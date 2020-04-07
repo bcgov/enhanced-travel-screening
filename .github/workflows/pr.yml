@@ -1,0 +1,39 @@
+name: Merge
+
+on: 
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-actions:
+    name: Test GH Actions
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Set env variables
+        run: |
+
+          ACCOUNT_ID="${{ secrets.ACCOUNT_ID }}"
+          S3_BUCKET="${{ secrets.S3_BUCKET }}"
+          PROJECT="${{ secrets.PROJECT }}"
+          REGION="${{ secrets.REGION }}"
+          PROFILE="${{ secrets.PROFILE }}"
+          AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
+          AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          DEPLOY_ENV="${{ secrets.DEPLOY_ENV }}"
+          
+          echo ::set-env name=ACCOUNT_ID::$ACCOUNT_ID
+          echo ::set-env name=S3_BUCKET::$S3_BUCKET
+          echo ::set-env name=PROJECT::$PROJECT
+          echo ::set-env name=REGION::$REGION
+          echo ::set-env name=PROFILE::$PROFILE
+          echo ::set-env name=AWS_ACCESS_KEY_ID::$AWS_ACCESS_KEY_ID
+          echo ::set-env name=AWS_SECRET_ACCESS_KEY::$AWS_SECRET_ACCESS_KEY
+          echo ::set-env name=DEPLOY_ENV::$DEPLOY_ENV
+          echo ::set-env name=MERGE_BRANCH::"master"           
+
+      - name: Checkout
+        uses: actions/checkout@v1
+      
+      - name: Status Output
+        run: make print-status
