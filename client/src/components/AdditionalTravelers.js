@@ -16,7 +16,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-const AdditionalTravellers = ({ classes, saveInfo, formValues }) => {
+const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => {
   const [additionalTravellers, setAdditionalTravellers] = useState([]);
   const [numberAdditionalTravellers, setNumberAdditionalTravellers] = useState(0);
   const blankTraveller = (index) => ({
@@ -70,6 +70,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues }) => {
             onChange={(e) => changeNumberOfTravellers(e.target.value)}
             fullWidth
             displayEmpty
+            inputProps={{disabled: isDisabled}}
           >
             <MenuItem value="" disabled>Select...</MenuItem>
             <MenuItem value={0}>0</MenuItem>

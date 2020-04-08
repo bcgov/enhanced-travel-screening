@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Grid, InputLabel, TextField, MenuItem, Select, Radio, RadioGroup, FormControl, FormControlLabel } from '@material-ui/core';
 
-const IsolationPlan = ({ classes, saveIsolationPlan, formValues }) => {
+const IsolationPlan = ({ classes, saveIsolationPlan, formValues, isDisabled }) => {
   const { isolationPlan } = formValues;
   const handleChange = (e) => {
     saveIsolationPlan(e.target.name, e.target.value)
@@ -56,6 +56,7 @@ const IsolationPlan = ({ classes, saveIsolationPlan, formValues }) => {
               onChange={handleChange}
               fullWidth
               displayEmpty
+              inputProps={{disabled: isDisabled}}
             >
               <MenuItem value="" disabled>Please Select</MenuItem>
               <MenuItem value="private">Private Residence</MenuItem>
