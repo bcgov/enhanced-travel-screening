@@ -38,37 +38,19 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.REGION }}
-      
-      # - name: Setup AWS 
-      #     run: make setup-aws-profile
-      #     env:
-      #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #       PROFILE: ${{ PROFILE }}
+    
             
       - name: Pipeline Build
         run: make pipeline-build
-        env:
-          GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
       - name: Pipeline Push
         run: make gh-pipeline-push
-        env:
-          REGION: ca-central-1
-          PROJECT: enhanced-travel-screening
-          MERGE_BRANCH: master
-          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
-          GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
       - name: Deploy Prep
         run: make gh-pipeline-deploy-prep
 
       - name: Deploy Version
         run: make gh-pipeline-deploy-version
-        env:
-          REGION: ${{ secrets.REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          DEPLOY_ENV: enhanced-travel-screening-dev
 
 
         
