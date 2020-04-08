@@ -53,7 +53,8 @@ const SubmissionLookup = () => {
 
   return (
     <Page>
-      <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
+      <Grid container alignItems="center" justify="center" >
+        <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
         <Card className={classes.card} variant="outlined">
           <CardContent>
             <Grid container spacing={3}>
@@ -89,6 +90,7 @@ const SubmissionLookup = () => {
             </Grid>
           </CardContent>
         </Card>
+      </Grid>
       </Grid>
     </Page>
   );
