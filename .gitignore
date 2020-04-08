@@ -12,6 +12,9 @@ client/.pnp
 client/.pnp.js
 client/build
 
+# Server
+client/*.pdf
+
 # Misc.
 docs
 Dockerrun.aws.json
