@@ -176,7 +176,7 @@ const Form = ({ initialValues, isDisabled }) => {
   }, [isDisabled])
 
   return (
-    <Grid className={classes.root} container justify="center" alignItems="center">
+    <Grid className={classes.root} justify="center" alignItems="center">
       <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
 
         {!isDisabled && (
