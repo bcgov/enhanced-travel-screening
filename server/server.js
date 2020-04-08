@@ -37,6 +37,16 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
     const item = {
+      TableName: 'forms',
+      Item: {
+        ...scrubbed,
+        id,
+      },
+      ConditionExpression: 'attribute_not_exists(id)',
+    };
+    const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
+    const scrubbed = scrubObject(req.body);
+    const item = {
       TableName: formsTable,
       Item: {
         ...scrubbed,
