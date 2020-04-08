@@ -13,7 +13,7 @@ client/.pnp.js
 client/build
 
 # Server
-client/*.pdf
+server/*.pdf
 
 # Misc.
 docs
