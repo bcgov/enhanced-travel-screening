@@ -12,7 +12,7 @@ jobs:
     steps: 
       - name: Set env variables
         run: |
-          GIT_LOCAL_BRANCH="$(echo $GITHUB_REF | sed 's/.*pull\/\([0-9]*\)\/.*/\1/')"
+          GIT_LOCAL_BRANCH="${GITHUB_REF##*/}"
           ACCOUNT_ID="${{ secrets.ACCOUNT_ID }}"
           S3_BUCKET="${{ secrets.S3_BUCKET }}"
           PROJECT="${{ secrets.PROJECT }}"
