@@ -49,9 +49,7 @@ const SubmissionLookup = () => {
   };
 
   // TODO: Determine if this is the correct flow
-  const handleSubmit = () => {
-    history.push(`/form/${formValues.confirmationNumber}`);
-  };
+  const handleSubmit = () => history.push(`/form/${formValues.confirmationNumber}`);
 
   return (
     <Page>

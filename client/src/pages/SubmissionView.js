@@ -88,8 +88,20 @@ const SubmissionView = ({ match: { params }}) => {
     // TODO: ...
   };
 
+  const handleLookupClick = () => history.push('/lookup');
+
   return (
-   <Page>
+   <Page
+    headerChildren={
+      <Button
+        variant="outlined"
+        color="inherit"
+        onClick={handleLookupClick}
+      >
+        Submission Lookup
+      </Button>
+    }
+   >
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
          {loading && <CircularProgress />}

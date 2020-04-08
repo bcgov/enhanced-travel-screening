@@ -1,10 +1,8 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
 
 import DesktopLogo from '../assets/images/desktop-logo.svg';
 import MobileLogo from '../assets/images/mobile-logo.svg';
@@ -32,11 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = () => {
-  const history = useHistory();
+const Header = ({ children }) => {
   const classes = useStyles();
-
-  const handleSubmissionLookupClick = () => history.push('/lookup');
 
   return (
     <div className={classes.root}>
@@ -50,14 +45,7 @@ const Header = () => {
               <img className={classes.logo} src={MobileLogo} alt="Logo" />
             </Hidden>
           </div>
-          <Button
-            className={classes.button}
-            variant="outlined"
-            color="inherit"
-            onClick={handleSubmissionLookupClick}
-          >
-            Submission Lookup
-          </Button>
+          {children}
         </Toolbar>
       </AppBar>
     </div>
