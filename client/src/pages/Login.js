@@ -102,7 +102,7 @@ const Login = () => {
                   onClick={handleSubmit}
                   fullWidth
                 >
-                  Submit Determination
+                  Login
                 </Button>
               </Grid>
               {error && (

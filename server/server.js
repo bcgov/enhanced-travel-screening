@@ -48,7 +48,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     await db.put(item).promise();
     res.json({ id, healthStatus: 'accepted', isolationPlanStatus: 'accepted' });
   } catch (error) {
-    res.status(500).json({ error: `Failed to create submission. ${error.message}` });
+    res.status(500).json({ error: 'Failed to create submission' });
   }
 });
 

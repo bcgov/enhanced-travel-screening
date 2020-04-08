@@ -28,8 +28,8 @@ print-status:
 	@echo " | MERGE BRANCH: $(MERGE_BRANCH) "
 	@echo " +---------------------------------------------------------+ "
 
-
-pipeline-deploy-dev:        | setup-development-env pipeline-build pipeline-push pipeline-deploy-prep pipeline-deploy-version
+# If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
+pipeline-deploy-dev: | pipeline-build pipeline-push pipeline-deploy-prep pipeline-deploy-version
 
 
 ####################
@@ -65,7 +65,8 @@ pipeline-build:
 
 pipeline-push:
 	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	@$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
 

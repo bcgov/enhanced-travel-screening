@@ -110,9 +110,9 @@ const App = () => (
         <Switch>
           <PrivateRoute path="/lookup" component={SubmissionLookup} />
           <PrivateRoute path="/form/:id" component={SubmissionView} />
-          <Route path="/form" component={SubmissionForm} />
-          <Route path="/confirmation/:confirmationNumber" component={Confirmation} />
-          <Route component={Login} />
+          <Route path="/login" component={Login} />
+          <Route path="/confirmation/:id" component={Confirmation} />
+          <Route component={SubmissionForm} />
         </Switch>
       </BrowserRouter>
     </ThemeProvider>

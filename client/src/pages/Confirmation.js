@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Grid, Typography, Card, CardContent, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Page from '../components/Page';
@@ -52,7 +52,7 @@ function Confirmation ({ location, match: { params }}) {
                     <CardContent>
                       <Typography variant="subtitle1">Confirmation Number</Typography>
                       <Typography variant="h2" color="primary">
-                        {params.confirmationNumber}
+                        {params.id}
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>
