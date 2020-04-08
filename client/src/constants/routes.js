@@ -5,7 +5,7 @@ export default Object.freeze({
   Confirmation: '/confirmation',
   RenderPDF: {
     staticRoute: '/renderpdf/:id/:jwt',
-    dynamicRoute: (id, jwt) => `/lookup/${id}/${jwt}`,
+    dynamicRoute: (id, jwt) => `/renderpdf/${id}/${jwt}`,
   },
   LookupResults: {
     staticRoute: '/lookup/:id',

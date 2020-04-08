@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { Route, Redirect } from 'react-router-dom';
 
+import Routes from '../constants/routes';
 import verifyJWT from '../utils/verify-jwt';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
@@ -19,7 +20,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route {...rest} render={(props) => (
       isValid
         ? <Component {...props} />
-        : <Redirect to='/login' />
+        : <Redirect to={Routes.Login} />
       )}
     />
   );

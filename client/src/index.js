@@ -120,7 +120,7 @@ const App = () => (
           {/* Non-admin routes */}
           <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
           <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
-          <PublicRoute exact path={Routes.RenderPDF} component={PDF} />
+          <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
 
           {/* Admin routes */}
           <PublicRoute exact path={Routes.Login} component={AdminLogin} />

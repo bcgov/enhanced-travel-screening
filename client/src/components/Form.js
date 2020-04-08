@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import Routes from '../constants/routes';
 import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
 import Arrival from './Arrival';
@@ -155,7 +156,7 @@ const Form = ({ initialValues, isDisabled, id = null }) => {
         // the definition of elegance
         alert(error.message);
       } else {
-        history.push(`/confirmation`, { id, healthStatus, isolationPlanStatus, accessToken });
+        history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
       }
     } else {
       console.error(response);
