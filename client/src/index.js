@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import SubmissionLookup from './pages/SubmissionLookup';
 import SubmissionView from './pages/SubmissionView';
 import SubmissionForm from './pages/SubmissionForm';
+import Confirmation from './pages/Confirmation';
 
 const openSansRegular = {
   fontFamily: 'Open Sans',
@@ -44,7 +45,7 @@ const theme = createMuiTheme({
   // Colors
   palette: {
     primary: {
-      main: '#003366',
+      main: '#002C71',
     },
     secondary: {
       main: '#FDB913',
@@ -109,8 +110,9 @@ const App = () => (
         <Switch>
           <PrivateRoute path="/lookup" component={SubmissionLookup} />
           <PrivateRoute path="/form/:id" component={SubmissionView} />
-          <Route path="/login" component={Login} />
-          <Route component={SubmissionForm} />
+          <Route path="/form" component={SubmissionForm} />
+          <Route path="/confirmation/:confirmationNumber" component={Confirmation} />
+          <Route component={Login} />
         </Switch>
       </BrowserRouter>
     </ThemeProvider>
