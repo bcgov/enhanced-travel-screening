@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import Routes from './constants/routes';
@@ -13,12 +14,13 @@ import LatoBoldFont from './assets/fonts/Lato-Bold.ttf';
 
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
-import SubmissionForm from './pages/SubmissionForm';
-import Confirmation from './pages/Confirmation';
-import PDF from './pages/PDF';
-import AdminLogin from './pages/AdminLogin';
-import AdminLookup from './pages/AdminLookup';
-import AdminLookupResults from './pages/AdminLookupResults';
+
+const SubmissionForm = lazy(() => import('./pages/SubmissionForm'));
+const Confirmation = lazy(() => import('./pages/Confirmation'));
+const PDF = lazy(() => import('./pages/PDF'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminLookup = lazy(() => import('./pages/AdminLookup'));
+const AdminLookupResults = lazy(() => import('./pages/AdminLookupResults'));
 
 const openSansRegular = {
   fontFamily: 'Open Sans',
@@ -113,20 +115,22 @@ const App = () => (
   <ThemeProvider theme={theme}>
     <CssBaseline />
     <BrowserRouter>
-      <Switch>
-        {/* Non-admin routes */}
-        <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
-        <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
-        <PublicRoute exact path={Routes.RenderPDF} component={PDF} />
+      <Suspense fallback={<LinearProgress />}>
+        <Switch>
+          {/* Non-admin routes */}
+          <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
+          <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
+          <PublicRoute exact path={Routes.RenderPDF} component={PDF} />
 
-        {/* Admin routes */}
-        <PublicRoute exact path={Routes.Login} component={AdminLogin} />
-        <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
-        <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
+          {/* Admin routes */}
+          <PublicRoute exact path={Routes.Login} component={AdminLogin} />
+          <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
+          <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
 
-        {/* Invalid route - default to user form */}
-        <Route component={SubmissionForm} />
-      </Switch>
+          {/* Invalid route - default to user form */}
+          <Route component={SubmissionForm} />
+        </Switch>
+      </Suspense>
     </BrowserRouter>
   </ThemeProvider>
 );

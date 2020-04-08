@@ -115,6 +115,11 @@ app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
   }
 });
 
+// Validate JWT
+app.get(`${apiBaseUrl}/validate`,
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => res.json({}));
+
 // Client app
 if (process.env.NODE_ENV === 'production') {
   app.get('/*', (req, res) => {
