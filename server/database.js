@@ -20,7 +20,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
       console.log('Checking for DB tables');
       const tables = await db.listTables().promise();
       if (nodeEnv !== 'development') {
-        console.error('Environemtn variable NODE_ENV must be set to development');
+        console.error('Environment variable NODE_ENV must be set to development');
         return;
       }
       if (Array.isArray(tables.TableNames) && tables.TableNames.length > 0) {

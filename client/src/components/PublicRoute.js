@@ -5,7 +5,7 @@ import { Route, Redirect } from 'react-router-dom';
 import Routes from '../constants/routes';
 import verifyJWT from '../utils/verify-jwt';
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PublicRoute = ({ component: Component, ...rest }) => {
   const [isValid, setValidity] = useState(null);
 
   useEffect(() => {
@@ -18,12 +18,12 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
   return isValid === null ? <LinearProgress /> : (
     <Route {...rest} render={(props) => (
-      isValid
+      !isValid
         ? <Component {...props} />
-        : <Redirect to={Routes.Login} />
+        : <Redirect to={Routes.Lookup} />
       )}
     />
   );
 }
 
-export default PrivateRoute;
+export default PublicRoute;

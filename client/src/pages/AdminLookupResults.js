@@ -44,12 +44,18 @@ const useStyles = makeStyles((theme) => ({
       letterSpacing: '0.81px',
     },
   },
+  divider: {
+    height: '3px',
+    backgroundColor: '#E2A014',
+    color: '#E2A014',
+    borderStyle: 'solid',
+  },
   button: {
     height: '54px',
   },
 }));
 
-const SubmissionView = ({ match: { params }}) => {
+const AdminLookupResults = ({ match: { params }}) => {
   const classes = useStyles();
   const history = useHistory();
   const [error, setError] = useState(null);
@@ -74,7 +80,6 @@ const SubmissionView = ({ match: { params }}) => {
       if (response.ok) {
         const data = await response.json();
         setInitialValues(data);
-        console.log(data);
       } else {
         setError(`Failed to find submission with ID ${params.id}`);
       }
@@ -107,26 +112,14 @@ const SubmissionView = ({ match: { params }}) => {
     }
   };
 
-  const handleLookupClick = () => history.push('/lookup');
-
   return (
-   <Page
-     headerChildren={
-       <Button
-         variant="outlined"
-         color="inherit"
-         onClick={handleLookupClick}
-       >
-         Submission Lookup
-       </Button>
-     }
-   >
+   <Page>
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
          {loading && <CircularProgress />}
          {error && (
            <Container maxWidth="sm" align="center">
-             <Typography paragraph color="error">Lookup failed... {error.message || error}</Typography>
+             <Typography paragraph>Lookup failed... {error.message || error}</Typography>
              <Button
                className={classes.button}
                variant="contained"
@@ -154,15 +147,10 @@ const SubmissionView = ({ match: { params }}) => {
                <Typography className={classes.sidebarTitle} variant="h2">
                  Public Health Official Determination
                </Typography>
-               <hr style={{
-                 height: '3px',
-                 backgroundColor: '#E2A014',
-                 color: '#E2A014',
-                 borderStyle: 'solid',
-               }}/>
+               <hr className={classes.divider} />
              </Grid>
              <Grid item xs={12}>
-               <Typography style={{marginBottom: "1rem"}} variant="h6">Determination</Typography>
+               <Typography style={{ marginBottom: "1rem" }} variant="h6">Determination</Typography>
                <ButtonGroup
                  className={classes.buttonGroup}
                  orientation="vertical"
@@ -206,17 +194,17 @@ const SubmissionView = ({ match: { params }}) => {
                />
              </Grid>
              <Grid item xs={12}>
-               {
-                 loadingDetermination
-                   ? <CircularProgress />
-                   : <Button
+               {loadingDetermination
+                 ? <CircularProgress />
+                 : <Button
                      className={classes.button}
                      variant="contained"
                      color="primary"
                      onClick={handleSubmit}
                      fullWidth
-                     >
-                     Submit Determination
+                     disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
+                   >
+                    Submit Determination
                    </Button>
                }
              </Grid>
@@ -229,4 +217,4 @@ const SubmissionView = ({ match: { params }}) => {
   );
 };
 
-export default SubmissionView;
+export default AdminLookupResults;

@@ -8,6 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
+import Routes from '../constants/routes';
+
 import Page from '../components/Page';
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubmissionLookup = () => {
+const AdminLookup = () => {
   const classes = useStyles();
   const history = useHistory();
   const [formValues, setFormValues] = useState({
@@ -48,12 +50,13 @@ const SubmissionLookup = () => {
     setFormValues(prevState => ({ ...prevState, [name]: value }));
   };
 
-  // TODO: Determine if this is the correct flow
-  const handleSubmit = () => history.push(`/form/${formValues.confirmationNumber}`);
+  const handleSubmit = () => {
+    history.push(Routes.LookupResults.dynamicRoute(formValues.confirmationNumber));
+  };
 
   return (
     <Page>
-      <Grid container alignItems="center" justify="center" >
+      <Grid container alignItems="center" justify="center">
         <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
           <Card className={classes.card} variant="outlined">
             <CardContent>
@@ -96,4 +99,4 @@ const SubmissionLookup = () => {
   );
 };
 
-export default SubmissionLookup;
+export default AdminLookup;

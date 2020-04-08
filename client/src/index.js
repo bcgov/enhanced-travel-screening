@@ -1,8 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+import Routes from './constants/routes';
 
 import OpenSansRegularFont from './assets/fonts/OpenSans-Regular.ttf';
 import OpenSansBoldFont from './assets/fonts/OpenSans-Bold.ttf';
@@ -10,12 +13,14 @@ import LatoRegularFont from './assets/fonts/Lato-Regular.ttf';
 import LatoBoldFont from './assets/fonts/Lato-Bold.ttf';
 
 import PrivateRoute from './components/PrivateRoute';
-import Login from './pages/Login';
-import SubmissionLookup from './pages/SubmissionLookup';
-import SubmissionView from './pages/SubmissionView';
-import SubmissionForm from './pages/SubmissionForm';
-import Confirmation from './pages/Confirmation';
-import PDF from './pages/PDF';
+import PublicRoute from './components/PublicRoute';
+
+const SubmissionForm = lazy(() => import('./pages/SubmissionForm'));
+const Confirmation = lazy(() => import('./pages/Confirmation'));
+const PDF = lazy(() => import('./pages/PDF'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminLookup = lazy(() => import('./pages/AdminLookup'));
+const AdminLookupResults = lazy(() => import('./pages/AdminLookupResults'));
 
 const openSansRegular = {
   fontFamily: 'Open Sans',
@@ -107,21 +112,27 @@ const theme = createMuiTheme({
 });
 
 const App = () => (
-  <Fragment>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <BrowserRouter>
+      <Suspense fallback={<LinearProgress />}>
         <Switch>
-          <PrivateRoute path="/lookup" component={SubmissionLookup} />
-          <PrivateRoute path="/form/:id" component={SubmissionView} />
-          <Route path="/login" component={Login} />
-          <Route path="/confirmation" component={Confirmation} />
-          <Route path="/renderpdf/:id/:jwt" component={PDF} />
+          {/* Non-admin routes */}
+          <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
+          <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
+          <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
+
+          {/* Admin routes */}
+          <PublicRoute exact path={Routes.Login} component={AdminLogin} />
+          <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
+          <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
+
+          {/* Invalid route - default to user form */}
           <Route component={SubmissionForm} />
         </Switch>
-      </BrowserRouter>
-    </ThemeProvider>
-  </Fragment>
+      </Suspense>
+    </BrowserRouter>
+  </ThemeProvider>
 );
 
 ReactDOM.render(<App />, document.getElementById('root'));
