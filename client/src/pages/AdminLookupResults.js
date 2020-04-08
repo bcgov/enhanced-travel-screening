@@ -44,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
       letterSpacing: '0.81px',
     },
   },
+  divider: {
+    height: '3px',
+    backgroundColor: '#E2A014',
+    color: '#E2A014',
+    borderStyle: 'solid',
+  },
   button: {
     height: '54px',
   },
@@ -141,15 +147,10 @@ const AdminLookupResults = ({ match: { params }}) => {
                <Typography className={classes.sidebarTitle} variant="h2">
                  Public Health Official Determination
                </Typography>
-               <hr style={{
-                 height: '3px',
-                 backgroundColor: '#E2A014',
-                 color: '#E2A014',
-                 borderStyle: 'solid',
-               }}/>
+               <hr className={classes.divider} />
              </Grid>
              <Grid item xs={12}>
-               <Typography style={{marginBottom: "1rem"}} variant="h6">Determination</Typography>
+               <Typography style={{ marginBottom: "1rem" }} variant="h6">Determination</Typography>
                <ButtonGroup
                  className={classes.buttonGroup}
                  orientation="vertical"
@@ -193,17 +194,17 @@ const AdminLookupResults = ({ match: { params }}) => {
                />
              </Grid>
              <Grid item xs={12}>
-               {
-                 loadingDetermination
-                   ? <CircularProgress />
-                   : <Button
+               {loadingDetermination
+                 ? <CircularProgress />
+                 : <Button
                      className={classes.button}
                      variant="contained"
                      color="primary"
                      onClick={handleSubmit}
                      fullWidth
-                     >
-                     Submit Determination
+                     disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
+                   >
+                    Submit Determination
                    </Button>
                }
              </Grid>
