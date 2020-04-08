@@ -9,7 +9,9 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
   useEffect(() => {
     (async () => {
-      setValidity(await verifyJWT());
+      const jwt = window.localStorage.getItem('jwt');
+      if (!jwt) setValidity(false);
+      else setValidity(await verifyJWT(jwt));
     })();
   }, []);
 
