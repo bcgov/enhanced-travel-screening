@@ -16,9 +16,7 @@ const Page = ({ headerChildren, children }) => {
   const classes = useStyles();
   return (
     <Fragment>
-      <Header>
-        {headerChildren}
-      </Header>
+      <Header />
       <Grid className={classes.root} container justify="center">
         {children}
       </Grid>

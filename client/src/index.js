@@ -1,8 +1,10 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+import Routes from './constants/routes';
 
 import OpenSansRegularFont from './assets/fonts/OpenSans-Regular.ttf';
 import OpenSansBoldFont from './assets/fonts/OpenSans-Bold.ttf';
@@ -10,12 +12,13 @@ import LatoRegularFont from './assets/fonts/Lato-Regular.ttf';
 import LatoBoldFont from './assets/fonts/Lato-Bold.ttf';
 
 import PrivateRoute from './components/PrivateRoute';
-import Login from './pages/Login';
-import SubmissionLookup from './pages/SubmissionLookup';
-import SubmissionView from './pages/SubmissionView';
+import PublicRoute from './components/PublicRoute';
 import SubmissionForm from './pages/SubmissionForm';
 import Confirmation from './pages/Confirmation';
 import PDF from './pages/PDF';
+import AdminLogin from './pages/AdminLogin';
+import AdminLookup from './pages/AdminLookup';
+import AdminLookupResults from './pages/AdminLookupResults';
 
 const openSansRegular = {
   fontFamily: 'Open Sans',
@@ -107,21 +110,25 @@ const theme = createMuiTheme({
 });
 
 const App = () => (
-  <Fragment>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Switch>
-          <PrivateRoute path="/lookup" component={SubmissionLookup} />
-          <PrivateRoute path="/form/:id" component={SubmissionView} />
-          <Route path="/login" component={Login} />
-          <Route path="/confirmation" component={Confirmation} />
-          <Route path="/renderpdf/:id/:jwt" component={PDF} />
-          <Route component={SubmissionForm} />
-        </Switch>
-      </BrowserRouter>
-    </ThemeProvider>
-  </Fragment>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <BrowserRouter>
+      <Switch>
+        {/* Non-admin routes */}
+        <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
+        <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
+        <PublicRoute exact path={Routes.RenderPDF} component={PDF} />
+
+        {/* Admin routes */}
+        <PublicRoute exact path={Routes.Login} component={AdminLogin} />
+        <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
+        <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
+
+        {/* Invalid route - default to user form */}
+        <Route component={SubmissionForm} />
+      </Switch>
+    </BrowserRouter>
+  </ThemeProvider>
 );
 
 ReactDOM.render(<App />, document.getElementById('root'));

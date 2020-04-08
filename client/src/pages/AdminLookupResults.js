@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubmissionView = ({ match: { params }}) => {
+const AdminLookupResults = ({ match: { params }}) => {
   const classes = useStyles();
   const history = useHistory();
   const [error, setError] = useState(null);
@@ -74,7 +74,6 @@ const SubmissionView = ({ match: { params }}) => {
       if (response.ok) {
         const data = await response.json();
         setInitialValues(data);
-        console.log(data);
       } else {
         setError(`Failed to find submission with ID ${params.id}`);
       }
@@ -107,26 +106,14 @@ const SubmissionView = ({ match: { params }}) => {
     }
   };
 
-  const handleLookupClick = () => history.push('/lookup');
-
   return (
-   <Page
-     headerChildren={
-       <Button
-         variant="outlined"
-         color="inherit"
-         onClick={handleLookupClick}
-       >
-         Submission Lookup
-       </Button>
-     }
-   >
+   <Page>
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
          {loading && <CircularProgress />}
          {error && (
            <Container maxWidth="sm" align="center">
-             <Typography paragraph color="error">Lookup failed... {error.message || error}</Typography>
+             <Typography paragraph>Lookup failed... {error.message || error}</Typography>
              <Button
                className={classes.button}
                variant="contained"
@@ -229,4 +216,4 @@ const SubmissionView = ({ match: { params }}) => {
   );
 };
 
-export default SubmissionView;
+export default AdminLookupResults;

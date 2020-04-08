@@ -8,6 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
+import Routes from '../constants/routes';
+
 import Page from '../components/Page';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = () => {
+const AdminLogin = () => {
   const history = useHistory();
   const classes = useStyles();
   const [error, setError] = useState(null);
@@ -41,10 +43,6 @@ const Login = () => {
     setFormValues(prevState => ({ ...prevState, [name]: value }));
   };
 
-  // TODO: Figure out these questions:
-  // - How to handle redirect?
-  // - What does a token enable someone to do?
-  // - How do we want to handle user state?
   const handleSubmit = async () => {
     const response = await fetch('/api/v1/login', {
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
@@ -55,7 +53,7 @@ const Login = () => {
     if (response.ok) {
       const { token } = await response.json();
       window.localStorage.setItem('jwt', token);
-      history.push('/lookup');
+      history.push(Routes.Lookup);
     } else {
       setError(response.error || response.statusText || response);
     }
@@ -122,4 +120,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
