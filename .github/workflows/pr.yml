@@ -25,7 +25,7 @@ jobs:
           echo ::set-env name=ACCOUNT_ID::$ACCOUNT_ID
           echo ::set-env name=S3_BUCKET::$S3_BUCKET
           echo ::set-env name=PROJECT::$PROJECT
-          echo ::set-env name=REGION::${{ secrets.REGION }}
+          echo ::set-env name=REGION::$REGION
           echo ::set-env name=PROFILE::$PROFILE
           echo ::set-env name=AWS_ACCESS_KEY_ID::$AWS_ACCESS_KEY_ID
           echo ::set-env name=AWS_SECRET_ACCESS_KEY::$AWS_SECRET_ACCESS_KEY
@@ -38,9 +38,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: $AWS_ACCESS_KEY_ID
-          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
-          aws-region: $REGION
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.REGION }}
       
       - name: Deploy to Dev
         run: make print-status
