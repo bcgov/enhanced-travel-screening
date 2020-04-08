@@ -9,10 +9,15 @@ jobs:
   test-actions:
     name: Test GH Actions
     runs-on: ubuntu-latest
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
     steps: 
       - name: Set env variables
         run: |
-          GIT_LOCAL_BRANCH="${GITHUB_REF##*/}"
+          GIT_LOCAL_BRANCH="${{ steps.extract_branch.outputs.branch }}"
           ACCOUNT_ID="${{ secrets.ACCOUNT_ID }}"
           S3_BUCKET="${{ secrets.S3_BUCKET }}"
           PROJECT="${{ secrets.PROJECT }}"
