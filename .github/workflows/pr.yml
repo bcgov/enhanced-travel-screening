@@ -39,5 +39,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.REGION }}
       
-      - name: Deploy to Dev
-        run: make pipeline-deploy-dev
+      - name: Pipeline Build
+        run: make pipeline-build
+        env:
+          GIT_LOCAL_BRANCH: ${{ github.base_ref }}
+      
+      - name: Pipeline Push
+        run: make pipeline-build
+        env:
+          REGION: ${{ secrets.REGION }}
+          PROFILE: ets
+          PROJECT: ${{ secrets.PROJECT }}
+          MERGE_BRANCH: ${{ secrets.MERGE_BRANCH }}
+          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+          GIT_LOCAL_BRANCH: ${{ github.base_ref }}
+        
+
+
