@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Typography, TextField, InputLabel, FormControlLabel, Checkbox } from '@material-ui/core';
 
-const Symptoms = ({ classes, saveSymptoms, saveRiskGroups, symptoms, riskGroups }) => {
+const Symptoms = ({ classes, saveSymptoms, saveRiskGroups, symptoms, riskGroups, isDisabled }) => {
 
   return (
     <Grid style={{padding: "1rem"}} container>
@@ -99,11 +99,11 @@ const Symptoms = ({ classes, saveSymptoms, saveRiskGroups, symptoms, riskGroups 
           name="otherSymptoms"
           className={`${classes.stretch} ${classes.textField}`}
           id="symptomsDescription"
-          label=""
           variant="outlined"
           rows="2"
           multiline
           fullWidth
+          disabled={isDisabled}
         />
       </Grid>
 

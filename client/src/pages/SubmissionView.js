@@ -53,7 +53,9 @@ const SubmissionView = ({ match: { params }}) => {
   const classes = useStyles();
   const history = useHistory();
   const [error, setError] = useState(null);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingDetermination, setLoadingDetermination] = useState(false);
   const [initialValues, setInitialValues] = useState(null);
   const [sidebarFormValues, setSidebarFormValues] = useState({
     determination: '',
@@ -84,8 +86,25 @@ const SubmissionView = ({ match: { params }}) => {
     setSidebarFormValues(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    // TODO: ...
+  const handleSubmit = async () => {
+    setLoadingDetermination(true)
+    try {
+      const jwt = window.localStorage.getItem('jwt');
+      const response = await fetch(`/api/v1/form/${params.id}`, {
+        headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
+        method: 'PATCH',
+        body: JSON.stringify({ ...sidebarFormValues })
+      });
+      if (response.ok) {
+        setUpdateSuccess(true);
+      } else {
+        throw new Error(response.error || 'Failed to update this submission.');
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoadingDetermination(false);
+    }
   };
 
   const handleLookupClick = () => history.push('/lookup');
@@ -151,14 +170,14 @@ const SubmissionView = ({ match: { params }}) => {
                    PLAN ACCEPTED
                  </Button>
                  <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'requires-support' })}
-                   variant={sidebarFormValues.determination === 'requires-support' ? 'contained' : 'outlined'}
+                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
+                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
                  >
                    PLAN REQUIRES SUPPORT
                  </Button>
                  <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'not-accepted' })}
-                   variant={sidebarFormValues.determination === 'not-accepted' ? 'contained' : 'outlined'}
+                   onClick={(e) => handleChange({ name: 'determination', value: 'rejected' })}
+                   variant={sidebarFormValues.determination === 'rejected' ? 'contained' : 'outlined'}
                  >
                    PLAN NOT ACCEPTED
                  </Button>
@@ -178,16 +197,21 @@ const SubmissionView = ({ match: { params }}) => {
                />
              </Grid>
              <Grid item xs={12}>
-               <Button
-                 className={classes.button}
-                 variant="contained"
-                 color="primary"
-                 onClick={handleSubmit}
-                 fullWidth
-               >
-                 Submit Determination
-               </Button>
+               {
+                 loadingDetermination
+                   ? <CircularProgress />
+                   : <Button
+                     className={classes.button}
+                     variant="contained"
+                     color="primary"
+                     onClick={handleSubmit}
+                     fullWidth
+                     >
+                     Submit Determination
+                   </Button>
+               }
              </Grid>
+             {updateSuccess && <Typography textAlign="center" color="secondary">Submission Updated</Typography>}
            </Grid>
          </Grid>
        </Fragment>

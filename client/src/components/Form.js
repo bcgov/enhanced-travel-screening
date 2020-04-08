@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
@@ -156,10 +156,7 @@ const Form = ({ initialValues, isDisabled }) => {
       if (error) {
         alert(error.message);
       }
-      history.state = {
-        id, healthStatus: "Accepted", isolationPlanStatus: "Support"
-      }
-      history.push(`/confirmation/${id}`);
+      history.push(`/confirmation/${id}`, { id, healthStatus, isolationPlanStatus });
     } else {
       console.error(response);
     }
@@ -168,6 +165,15 @@ const Form = ({ initialValues, isDisabled }) => {
   const canSubmitForm = () => {
     return certified
   };
+
+  useEffect(() => {
+    if (isDisabled) {
+      const inputs = document.getElementsByTagName('input');
+      for (let input of inputs) {
+        input.setAttribute('disabled', true)
+      }
+    }
+  }, [isDisabled])
 
   return (
     <Grid className={classes.root} container justify="center" alignItems="center">

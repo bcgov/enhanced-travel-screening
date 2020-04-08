@@ -14,7 +14,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-const Personal = ({ classes, saveInfo, formValues }) => {
+const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
   const handleChange = (event) => saveInfo(event);
   const handleDateChange = (date) => {
     saveInfo({ target: {
@@ -81,7 +81,7 @@ const Personal = ({ classes, saveInfo, formValues }) => {
             />
           </Box>
         </Grid>
-        {/* Mobile */}
+        {/* MOBILE */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
             <InputLabel htmlFor="mobilePhone">Mobile Phone</InputLabel>
@@ -156,6 +156,7 @@ const Personal = ({ classes, saveInfo, formValues }) => {
               rows="2"
               multiline
               fullWidth
+              disabled={isDisabled}
             />
           </Box>
         </Grid>
@@ -203,6 +204,7 @@ const Personal = ({ classes, saveInfo, formValues }) => {
               onChange={handleChange}
               fullWidth
               displayEmpty
+              inputProps={{disabled: isDisabled}}
             >
               <MenuItem value="" disabled>Please Select</MenuItem>
               {provs.map((prov) => (
@@ -251,10 +253,12 @@ const Personal = ({ classes, saveInfo, formValues }) => {
                 format="MM/DD/YYYY"
                 className={classes.select}
                 id="dob"
+                openTo="year"
                 variant="filled"
                 fullWidth
                 onChange={handleDateChange}
                 inputVariant="filled"
+                disabled={isDisabled}
                 value={formValues.dob || '01/01/1990'}
                 KeyboardButtonProps={{ 'aria-label': 'change date' }}
               />
