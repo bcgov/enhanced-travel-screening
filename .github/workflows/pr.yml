@@ -54,9 +54,9 @@ jobs:
       - name: Pipeline Push
         run: make gh-pipeline-push
         env:
-          REGION: ${{ secrets.REGION }}
-          PROJECT: ${{ secrets.PROJECT }}
-          MERGE_BRANCH: ${{ secrets.MERGE_BRANCH }}
+          REGION: ca-central-1
+          PROJECT: enhanced-travel-screening
+          MERGE_BRANCH: master
           ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
