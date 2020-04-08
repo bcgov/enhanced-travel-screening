@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
 function Confirmation ({ location, match: { params }}) {
 
   const classes = useStyles();
-  console.dir(location)
-  console.dir(params)
+  const { healthStatus, isolationPlanStatus } = location;
+
   return (
     <Page>
       <Grid className={classes.root} container justify="center">
@@ -56,11 +56,11 @@ function Confirmation ({ location, match: { params }}) {
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>
-                          <img src={Health} alt="submission is healthy" />
+                          {healthStatus === "Accepted" ? <img src={Health} alt="submission is healthy" /> : <img src={Support} alt="needs support" />}
                           <Typography variant="subtitle1">Health Status Complete</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          <img src={Pass} alt="submission passes" />
+                          {isolationPlanStatus === "Accepted" ? <img src={Pass} alt="submission passes" /> : <img src={Support} alt="needs support" />}
                           <Typography variant="subtitle1">Isolation Plan Status Complete</Typography>
                         </Grid>
                       </Grid>

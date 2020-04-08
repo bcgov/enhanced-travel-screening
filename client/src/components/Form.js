@@ -151,13 +151,13 @@ const Form = ({ initialValues, isDisabled }) => {
     console.log(response.ok)
     console.dir(response)
     if (response.ok) {
-      const { id, health, plan, error } = await response.json();
-      console.log(id, health, plan, error);
+      const { id, healthStatus, isolationPlanStatus, error } = await response.json();
+      console.log(id, healthStatus, isolationPlanStatus, error);
       if (error) {
         alert(error.message);
       }
       history.state = {
-        id, health: "Accepted", plan: "Support"
+        id, healthStatus: "Accepted", isolationPlanStatus: "Support"
       }
       history.push(`/confirmation/${id}`);
     } else {
