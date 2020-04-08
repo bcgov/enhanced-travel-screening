@@ -45,7 +45,7 @@ jobs:
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
       - name: Pipeline Push
-        run: aws --region $(REGION) --profile $(PROFILE) ecr get-login-password
+        run: aws --region ca-central-1 --profile ets ecr get-login-password
         env:
           REGION: ${{ secrets.REGION }}
           PROFILE: ets
