@@ -160,7 +160,7 @@ const Arrival = ({ classes, saveInfo, formValues }) => {
               </Grid>
             ))}
             <Grid container>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <Box padding="1rem">
                   <Button
                     variant="outlined"
