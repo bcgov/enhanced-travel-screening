@@ -17,14 +17,18 @@ const useStyles = makeStyles((theme) => ({
 function Confirmation ({ location: { state } }) {
 
   const classes = useStyles();
-  const { healthStatus, isolationPlanStatus, id, accessToken } = state || { healthStatus: "Accepted", isolationPlanStatus: "Accepted" };
+  const { healthStatus, isolationPlanStatus, id, accessToken } = state || {
+    healthStatus: "", isolationPlanStatus: "", id: null, accessToken: null
+  };
 
   const genPDF = async () => {
-    const response = await fetch(`/api/v1/pdf/${id}`, {
+    const response = await fetch(`/api/v1/pdf`, {
       headers: {
         'Accept': 'application/pdf',
-        'Authorization': `Bearer ${accessToken}`
-      }
+        'Content-type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ id, accessToken })
     });
     if (response.ok) {
       const blob = await response.blob()
@@ -50,7 +54,15 @@ function Confirmation ({ location: { state } }) {
   return (
     <Page>
       <Grid className={classes.root} container justify="center">
-        <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+        {(!id || !accessToken) ? (
+          <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+            <Box margin="2rem 0">
+              <Typography variant="h4">
+                No submission detected, please create a new submission.
+              </Typography>
+            </Box>
+          </Grid>
+        ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
           <Box margin="2rem 0">
             <Typography variant="h4">
               Thank you. Your form has been submitted.
@@ -117,7 +129,7 @@ function Confirmation ({ location: { state } }) {
             </CardContent>
           </Card>
 
-        </Grid>
+        </Grid>}
       </Grid>
     </Page>
   )

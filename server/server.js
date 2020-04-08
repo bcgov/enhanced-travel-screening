@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
 const puppeteer = require('puppeteer');
-const { passport } = require('./auth.js');
+const { passport, genTokenForSubmission } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 
 const apiBaseUrl = '/api/v1';
@@ -57,7 +57,13 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ConditionExpression: 'attribute_not_exists(id)',
     };
     await db.put(item).promise();
-    res.json({ id, healthStatus: 'accepted', isolationPlanStatus: 'accepted' });
+    const accessToken = genTokenForSubmission(id);
+    res.json({
+      id,
+      healthStatus: 'accepted',
+      isolationPlanStatus: 'accepted',
+      accessToken,
+    });
   } catch (error) {
     res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
@@ -105,26 +111,16 @@ app.get(`${apiBaseUrl}/form/:id`,
     }
   });
 
-app.get(`${apiBaseUrl}/form/pdf/:id`, async (req, res) => {
-  const { id } = req.params;
-  const params = { TableName: formsTable, Key: { id } };
-  try {
-    const item = await db.get(params).promise();
-    return res.json(item.Item);
-  } catch (error) {
-    console.error(error)
-    return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
-  }
-});
 // PDF route
 // uses a conf number to fetch a submission and renders it as a pdf
 // employs a front end route to do this
-app.get(`${apiBaseUrl}/pdf/:id`, async (req, res) => {
-  const { id } = req.params;
+// front end route looks for a JWT in params and can only fetch data if the token is valid
+app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
+  const { id, accessToken } = req.body;
   (async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto(`${FE_URL}/renderpdf/${id}`, {
+    await page.goto(`${FE_URL}/renderpdf/${id}/${accessToken}`, {
       waitUntil: 'networkidle2',
     });
     await page.setViewport({ width: 1680, height: 1050 });
@@ -138,12 +134,9 @@ app.get(`${apiBaseUrl}/pdf/:id`, async (req, res) => {
       'Content-Length': pdf.length,
     });
     const pdfPath = path.join(__dirname, 'pdfs', `travellerScreeningReport-${id}.pdf`);
-    console.log(pdfPath)
     res.sendFile(pdfPath);
   })();
 });
-
-
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

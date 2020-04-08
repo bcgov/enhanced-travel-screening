@@ -148,15 +148,14 @@ const Form = ({ initialValues, isDisabled }) => {
       },
       body: JSON.stringify(formValues)
     });
-    console.log(response.ok)
-    console.dir(response)
     if (response.ok) {
       const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
-      console.log(id, healthStatus, isolationPlanStatus, error);
       if (error) {
+        // the definition of elegance
         alert(error.message);
+      } else {
+        history.push(`/confirmation`, { id, healthStatus, isolationPlanStatus, accessToken });
       }
-      history.push(`/confirmation`, { id, healthStatus, isolationPlanStatus, accessToken });
     } else {
       console.error(response);
     }

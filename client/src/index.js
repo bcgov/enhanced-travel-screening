@@ -113,7 +113,7 @@ const App = () => (
           <PrivateRoute path="/form/:id" component={SubmissionView} />
           <Route path="/login" component={Login} />
           <Route path="/confirmation" component={Confirmation} />
-          <Route path="/renderpdf/:id" component={PDF} />
+          <Route path="/renderpdf/:id/:jwt" component={PDF} />
           <Route component={SubmissionForm} />
         </Switch>
       </BrowserRouter>

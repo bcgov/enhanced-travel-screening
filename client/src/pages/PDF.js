@@ -2,25 +2,23 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Form from '../components/Form';
 
-const SubmissionView = ({ match: { params }}) => {
+const PDF = ({ match: { params }}) => {
   const [initialValues, setInitialValues] = useState(null);
   const [loading, toggleLoading] = useState(true);
-
+  const { jwt, id } = params;
   useEffect(() => {
     (async () => {
-      // const jwt = window.localStorage.getItem('jwt');
-      const response = await fetch(`/api/v1/form/pdf/${params.id}`, {
-        headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
+      const response = await fetch(`/api/v1/form/${id}`, {
         method: 'GET',
+        headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
       });
       if (response.ok) {
         const data = await response.json();
-        console.dir(data);
         setInitialValues(data);
         toggleLoading(false);
       }
     })();
-  }, [params.id]);
+  }, [jwt, id]);
 
   return (
      <Grid style={{ height: '100%', overflowY: 'auto'}} item xs={12}>
@@ -29,4 +27,4 @@ const SubmissionView = ({ match: { params }}) => {
   );
 };
 
-export default SubmissionView;
+export default PDF;
