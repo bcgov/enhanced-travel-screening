@@ -1,6 +1,6 @@
 #!make
 
-include .env
+-include .env
 
 export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
