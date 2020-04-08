@@ -162,7 +162,7 @@ const SubmissionView = ({ match: { params }}) => {
                }}/>
              </Grid>
              <Grid item xs={12}>
-               <Typography variant="body1">Determination</Typography>
+               <Typography style={{marginBottom: "1rem"}} variant="h6">Determination</Typography>
                <ButtonGroup
                  className={classes.buttonGroup}
                  orientation="vertical"
@@ -170,16 +170,19 @@ const SubmissionView = ({ match: { params }}) => {
                  fullWidth
                >
                  <Button
+                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
+                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
+                   style={{
+                     backgroundColor: sidebarFormValues.determination === 'support' ? '#F5A623' : 'unset',
+                   }}
+                 >
+                   Support Needed
+                 </Button>
+                 <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'accepted' })}
                    variant={sidebarFormValues.determination === 'accepted' ? 'contained' : 'outlined'}
                  >
-                   PLAN ACCEPTED
-                 </Button>
-                 <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
-                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
-                 >
-                   PLAN REQUIRES SUPPORT
+                   Isolation Plan Approved
                  </Button>
                  {/* <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'rejected' })}
@@ -190,7 +193,7 @@ const SubmissionView = ({ match: { params }}) => {
                </ButtonGroup>
              </Grid>
              <Grid item xs={12}>
-               <Typography variant="body1">Notes</Typography>
+               <Typography variant="h6">Notes*</Typography>
                <TextField
                  value={sidebarFormValues.notes}
                  name="notes"

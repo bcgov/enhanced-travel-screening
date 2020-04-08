@@ -7,7 +7,6 @@ import PlanFail from '../assets/images/icon_isolation_fail.svg';
 
 const passStyles = {
   height: '36px',
-  width: '143px',
   color: '#16C92E',
   fontfamily: 'Lato',
   fontsize: '12px',
@@ -15,10 +14,10 @@ const passStyles = {
   letterSpacing: 0,
   lineHeight: '18px',
   textAlign: 'center',
+  marginTop: '10px',
 }
 const failStyles = {
   height: '36px',
-  width: '142px',
   color: '#FF534A',
   fontFamily: 'Lato',
   fontSize: '12px',
@@ -26,9 +25,10 @@ const failStyles = {
   letterSpacing: 0,
   lineHeight: '18px',
   textAlign: 'center',
+  marginTop: '10px',
 }
 
-function SubmissionInfo ({ id, healthStatus = "accepted", isolationPlanStatus = "accepted" }) {
+function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "support" }) {
   return (
     <Box padding='1.5rem 1rem 1rem 1rem'>
       <Grid container spacing={4}>
@@ -48,13 +48,13 @@ function SubmissionInfo ({ id, healthStatus = "accepted", isolationPlanStatus = 
               <Grid container>
                 <Grid item xs={6}>
                   <Box style={{textAlign: 'center'}}>
-                    <img src={healthStatus === "accepted" ? HealthPass : HealthFail} alt="health status accepted or failed" />
+                    <img style={{height: '50px'}} src={healthStatus === "accepted" ? HealthPass : HealthFail} alt="health status accepted or failed" />
                     <Typography style={healthStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Health Status Complete</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
                   <Box style={{textAlign: 'center'}}>
-                    <img src={isolationPlanStatus === "accepted" ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
+                    <img style={{height: '50px'}} src={isolationPlanStatus === "accepted" ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
                     <Typography style={isolationPlanStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
                   </Box>
                 </Grid>
