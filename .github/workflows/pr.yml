@@ -33,7 +33,14 @@ jobs:
           echo ::set-env name=MERGE_BRANCH::"master"           
 
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: $AWS_ACCESS_KEY_ID
+          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
+          aws-region: $REGION
       
-      - name: Status Output
+      - name: Deploy to Dev
         run: make print-status

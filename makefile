@@ -26,6 +26,7 @@ print-status:
 	@echo " | PROFILE: $(PROFILE) "
 	@echo " | DEPLOY ENV: $(DEPLOY_ENV) "
 	@echo " | MERGE BRANCH: $(MERGE_BRANCH) "
+	@echo " | GIT LOCAL BRANCH: $(GIT_LOCAL_BRANCH) "
 	@echo " +---------------------------------------------------------+ "
 
 # If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
