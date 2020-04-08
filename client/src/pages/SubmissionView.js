@@ -111,15 +111,15 @@ const SubmissionView = ({ match: { params }}) => {
 
   return (
    <Page
-    headerChildren={
-      <Button
-        variant="outlined"
-        color="inherit"
-        onClick={handleLookupClick}
-      >
-        Submission Lookup
-      </Button>
-    }
+     headerChildren={
+       <Button
+         variant="outlined"
+         color="inherit"
+         onClick={handleLookupClick}
+       >
+         Submission Lookup
+       </Button>
+     }
    >
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
@@ -144,7 +144,7 @@ const SubmissionView = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} md={8}>
-           <Form initialValues={initialValues} isDisabled />
+           <Form initialValues={initialValues} isDisabled id={params.id} />
          </Grid>
 
          {/** Sidebar */}
@@ -154,9 +154,15 @@ const SubmissionView = ({ match: { params }}) => {
                <Typography className={classes.sidebarTitle} variant="h2">
                  Public Health Official Determination
                </Typography>
+               <hr style={{
+                 height: '3px',
+                 backgroundColor: '#E2A014',
+                 color: '#E2A014',
+                 borderStyle: 'solid',
+               }}/>
              </Grid>
              <Grid item xs={12}>
-               <Typography variant="body1">Determination</Typography>
+               <Typography style={{marginBottom: "1rem"}} variant="h6">Determination</Typography>
                <ButtonGroup
                  className={classes.buttonGroup}
                  orientation="vertical"
@@ -164,27 +170,30 @@ const SubmissionView = ({ match: { params }}) => {
                  fullWidth
                >
                  <Button
+                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
+                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
+                   style={{
+                     backgroundColor: sidebarFormValues.determination === 'support' ? '#F5A623' : 'unset',
+                   }}
+                 >
+                   Support Needed
+                 </Button>
+                 <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'accepted' })}
                    variant={sidebarFormValues.determination === 'accepted' ? 'contained' : 'outlined'}
                  >
-                   PLAN ACCEPTED
+                   Isolation Plan Approved
                  </Button>
-                 <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
-                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
-                 >
-                   PLAN REQUIRES SUPPORT
-                 </Button>
-                 <Button
+                 {/* <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'rejected' })}
                    variant={sidebarFormValues.determination === 'rejected' ? 'contained' : 'outlined'}
-                 >
+                   >
                    PLAN NOT ACCEPTED
-                 </Button>
+                 </Button> */}
                </ButtonGroup>
              </Grid>
              <Grid item xs={12}>
-               <Typography variant="body1">Notes</Typography>
+               <Typography variant="h6">Notes*</Typography>
                <TextField
                  value={sidebarFormValues.notes}
                  name="notes"

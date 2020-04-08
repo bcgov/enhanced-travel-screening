@@ -6,6 +6,7 @@ import Arrival from './Arrival';
 import Symptoms from './Symptoms';
 import IsolationPlan from './IsolationPlan';
 import Certify from './Certify';
+import SubmissionInfo from './SubmissionInfo';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // TODO: Implement `isDisabled` for all form fields
-const Form = ({ initialValues, isDisabled }) => {
+const Form = ({ initialValues, isDisabled, id = null }) => {
 
   const classes = useStyles();
   const history = useHistory();
@@ -175,7 +176,9 @@ const Form = ({ initialValues, isDisabled }) => {
   }, [isDisabled])
 
   return (
-    <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+    <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 8}>
+
+      {isDisabled && (<SubmissionInfo id={id} />)}
 
       {!isDisabled && (
         <Box padding='2rem'>

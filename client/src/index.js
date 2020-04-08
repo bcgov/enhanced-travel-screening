@@ -51,6 +51,9 @@ const theme = createMuiTheme({
     secondary: {
       main: '#FDB913',
     },
+    warning: {
+      main: '#F5A623',
+    }
   },
 
   // Typography
