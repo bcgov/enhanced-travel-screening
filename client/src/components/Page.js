@@ -12,11 +12,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Page = ({ children }) => {
+const Page = ({ headerChildren, children }) => {
   const classes = useStyles();
   return (
     <Fragment>
-      <Header />
+      <Header>
+        {headerChildren}
+      </Header>
       <Grid className={classes.root} container alignItems="center" justify="center">
         {children}
       </Grid>
