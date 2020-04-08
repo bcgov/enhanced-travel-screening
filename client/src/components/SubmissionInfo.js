@@ -1,9 +1,32 @@
 import React from 'react';
 import { Box, Grid, Card, CardContent, Typography } from '@material-ui/core';
-import Health from '../assets/images/Health.svg';
-import Pass from '../assets/images/PlanPass.svg';
-// import Positive from '../assets/images/Positive.png';
-import Support from '../assets/images/Support.png';
+import HealthPass from '../assets/images/icon_health_pass.svg';
+import HealthFail from '../assets/images/icon_health_fail.svg';
+import PlanPass from '../assets/images/icon_isolation_pass.svg';
+import PlanFail from '../assets/images/icon_isolation_fail.svg';
+
+const passStyles = {
+  height: '36px',
+  width: '143px',
+  color: '#16C92E',
+  fontfamily: 'Lato',
+  fontsize: '12px',
+  fontweight: 'bold',
+  letterSpacing: 0,
+  lineHeight: '18px',
+  textAlign: 'center',
+}
+const failStyles = {
+  height: '36px',
+  width: '142px',
+  color: '#FF534A',
+  fontFamily: 'Lato',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  letterSpacing: 0,
+  lineHeight: '18px',
+  textAlign: 'center',
+}
 
 function SubmissionInfo ({ id, healthStatus = "accepted", isolationPlanStatus = "accepted" }) {
   return (
@@ -25,14 +48,14 @@ function SubmissionInfo ({ id, healthStatus = "accepted", isolationPlanStatus = 
               <Grid container>
                 <Grid item xs={6}>
                   <Box style={{textAlign: 'center'}}>
-                    {healthStatus === "accepted" ? <img src={Health} alt="submission is healthy" /> : <img src={Support} alt="needs support" />}
-                    <Typography variant="subtitle1">Health Status Complete</Typography>
+                    <img src={healthStatus === "accepted" ? HealthPass : HealthFail} alt="health status accepted or failed" />
+                    <Typography style={healthStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Health Status Complete</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
                   <Box style={{textAlign: 'center'}}>
-                    {isolationPlanStatus === "accepted" ? <img src={Pass} alt="submission passes" /> : <img src={Support} alt="needs support" />}
-                    <Typography variant="subtitle1">Isolation Plan Status Complete</Typography>
+                    <img src={isolationPlanStatus === "accepted" ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
+                    <Typography style={isolationPlanStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
                   </Box>
                 </Grid>
               </Grid>

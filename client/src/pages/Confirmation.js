@@ -3,10 +3,8 @@ import { Grid, Typography, Card, CardContent, Box, Button, Hidden } from '@mater
 import { makeStyles } from '@material-ui/core/styles';
 import Page from '../components/Page';
 
-import Health from '../assets/images/Health.svg';
-import Pass from '../assets/images/PlanPass.svg';
-// import Positive from '../assets/images/Positive.png';
-import Support from '../assets/images/Support.png';
+import Health from '../assets/images/icon_health_pass.svg';
+import Pass from '../assets/images/icon_isolation_pass.svg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -98,11 +96,11 @@ function Confirmation ({ location: { state } }) {
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>
-                          {healthStatus === "accepted" ? <img src={Health} alt="submission is healthy" /> : <img src={Support} alt="needs support" />}
+                          <img src={Health} alt="health status" />
                           <Typography variant="subtitle1">Health Status Complete</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          {isolationPlanStatus === "accepted" ? <img src={Pass} alt="submission passes" /> : <img src={Support} alt="needs support" />}
+                          <img src={Pass} alt="Isolation plan" />
                           <Typography variant="subtitle1">Isolation Plan Status Complete</Typography>
                         </Grid>
                       </Grid>
