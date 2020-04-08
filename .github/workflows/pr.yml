@@ -45,7 +45,7 @@ jobs:
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
       - name: Pipeline Push
-        run: make pipeline-push
+        run: aws --region $(REGION) --profile $(PROFILE) ecr get-login-password
         env:
           REGION: ${{ secrets.REGION }}
           PROFILE: ets
@@ -54,16 +54,16 @@ jobs:
           ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
-      - name: Deploy Prep
-        run: make pipeline-deploy-prep
+      # - name: Deploy Prep
+      #   run: make pipeline-deploy-prep
 
-      - name: Deploy Version
-        run: make pipeline-deploy-version
-        env:
-          REGION: ${{ secrets.REGION }}
-          PROFILE: ets
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          DEPLOY_ENV: enhanced-travel-screening-dev
+      # - name: Deploy Version
+      #   run: make pipeline-deploy-version
+      #   env:
+      #     REGION: ${{ secrets.REGION }}
+      #     PROFILE: ets
+      #     S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      #     DEPLOY_ENV: enhanced-travel-screening-dev
 
 
         
