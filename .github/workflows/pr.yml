@@ -18,7 +18,7 @@ jobs:
         
       - name: Set env variables
         run: |
-          GIT_LOCAL_BRANCH="${{ steps.extract_branch.outputs.branch }}"
+          GIT_LOCAL_BRANCH="${{ github.base_ref }}"
           ACCOUNT_ID="${{ secrets.ACCOUNT_ID }}"
           S3_BUCKET="${{ secrets.S3_BUCKET }}"
           PROJECT="${{ secrets.PROJECT }}"
