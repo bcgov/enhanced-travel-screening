@@ -15,6 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Page from '../components/Page';
+
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: theme.spacing(2),
@@ -176,7 +178,6 @@ const Form = ({ initialValues, isDisabled }) => {
   }, [isDisabled])
 
   return (
-    <Grid className={classes.root} justify="center" alignItems="center">
       <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
 
         {!isDisabled && (
@@ -222,7 +223,6 @@ const Form = ({ initialValues, isDisabled }) => {
           </CardContent>
         </Card>
       </Grid>
-    </Grid>
   );
 };
 
