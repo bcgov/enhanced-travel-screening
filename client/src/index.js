@@ -76,7 +76,7 @@ const theme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
-        '&.MuiFilledInput-input': {
+        '&.MuiFilledInput-input&:not(.MuiSelect-selectMenu)': {
           height: '40px',
           lineHeight: '18px',
         },
@@ -94,7 +94,7 @@ const theme = createMuiTheme({
     },
     MuiSelect: {
       selectMenu: {
-        height: '30px',
+        height: '31px',
         paddingTop: '10px',
         paddingLeft: '4px'
       }

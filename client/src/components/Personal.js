@@ -112,7 +112,7 @@ const Personal = ({ classes, saveInfo, formValues }) => {
           </Box>
         </Grid>
         {/* EMAIL */}
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Box padding="1rem">
             <InputLabel htmlFor="email">Email</InputLabel>
             <TextField
@@ -152,7 +152,6 @@ const Personal = ({ classes, saveInfo, formValues }) => {
               onChange={handleChange}
               name="role"
               className={`${classes.stretch} ${classes.textField}`}
-              label=""
               variant="outlined"
               rows="2"
               multiline

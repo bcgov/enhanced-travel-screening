@@ -151,8 +151,11 @@ const Form = ({ initialValues, isDisabled }) => {
     console.log(response.ok)
     console.dir(response)
     if (response.ok) {
-      const { id, health, plan } = await response.json();
-      console.log(id, health, plan);
+      const { id, health, plan, error } = await response.json();
+      console.log(id, health, plan, error);
+      if (error) {
+        alert(error.message);
+      }
       history.state = {
         id, health: "Accepted", plan: "Support"
       }
