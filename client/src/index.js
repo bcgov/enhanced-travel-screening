@@ -15,6 +15,7 @@ import SubmissionLookup from './pages/SubmissionLookup';
 import SubmissionView from './pages/SubmissionView';
 import SubmissionForm from './pages/SubmissionForm';
 import Confirmation from './pages/Confirmation';
+import PDF from './pages/PDF';
 
 const openSansRegular = {
   fontFamily: 'Open Sans',
@@ -111,7 +112,8 @@ const App = () => (
           <PrivateRoute path="/lookup" component={SubmissionLookup} />
           <PrivateRoute path="/form/:id" component={SubmissionView} />
           <Route path="/login" component={Login} />
-          <Route path="/confirmation/:id" component={Confirmation} />
+          <Route path="/confirmation" component={Confirmation} />
+          <Route path="/renderpdf/:id/:jwt" component={PDF} />
           <Route component={SubmissionForm} />
         </Switch>
       </BrowserRouter>

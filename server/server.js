@@ -2,8 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { passport } = require('./auth.js');
+const { passport, genTokenForSubmission } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
+const createPdf = require('./pdf.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
@@ -45,7 +46,13 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ConditionExpression: 'attribute_not_exists(id)',
     };
     await db.put(item).promise();
-    res.json({ id, healthStatus: 'accepted', isolationPlanStatus: 'accepted' });
+    const accessToken = genTokenForSubmission(id);
+    res.json({
+      id,
+      healthStatus: 'accepted',
+      isolationPlanStatus: 'accepted',
+      accessToken,
+    });
   } catch (error) {
     res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
@@ -86,13 +93,27 @@ app.get(`${apiBaseUrl}/form/:id`,
     };
     try {
       const item = await db.get(params).promise();
-      console.dir(item)
       if (Object.keys(item).length === 0) return res.status(404).json({ error: `No submission with ID ${id}` });
       return res.json(item.Item);
     } catch (error) {
       return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
     }
   });
+
+// Generate PDF for submission, requires access token
+app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
+  const { id, accessToken } = req.body;
+  try {
+    const pdf = await createPdf(id, accessToken);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': pdf.length,
+    });
+    return res.sendFile(pdf.path);
+  } catch (error) {
+    return res.status(500).json({ error: `Failed to create PDF for ID ${id}` });
+  }
+});
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

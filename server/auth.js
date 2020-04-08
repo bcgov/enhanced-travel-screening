@@ -37,7 +37,7 @@ passport.use('login', new LocalStrategy(
       }
       user.token = jwt.sign({
         sub: username,
-      }, jwtSecret);
+      }, jwtSecret, { expiresIn: '24h' });
       return done(null, user); // Success
     } catch (error) {
       return done(null, false); // Invalid user ID
@@ -62,4 +62,11 @@ passport.use('jwt', new JwtStrategy(
   },
 ));
 
-module.exports = { passport, hashPassword };
+function genTokenForSubmission(id) {
+  const token = jwt.sign({
+    sub: id,
+  }, jwtSecret, { expiresIn: '1h' });
+  return token;
+}
+
+module.exports = { passport, hashPassword, genTokenForSubmission };
