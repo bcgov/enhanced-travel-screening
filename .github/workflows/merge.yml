@@ -21,7 +21,7 @@ jobs:
           echo ::set-env name=AWS_SECRET_ACCESS_KEY:${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo ::set-env name=DEPLOY_ENV::"enhanced-travel-screening-dev"
           echo ::set-env name=MERGE_BRANCH::"master"
-          echo ::set-env name=GIT_LOCAL_BRANCH::${{ github.base_ref }}     
+          echo ::set-env name=GIT_LOCAL_BRANCH::${{ github.head_ref }}     
 
       - name: Checkout
         uses: actions/checkout@v2
