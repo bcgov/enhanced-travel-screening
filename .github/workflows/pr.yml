@@ -40,4 +40,4 @@ jobs:
           aws-region: ${{ secrets.REGION }}
       
       - name: Deploy to Dev
-        run: make print-status
+        run: make pipeline-deploy-dev
