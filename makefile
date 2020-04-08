@@ -85,3 +85,29 @@ pipeline-deploy-version:
 
 pipeline-healthcheck:
 	@aws --profile $(PROFILE) elasticbeanstalk describe-environments --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --query 'Environments[*].{Status: Status, Health: Health}'
+
+##########################################
+# GH deployment commands #
+##########################################
+
+gh-pipeline-push:
+	@echo "+\n++ Pushing image to Dockerhub...\n+"
+	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+	@aws --region $(REGION) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
+	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
+
+gh-pipeline-deploy-prep:
+	@echo "+\n++ Creating Dockerrun.aws.json file...\n+"
+	@.build/build_dockerrun.sh > Dockerrun.aws.json
+
+gh-pipeline-deploy-version:
+	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
+	@zip -r $(call deployTag).zip  Dockerrun.aws.json
+	@aws configure set region $(REGION)
+	@aws s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
+	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
+	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
+
+gh-pipeline-healthcheck:
+	@aws elasticbeanstalk describe-environments --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --query 'Environments[*].{Status: Status, Health: Health}'
