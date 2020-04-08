@@ -36,6 +36,4 @@ jobs:
         uses: actions/checkout@v1
       
       - name: Status Output
-        run: |
-          cp .env.dev.example .env
-          make print-status
+        run: make print-status
