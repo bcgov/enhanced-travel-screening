@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { scryptSync } = require('crypto');
-const db = require('./database.js');
+const { db, usersTable } = require('./database.js');
 
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
@@ -18,7 +18,7 @@ const hashPassword = (password, salt) => (
 // Could be refactored into database.js
 const getUser = async (id) => {
   const params = {
-    TableName: 'credentials',
+    TableName: usersTable,
     Key: { id },
   };
   const item = await db.get(params).promise();
