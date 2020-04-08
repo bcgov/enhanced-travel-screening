@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Typography, Card, CardContent, Box, Button } from '@material-ui/core';
+import React from 'react';
+import { Grid, Typography, Card, CardContent, Box, Button, Hidden } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Page from '../components/Page';
 
@@ -14,16 +14,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Confirmation ({ location, match: { params }}) {
+function Confirmation ({ location: { state }, match: { params }}) {
 
   const classes = useStyles();
-  const { healthStatus, isolationPlanStatus } = location;
+  const { healthStatus, isolationPlanStatus } = state;
 
   return (
     <Page>
       <Grid className={classes.root} container justify="center">
         <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
-          <Box marginBottom="2rem">
+          <Box margin="2rem 0">
             <Typography variant="h4">
               Thank you. Your form has been submitted.
             </Typography>
@@ -46,7 +46,9 @@ function Confirmation ({ location, match: { params }}) {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid item md={3} s={false} xs={false}></Grid>
+                <Hidden smDown>
+                  <Grid item md={3}></Grid>
+                </Hidden>
                 <Grid item xs={12} md={6}>
                   <Card>
                     <CardContent>
@@ -56,11 +58,11 @@ function Confirmation ({ location, match: { params }}) {
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>
-                          {healthStatus === "Accepted" ? <img src={Health} alt="submission is healthy" /> : <img src={Support} alt="needs support" />}
+                          {healthStatus === "accepted" ? <img src={Health} alt="submission is healthy" /> : <img src={Support} alt="needs support" />}
                           <Typography variant="subtitle1">Health Status Complete</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          {isolationPlanStatus === "Accepted" ? <img src={Pass} alt="submission passes" /> : <img src={Support} alt="needs support" />}
+                          {isolationPlanStatus === "accepted" ? <img src={Pass} alt="submission passes" /> : <img src={Support} alt="needs support" />}
                           <Typography variant="subtitle1">Isolation Plan Status Complete</Typography>
                         </Grid>
                       </Grid>

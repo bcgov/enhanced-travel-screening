@@ -156,10 +156,7 @@ const Form = ({ initialValues, isDisabled }) => {
       if (error) {
         alert(error.message);
       }
-      history.state = {
-        id, healthStatus: "Accepted", isolationPlanStatus: "Support"
-      }
-      history.push(`/confirmation/${id}`);
+      history.push(`/confirmation/${id}`, { id, healthStatus, isolationPlanStatus });
     } else {
       console.error(response);
     }
