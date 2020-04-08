@@ -1,6 +1,6 @@
 module.exports = [
   {
-    TableName: 'credentials',
+    TableName: 'ets-users-development',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
@@ -13,7 +13,7 @@ module.exports = [
     },
   },
   {
-    TableName: 'forms',
+    TableName: 'ets-forms-development',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
