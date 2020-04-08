@@ -54,7 +54,7 @@ function Confirmation ({ location: { state }, match: { params }}) {
                     <CardContent>
                       <Typography variant="subtitle1">Confirmation Number</Typography>
                       <Typography variant="h2" color="primary">
-                        {params.confirmationNumber}
+                        {params.id}
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>

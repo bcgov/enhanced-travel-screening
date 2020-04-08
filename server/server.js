@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
-const db = require('./database.js');
+const { db, formsTable } = require('./database.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
@@ -28,7 +28,6 @@ const scrubObject = (obj) => {
 app.post(`${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
   (req, res) => {
-    // res.header('Authorization', `Bearer ${req.user.token}`);
     res.json({ token: req.user.token });
   });
 
@@ -38,7 +37,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
     const item = {
-      TableName: 'forms',
+      TableName: formsTable,
       Item: {
         ...scrubbed,
         id,
@@ -82,7 +81,7 @@ app.get(`${apiBaseUrl}/form/:id`,
   async (req, res) => {
     const { id } = req.params;
     const params = {
-      TableName: 'forms',
+      TableName: formsTable,
       Key: { id },
     };
     try {
