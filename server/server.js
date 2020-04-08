@@ -2,12 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const puppeteer = require('puppeteer');
 const { passport, genTokenForSubmission } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
+const createPdf = require('./pdf.js');
 
 const apiBaseUrl = '/api/v1';
-const FE_URL = process.env.FE_URL || 'http://localhost:4000';
 const port = 80;
 const app = express();
 app.use(bodyParser.json());
@@ -36,16 +35,6 @@ app.post(`${apiBaseUrl}/login`,
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
-    const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
-    const scrubbed = scrubObject(req.body);
-    const item = {
-      TableName: 'forms',
-      Item: {
-        ...scrubbed,
-        id,
-      },
-      ConditionExpression: 'attribute_not_exists(id)',
-    };
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
     const item = {
@@ -111,31 +100,19 @@ app.get(`${apiBaseUrl}/form/:id`,
     }
   });
 
-// PDF route
-// uses a conf number to fetch a submission and renders it as a pdf
-// employs a front end route to do this
-// front end route looks for a JWT in params and can only fetch data if the token is valid
+// Generate PDF for submission, requires access token
 app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
   const { id, accessToken } = req.body;
-  (async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(`${FE_URL}/renderpdf/${id}/${accessToken}`, {
-      waitUntil: 'networkidle2',
-    });
-    await page.setViewport({ width: 1680, height: 1050 });
-    const pdf = await page.pdf({
-      path: path.join(__dirname, 'pdfs', `travellerScreeningReport-${id}.pdf`),
-      format: 'A4',
-    });
-    await browser.close();
+  try {
+    const pdf = await createPdf(id, accessToken);
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Length': pdf.length,
     });
-    const pdfPath = path.join(__dirname, 'pdfs', `travellerScreeningReport-${id}.pdf`);
-    res.sendFile(pdfPath);
-  })();
+    return res.sendFile(pdf.path);
+  } catch (error) {
+    return res.status(500).json({ error: `Failed to create PDF for ID ${id}` });
+  }
 });
 
 // Client app
