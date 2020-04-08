@@ -19,7 +19,7 @@ const Page = ({ headerChildren, children }) => {
       <Header>
         {headerChildren}
       </Header>
-      <Grid className={classes.root} container alignItems="center" justify="center">
+      <Grid className={classes.root} container justify="center">
         {children}
       </Grid>
     </Fragment>
