@@ -15,8 +15,6 @@ import Grid from '@material-ui/core/Grid';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Page from '../components/Page';
-
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: theme.spacing(2),
@@ -178,51 +176,51 @@ const Form = ({ initialValues, isDisabled }) => {
   }, [isDisabled])
 
   return (
-      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+    <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
 
-        {!isDisabled && (
-          <Box padding='2rem'>
-            <Typography variant="h5" gutterBottom>
-              Travel Assesment Form
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              BC has declared a state of emergency. To ensure the safety of all British Columbians, you are being asked to delcare your journey details and plans to self isolate.
-            </Typography>
-          </Box>
-        )}
+      {!isDisabled && (
+        <Box padding='2rem'>
+          <Typography variant="h5" gutterBottom>
+            Travel Assesment Form
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            BC has declared a state of emergency. To ensure the safety of all British Columbians, you are being asked to delcare your journey details and plans to self isolate.
+          </Typography>
+        </Box>
+      )}
 
-        <Card variant="outlined" className={classes.card}>
-          <CardContent>
-            <Grid container>
+      <Card variant="outlined" className={classes.card}>
+        <CardContent>
+          <Grid container>
 
-              <Personal isDisabled={isDisabled} classes={classes} saveInfo={handleChange} formValues={formValues} />
-              <AdditionalTravelers isDisabled={isDisabled} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
-              <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
-              <Symptoms isDisabled={isDisabled} classes={classes} saveSymptoms={saveSymptoms} saveRiskGroups={saveRiskGroups} symptoms={formValues.symptoms} riskGroups={formValues.riskGroups} />
-              <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} />
-              {!isDisabled && <Certify toggleCertified={toggleCertified} certified={certified} />}
+            <Personal isDisabled={isDisabled} classes={classes} saveInfo={handleChange} formValues={formValues} />
+            <AdditionalTravelers isDisabled={isDisabled} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
+            <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
+            <Symptoms isDisabled={isDisabled} classes={classes} saveSymptoms={saveSymptoms} saveRiskGroups={saveRiskGroups} symptoms={formValues.symptoms} riskGroups={formValues.riskGroups} />
+            <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} />
+            {!isDisabled && <Certify toggleCertified={toggleCertified} certified={certified} />}
 
-              {!isDisabled && (
-                <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
-                  <Grid item xs={4}>
-                    <Button
-                      className={classes.button}
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSubmit}
-                      disabled={!canSubmitForm()}
-                      fullWidth
-                    >
-                      Submit Form
-                    </Button>
-                  </Grid>
+            {!isDisabled && (
+              <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
+                <Grid item xs={4}>
+                  <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    disabled={!canSubmitForm()}
+                    fullWidth
+                  >
+                    Submit Form
+                  </Button>
                 </Grid>
-              )}
-            </Grid>
+              </Grid>
+            )}
+          </Grid>
 
-          </CardContent>
-        </Card>
-      </Grid>
+        </CardContent>
+      </Card>
+    </Grid>
   );
 };
 
