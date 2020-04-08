@@ -33,11 +33,11 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Setup AWS 
-          run: make setup-aws-profile
-          env:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            PROFILE: ${{ PROFILE }}
+        run: make setup-aws-profile
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          PROFILE: ${{ PROFILE }}
 
       - name: Pipeline Build
         run: make pipeline-build
