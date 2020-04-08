@@ -34,21 +34,21 @@ app.post(`${apiBaseUrl}/login`,
 
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
-  const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
-  const scrubbed = scrubObject(req.body);
-  const item = {
-    TableName: 'forms',
-    Item: {
-      ...scrubbed,
-      id,
-    },
-    ConditionExpression: 'attribute_not_exists(id)',
-  };
   try {
+    const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
+    const scrubbed = scrubObject(req.body);
+    const item = {
+      TableName: 'forms',
+      Item: {
+        ...scrubbed,
+        id,
+      },
+      ConditionExpression: 'attribute_not_exists(id)',
+    };
     await db.put(item).promise();
-    res.json({ id, healthStatus: 'rejected', isolationPlanStatus: 'accepted' });
+    res.json({ id, healthStatus: 'accepted', isolationPlanStatus: 'accepted' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create submission' });
+    res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
 });
 
