@@ -45,7 +45,7 @@ jobs:
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
       
       - name: Pipeline Push
-        run: make pipeline-build
+        run: make pipeline-push
         env:
           REGION: ${{ secrets.REGION }}
           PROFILE: ets
@@ -53,6 +53,19 @@ jobs:
           MERGE_BRANCH: ${{ secrets.MERGE_BRANCH }}
           ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
           GIT_LOCAL_BRANCH: ${{ github.base_ref }}
+      
+      - name: Deploy Prep
+        run: make pipeline-deploy-prep
+
+      - name: Deploy Version
+        run: make pipeline-deploy-version
+        env:
+          REGION: ${{ secrets.REGION }}
+          PROFILE: ets
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          DEPLOY_ENV: enhanced-travel-screening-dev
+
+
         
 
 
