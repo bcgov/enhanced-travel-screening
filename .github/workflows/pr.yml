@@ -12,7 +12,7 @@ jobs:
     steps: 
       - name: Set env variables
         run: |
-
+          GIT_LOCAL_BRANCH="$(echo $GITHUB_REF | sed 's/.*pull\/\([0-9]*\)\/.*/\1/')"
           ACCOUNT_ID="${{ secrets.ACCOUNT_ID }}"
           S3_BUCKET="${{ secrets.S3_BUCKET }}"
           PROJECT="${{ secrets.PROJECT }}"
@@ -30,7 +30,8 @@ jobs:
           echo ::set-env name=AWS_ACCESS_KEY_ID::$AWS_ACCESS_KEY_ID
           echo ::set-env name=AWS_SECRET_ACCESS_KEY::$AWS_SECRET_ACCESS_KEY
           echo ::set-env name=DEPLOY_ENV::$DEPLOY_ENV
-          echo ::set-env name=MERGE_BRANCH::"master"           
+          echo ::set-env name=MERGE_BRANCH::"master"
+          echo ::set-env name=GIT_LOCAL_BRANCH::$GIT_LOCAL_BRANCH      
 
       - name: Checkout
         uses: actions/checkout@v2
