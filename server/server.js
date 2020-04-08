@@ -2,10 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
+const puppeteer = require('puppeteer');
 const { passport } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 
 const apiBaseUrl = '/api/v1';
+const FE_URL = process.env.FE_URL || 'http://localhost:4000';
 const port = 80;
 const app = express();
 app.use(bodyParser.json());
@@ -96,13 +98,52 @@ app.get(`${apiBaseUrl}/form/:id`,
     };
     try {
       const item = await db.get(params).promise();
-      console.dir(item)
       if (Object.keys(item).length === 0) return res.status(404).json({ error: `No submission with ID ${id}` });
       return res.json(item.Item);
     } catch (error) {
       return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
     }
   });
+
+app.get(`${apiBaseUrl}/form/pdf/:id`, async (req, res) => {
+  const { id } = req.params;
+  const params = { TableName: formsTable, Key: { id } };
+  try {
+    const item = await db.get(params).promise();
+    return res.json(item.Item);
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
+  }
+});
+// PDF route
+// uses a conf number to fetch a submission and renders it as a pdf
+// employs a front end route to do this
+app.get(`${apiBaseUrl}/pdf/:id`, async (req, res) => {
+  const { id } = req.params;
+  (async () => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(`${FE_URL}/renderpdf/${id}`, {
+      waitUntil: 'networkidle2',
+    });
+    await page.setViewport({ width: 1680, height: 1050 });
+    const pdf = await page.pdf({
+      path: path.join(__dirname, 'pdfs', `travellerScreeningReport-${id}.pdf`),
+      format: 'A4',
+    });
+    await browser.close();
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': pdf.length,
+    });
+    const pdfPath = path.join(__dirname, 'pdfs', `travellerScreeningReport-${id}.pdf`);
+    console.log(pdfPath)
+    res.sendFile(pdfPath);
+  })();
+});
+
+
 
 // Client app
 if (process.env.NODE_ENV === 'production') {

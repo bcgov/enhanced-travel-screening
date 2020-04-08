@@ -5,7 +5,7 @@ import Page from '../components/Page';
 
 import Health from '../assets/images/Health.svg';
 import Pass from '../assets/images/PlanPass.svg';
-import Positive from '../assets/images/Positive.png';
+// import Positive from '../assets/images/Positive.png';
 import Support from '../assets/images/Support.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,10 +14,38 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Confirmation ({ location: { state }, match: { params }}) {
+function Confirmation ({ location: { state } }) {
 
   const classes = useStyles();
-  const { healthStatus, isolationPlanStatus } = state;
+  const { healthStatus, isolationPlanStatus, id, accessToken } = state || { healthStatus: "Accepted", isolationPlanStatus: "Accepted" };
+
+  const genPDF = async () => {
+    const response = await fetch(`/api/v1/pdf/${id}`, {
+      headers: {
+        'Accept': 'application/pdf',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    if (response.ok) {
+      const blob = await response.blob()
+      const pdfBlob = new Blob([blob], {type: "application/pdf"})
+      if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(pdfBlob);
+        return;
+      }
+      // For other browsers:
+      // Create a link pointing to the ObjectURL containing the blob.
+      const data = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = data;
+      link.download = `screeningReport-${id}.pdf`;
+      link.click();
+      setTimeout(function(){
+        // For Firefox it is necessary to delay revoking the ObjectURL
+        window.URL.revokeObjectURL(data);
+      }, 100);
+    }
+  }
 
   return (
     <Page>
@@ -54,7 +82,7 @@ function Confirmation ({ location: { state }, match: { params }}) {
                     <CardContent>
                       <Typography variant="subtitle1">Confirmation Number</Typography>
                       <Typography variant="h2" color="primary">
-                        {params.id}
+                        {id}
                       </Typography>
                       <Grid container style={{marginTop: "2rem"}}>
                         <Grid item xs={6}>
@@ -71,7 +99,7 @@ function Confirmation ({ location: { state }, match: { params }}) {
                 </Grid>
               </Grid>
 
-              <Box marginTop="1rem">
+              {accessToken && <Box marginTop="1rem">
                 <Grid item xs={6} style={{margin: "auto"}}>
                   <Typography variant="h6">Download your form submission as a PDF document.</Typography>
                   <Typography variant="subtitle1">Use the button below to download your submission as a PDF (.pdf) document for your records.</Typography>
@@ -80,11 +108,12 @@ function Confirmation ({ location: { state }, match: { params }}) {
                     size="large"
                     color="primary"
                     style={{marginTop: "1rem"}}
+                    onClick={genPDF}
                     fullWidth
                   >
                   Download PDF of Submission</Button>
                 </Grid>
-              </Box>
+              </Box>}
             </CardContent>
           </Card>
 
