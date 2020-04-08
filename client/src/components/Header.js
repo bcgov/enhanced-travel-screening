@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     height: '42px',
-    backgroundColor: 'red',
     padding: theme.spacing(1, 3),
   },
 }));
