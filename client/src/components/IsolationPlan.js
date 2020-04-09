@@ -31,32 +31,29 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
           </RadioGroup>
         </FormControl>
       </Grid>
-
-      <Grid item xs={12} md={6}>
-        <InputLabel htmlFor="isolationTypeSelect">Isolation Type</InputLabel>
-        <Select
-          id="isolationTypeSelect"
-          className={classes.select}
-          name="type"
-          value={isolationPlan.type || ""}
-          variant="filled"
-          onChange={handleChange}
-          fullWidth
-          displayEmpty
-          inputProps={{disabled: isDisabled}}
-        >
-          <MenuItem value="" disabled>Please Select</MenuItem>
-          <MenuItem value="private">Private Residence</MenuItem>
-          <MenuItem value="family">With family</MenuItem>
-          <MenuItem value="commercial">Commercial (hotel, BnB etc)</MenuItem>
-          <MenuItem value="isolationCentre">Isolation Centre</MenuItem>
-          <MenuItem value="other">Other</MenuItem>
-
-        </Select>
-      </Grid>
-
-      <Grid item xs={12} style={{marginTop: "1rem"}}>
+      <Grid item xs={12} style={{marginTop: "0.75rem"}}>
         <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <InputLabel htmlFor="isolationTypeSelect">Isolation Type</InputLabel>
+            <Select
+              id="isolationTypeSelect"
+              className={classes.select}
+              name="type"
+              value={isolationPlan.type || ""}
+              variant="filled"
+              onChange={handleChange}
+              fullWidth
+              displayEmpty
+              inputProps={{disabled: isDisabled}}
+            >
+              <MenuItem value="" disabled>Please Select</MenuItem>
+              <MenuItem value="private">Private Residence</MenuItem>
+              <MenuItem value="family">With family</MenuItem>
+              <MenuItem value="commercial">Commercial (hotel, BnB etc)</MenuItem>
+              <MenuItem value="isolationCentre">Isolation Centre</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </Select>
+          </Grid>
           <Grid item xs={12} md={6}>
             <Box>
               <InputLabel htmlFor="isolationCity">Which city will you be isolating in?</InputLabel>
@@ -86,77 +83,78 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
               />
             </Box>
           </Grid>
-
-          <Grid container style={{marginTop: "0.75rem"}}>
-            <Grid item xs={12}>
-              <Box padding="0.75rem">
-                <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
-                  Are you able to self-isolate from anyone who is over 60 years old or who has heart disease, high blood pressure, asthma or other lung disease, diabetes, cancer, immune suppression or is taking prednisone medication?*
-                </Typography>
-                <FormControl component="fieldset">
-                  <RadioGroup
-                    row
-                    aria-label="able to isolate from immuno compromiseed"
-                    name="ableToIsolate"
-                    value={computeRadioValue(isolationPlan.ableToIsolate)}
-                    onChange={(event) => handleChange({ target: { name: "ableToIsolate", value: event.target.value === "yes" }})}>
-                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup>
-                </FormControl>
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              <Box padding="0.75rem">
-                <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
-                  Are you able to make the necessary arrangements for your self-isolation period? (e.g. food, medication, child care, cleaning supplies, pet care).*
-                </Typography>
-                <FormControl component="fieldset">
-                  <RadioGroup
-                    row
-                    aria-label="supplies"
-                    name="supplies"
-                    value={computeRadioValue(isolationPlan.supplies)}
-                    onChange={(event) => handleChange({ target: { name: "supplies", value: event.target.value === "yes" }})}>
-                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup>
-                </FormControl>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Grid item xs={12}>
-            <InputLabel htmlFor="transportation">
-              What form of transportation will you take to your self-isolation location?*
-            </InputLabel>
-            <Select
-              id="transportation"
-              className={classes.select}
-              name="transportation"
-              value={isolationPlan.transportation || ""}
-              variant="filled"
-              onChange={handleChange}
-              fullWidth
-              displayEmpty
-              inputProps={{disabled: isDisabled}}
-            >
-              <MenuItem value="" disabled>Required</MenuItem>
-              <MenuItem value="personal">Personal Vehicle</MenuItem>
-              <MenuItem value="public">Public Transportation</MenuItem>
-              <MenuItem value="taxi">Taxi or Ride Share</MenuItem>
-
-            </Select>
-          </Grid>
-          <div style={{
-            margin: '1rem 0.5rem',
-            boxSizing: 'border-box',
-            height: '2px',
-            width: '100%',
-            border: '1px solid #CCCCCC',
-          }}></div>
         </Grid>
       </Grid>
+      <Grid container style={{marginTop: "0.75rem"}}>
+        <Grid item xs={12}>
+          <Box>
+            <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
+              Are you able to self-isolate from anyone who is over 60 years old or who has heart disease, high blood pressure, asthma or other lung disease, diabetes, cancer, immune suppression or is taking prednisone medication?*
+            </Typography>
+            <FormControl component="fieldset">
+              <RadioGroup
+                row
+                aria-label="able to isolate from immuno compromiseed"
+                name="ableToIsolate"
+                value={computeRadioValue(isolationPlan.ableToIsolate)}
+                onChange={(event) => handleChange({ target: { name: "ableToIsolate", value: event.target.value === "yes" }})}>
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box>
+            <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
+              Are you able to make the necessary arrangements for your self-isolation period? (e.g. food, medication, child care, cleaning supplies, pet care).*
+            </Typography>
+            <FormControl component="fieldset">
+              <RadioGroup
+                row
+                aria-label="supplies"
+                name="supplies"
+                value={computeRadioValue(isolationPlan.supplies)}
+                onChange={(event) => handleChange({ target: { name: "supplies", value: event.target.value === "yes" }})}>
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Box marginTop="0.75rem">
+          <InputLabel htmlFor="transportation">
+            What form of transportation will you take to your self-isolation location?*
+          </InputLabel>
+          <Select
+            id="transportation"
+            className={classes.select}
+            name="transportation"
+            value={isolationPlan.transportation || ""}
+            variant="filled"
+            onChange={handleChange}
+            fullWidth
+            displayEmpty
+            inputProps={{disabled: isDisabled}}
+          >
+            <MenuItem value="" disabled>Required</MenuItem>
+            <MenuItem value="personal">Personal Vehicle</MenuItem>
+            <MenuItem value="public">Public Transportation</MenuItem>
+            <MenuItem value="taxi">Taxi or Ride Share</MenuItem>
+
+          </Select>
+        </Box>
+      </Grid>
+      <div style={{
+        margin: '2rem 0 0 0',
+        boxSizing: 'border-box',
+        height: '2px',
+        width: '100%',
+        border: '1px solid #CCCCCC',
+      }}></div>
     </Grid>
   )
 }
