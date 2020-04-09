@@ -4,7 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Page from '../components/Page';
 
 // import Health from '../assets/images/icon_health_neutral.svg';
-import Plan from '../assets/images/icon_isolation_neutral.svg';
+import PlanPass from '../assets/images/icon_isolation_neutral.svg';
+import PlanFail from '../assets/images/icon_isolation_fail_white.svg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 function Confirmation ({ location: { state } }) {
 
   const classes = useStyles();
-  const { id, accessToken } = state || { id: null, accessToken: null };
+  const { id, accessToken, isolationPlanStatus } = state || { id: null, accessToken: null };
 
   const genPDF = async () => {
     const response = await fetch(`/api/v1/pdf`, {
@@ -60,12 +61,11 @@ function Confirmation ({ location: { state } }) {
           </Grid>
         ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
           <Box margin="2rem 0">
-            <Typography variant="h4">
+            <Typography variant="h6">
               Thank you. Your form has been submitted.
             </Typography>
-
-            <Typography variant="h4">
-              Do not close this page.
+            <Typography variant="h6">
+              DO NOT CLOSE THIS PAGE.
             </Typography>
           </Box>
 
@@ -73,12 +73,12 @@ function Confirmation ({ location: { state } }) {
             <CardContent>
               <Grid container>
                 <Grid item xs={12}>
-                  <Box padding="1rem" paddingTop="0">
-                    <Typography variant="h6">
-                      Proceed to CBSA agent and present this device's screen.
+                  <Box padding="0" paddingTop="0">
+                    <Typography variant="h5">
+                      Proceed to the provincial check point, if available at your location, where you may be asked to confirm how you will comply with the provincial order to self isolate
                     </Typography>
                     <Typography variant="subtitle1">
-                      You will be asked to present your confirmation number to your CBSA agent and Public Health Officials. Rescor your confirmation number for your records.
+                      You may be asked to present your confirmation number.
                     </Typography>
                   </Box>
                 </Grid>
@@ -86,7 +86,7 @@ function Confirmation ({ location: { state } }) {
                   <Grid item md={3}></Grid>
                 </Hidden>
                 <Grid item xs={12} md={6}>
-                  <Card>
+                  {isolationPlanStatus ? <Card style={{margin: '15px'}}>
                     <CardContent>
                       <Typography variant="subtitle1">Confirmation Number</Typography>
                       <Typography variant="h2" color="primary">
@@ -98,12 +98,29 @@ function Confirmation ({ location: { state } }) {
                           <Typography variant="subtitle1">Health Status Complete</Typography>
                         </Grid> */}
                         <Grid item xs={12}>
-                          <img src={Plan} alt="Isolation plan" />
+                          <img src={PlanPass} alt="Isolation plan" style={{ width: "128px"}} />
                           <Typography variant="subtitle1">Isolation Plan Status Complete</Typography>
                         </Grid>
                       </Grid>
                     </CardContent>
-                  </Card>
+                  </Card> : <Card style={{ margin: '15px', color: 'white', backgroundColor: '#002C71' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" style={{marginTop: "16px"}}>Confirmation Number</Typography>
+                      <Typography variant="h2">
+                        {id}
+                      </Typography>
+                      <Grid container style={{marginTop: "2rem"}}>
+                        {/* <Grid item xs={6}>
+                          <img src={Health} alt="health status" />
+                          <Typography variant="subtitle1">Health Status Complete</Typography>
+                        </Grid> */}
+                        <Grid item xs={12}>
+                          <img src={PlanFail} alt="Isolation plan" style={{ width: "128px"}} />
+                          <Typography variant="subtitle1" style={{marginTop: "16px"}}>Isolation Plan Status Complete</Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>}
                 </Grid>
               </Grid>
 
