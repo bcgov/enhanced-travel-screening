@@ -4,7 +4,7 @@ FROM node:12 AS client
 # Build client
 WORKDIR /client
 COPY client/package*.json ./
-RUN npm ci
+RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
 RUN npm run build
 
