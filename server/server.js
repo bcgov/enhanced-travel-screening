@@ -80,7 +80,7 @@ app.patch(`${apiBaseUrl}/form/:id`,
   async (req, res) => {
     const { id } = req.params;
     const params = {
-      TableName: 'forms',
+      TableName: formsTable,
       Key: { id },
       UpdateExpression: 'set notes = :n, determination = :d',
       ExpressionAttributeValues: {

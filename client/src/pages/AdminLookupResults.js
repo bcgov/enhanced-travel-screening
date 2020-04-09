@@ -117,6 +117,7 @@ const AdminLookupResults = ({ match: { params }}) => {
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
          {loading && <CircularProgress />}
+         {/* TODO error type? if submission update fails this becomes misleading */}
          {error && (
            <Container maxWidth="sm" align="center">
              <Typography paragraph>Lookup failed... {error.message || error}</Typography>
