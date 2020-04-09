@@ -28,7 +28,7 @@ print-status:
 	@echo " | PROFILE: $(PROFILE) "
 	@echo " | DEPLOY ENV: $(DEPLOY_ENV) "
 	@echo " | IMAGE TAG: $(IMAGE_TAG)
-	@echo " | SHA: $(git rev-parse --short=4 ${{ github.sha }})
+	@echo " | SHA: $(COMMIT_SHA)
 	@echo " +---------------------------------------------------------+ "
 
 # If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
