@@ -19,9 +19,8 @@ const useStyles = makeStyles((theme) => ({
 
 const RenderButtonGroup = ({
   field,
-  form: { touched, errors },
+  form: { errors },
   options,
-  disabled,
   ...props
 }) => {
   const classes = useStyles();
@@ -47,7 +46,7 @@ const RenderButtonGroup = ({
           </Button>
         ))}
       </ButtonGroup>
-      {(touched[field.name] && !!errors[field.name]) && <FormHelperText error>{errors[field.name]}</FormHelperText>}
+      {!!errors[field.name] && <FormHelperText error>{errors[field.name]}</FormHelperText>}
     </Fragment>
   );
 };

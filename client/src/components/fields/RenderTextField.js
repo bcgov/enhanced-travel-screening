@@ -5,7 +5,6 @@ const RenderTextField = ({
   field,
   form: { touched, errors },
   options,
-  disabled,
   ...props
 }) => {
   return (
