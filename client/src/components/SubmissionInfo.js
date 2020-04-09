@@ -28,11 +28,11 @@ const failStyles = {
   marginTop: '10px',
 }
 
-function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "support" }) {
+function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "support", isPdf = false }) {
   return (
     <Box padding='1.5rem 1rem 1rem 1rem'>
       <Grid container spacing={4}>
-        <Grid xs={6} item>
+        <Grid xs={isPdf ? 12 : 6} item>
           <Card style={{height: '150px'}}>
             <CardContent>
               <Typography align="center" variant="subtitle1">Confirmation Number</Typography>
@@ -42,7 +42,7 @@ function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "
             </CardContent>
           </Card>
         </Grid>
-        <Grid xs={6} item>
+        {!isPdf && <Grid xs={6} item>
           <Card style={{height: '150px', padding: '1rem'}}>
             <CardContent>
               <Grid container>
@@ -62,7 +62,7 @@ function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "
 
             </CardContent>
           </Card>
-        </Grid>
+        </Grid>}
       </Grid>
     </Box>
 
