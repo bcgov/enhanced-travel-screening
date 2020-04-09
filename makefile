@@ -5,6 +5,8 @@
 export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
+export COMMIT_SHA?=$(shell git rev-parse --short=8 HEAD)
+export IMAGE_TAG=${DEPLOY_DATE}-${COMMIT_SHA}
 
 define deployTag
 "${PROJECT}-${DEPLOY_DATE}"
@@ -27,6 +29,8 @@ print-status:
 	@echo " | DEPLOY ENV: $(DEPLOY_ENV) "
 	@echo " | MERGE BRANCH: $(MERGE_BRANCH) "
 	@echo " | GIT LOCAL BRANCH: $(GIT_LOCAL_BRANCH) "
+	@echo " | COMMIT_SHA: $(COMMIT_SHA) "
+	@echo " | IMAGE_TAG: $(IMAGE_TAG) "
 	@echo " +---------------------------------------------------------+ "
 
 # If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
@@ -61,15 +65,15 @@ setup-development-env:
 
 pipeline-build:
 	@echo "+\n++ Performing build of Docker images...\n+"
-	@echo "Tagging images with: $(GIT_LOCAL_BRANCH)"
+	@echo "Building images with: $(GIT_LOCAL_BRANCH)"
 	@docker-compose -f docker-compose.yml build
 
 pipeline-push:
 	@echo "+\n++ Pushing image to Dockerhub...\n+"
 	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
 	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(MERGE_BRANCH)
+	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
+	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
 pipeline-deploy-prep:
 	@echo "+\n++ Creating Dockerrun.aws.json file...\n+"
