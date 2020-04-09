@@ -5,10 +5,11 @@ import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
 import Arrival from './Arrival';
 import Disclaimer from './Disclaimer';
-import Symptoms from './Symptoms';
+// import Symptoms from './Symptoms';
 import IsolationPlan from './IsolationPlan';
 import Certify from './Certify';
 import SubmissionInfo from './SubmissionInfo';
+import { Contact } from './Contact';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -54,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '54px',
     height: '100%',
   },
+  contactButton: {
+    minHeight: '42px',
+    height: '100%',
+  },
   hr: {
     height: '3px',
     backgroundColor: '#E2A014',
@@ -89,8 +94,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     arrival: {
       date: '',
       by: '',
-      city: '',
-      country: ''
+      from: '',
     },
     symptoms: null,
     accomodations: null,
@@ -100,7 +104,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
       type: '',
       ableToIsolate: null,
       supplies: null,
-      transportation: ''
+      transportation: []
     }
   });
   const handleChange = (event) => {
@@ -142,6 +146,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     } catch (error) {
       console.error(error);
       setError(error.message);
+    } finally {
       toggleLoading(false);
     }
   };
@@ -172,17 +177,26 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
           <Typography variant="body1" gutterBottom>
             B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
           </Typography>
+
+          <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
+            Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services ">Talk to a Service BC agent</a>
+          </Typography>
+
+          <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
+            Download a <a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/assets/gov/health-safety/support_for_travellers_print.pdf">PDF version of this form</a>
+          </Typography>
         </Box>
       )}
 
+      {/* <GetHelp />
+      */}
       <Card variant="outlined" className={classes.card}>
         <CardContent>
           <Grid container>
-            <Disclaimer />
             <Personal isDisabled={isDisabled} classes={classes} saveInfo={handleChange} formValues={formValues} />
             <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
-            <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/>
+            {/* <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/> */}
             <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} accomodations={formValues.accomodations}/>
             {!isDisabled && <Certify firstName={formValues.firstName} lastName={formValues.lastName} toggleCertified={toggleCertified} certified={certified} />}
 
@@ -197,10 +211,12 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
                 </Grid>
               </Grid>
             )}
-
             {!isDisabled && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
-                <Grid item xs={4}>
+                <Box padding="1rem">
+                  <Disclaimer />
+                </Box>
+                <Grid item xs={8}>
                   <Button
                     className={classes.button}
                     variant="contained"
@@ -209,15 +225,17 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
                     disabled={!canSubmitForm() || loading}
                     fullWidth
                   >
-                    {loading ? 'Processing...' : 'Submit Form'}
+                    {loading ? 'Processing...' : 'Submit'}
                   </Button>
                 </Grid>
               </Grid>
             )}
           </Grid>
-
         </CardContent>
       </Card>
+      <Box padding="1rem">
+        <Contact classes={classes} />
+      </Box>
     </Grid>
   );
 };

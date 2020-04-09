@@ -25,12 +25,12 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
       </Grid>
       {/* ARRIVAL INFO */}
       {/* DATE */}
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={6}>
         <Box padding="1rem">
           <MuiPickersUtilsProvider utils={MomentUtils}>
-            <InputLabel htmlFor="arrival_date">Arrival Date</InputLabel>
+            <InputLabel htmlFor="arrival_date">* Arrival Date (yyyy/mm/dd)</InputLabel>
             <KeyboardDatePicker
-              format="MM/DD/YYYY"
+              format="YYYY/MM/DD"
               id="arrival_date"
               variant="filled"
               fullWidth
@@ -45,9 +45,9 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
         </Box>
       </Grid>
       {/* ARRIVAL BY */}
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={6}>
         <Box padding="1rem">
-          <InputLabel htmlFor="arrival_by">Arrival By</InputLabel>
+          <InputLabel htmlFor="arrival_by">* Arrival By</InputLabel>
 
           <Select
             id="arrival_by"
@@ -62,15 +62,30 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
           >
             <MenuItem value="" disabled>Select Arrival Type</MenuItem>
             <MenuItem key="arrivalAir" value="air">Air</MenuItem>
-            <MenuItem key="arrivalLand" value="land">Land</MenuItem>
             <MenuItem key="arrivalSea" value="sea">Sea</MenuItem>
+            <MenuItem key="arrivalLand" value="land">Ground Transportation</MenuItem>
           </Select>
         </Box>
       </Grid>
-      {/* CITY */}
-      <Grid item xs={12} md={4}>
+      {/* Flight # */}
+      <Grid item xs={12} md={6}>
         <Box padding="1rem">
-          <InputLabel htmlFor="arrival_city">Arrival City</InputLabel>
+          <InputLabel htmlFor="arrival_country">Airline / Flight Number (if applicable)</InputLabel>
+          <TextField
+            id="arrival_country"
+            className={classes.textField}
+            name="country"
+            value={arrival.from}
+            onChange={(e) => saveInfo(e.target.name, e.target.value)}
+            variant="filled"
+            fullWidth
+          />
+        </Box>
+      </Grid>
+      {/* CITY */}
+      <Grid item xs={12} md={6}>
+        <Box padding="1rem">
+          <InputLabel htmlFor="arrival_city">* Arrival From (City, Country)</InputLabel>
           <TextField
             id="arrival_city"
             className={classes.textField}
@@ -82,21 +97,7 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
           />
         </Box>
       </Grid>
-      {/* COUNTRY */}
-      <Grid item xs={12} md={4}>
-        <Box padding="1rem">
-          <InputLabel htmlFor="arrival_country">Arrival Country</InputLabel>
-          <TextField
-            id="arrival_country"
-            className={classes.textField}
-            name="country"
-            value={arrival.country}
-            onChange={(e) => saveInfo(e.target.name, e.target.value)}
-            variant="filled"
-            fullWidth
-          />
-        </Box>
-      </Grid>
+
     </Grid>
   )
 }

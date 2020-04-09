@@ -49,7 +49,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
   return (
-    <Grid item xs={12}>
+    <Grid container>
       <Grid item xs={12}>
         <Box padding="1rem">
           <Typography className={classes.cardTitle} variant="h6">
@@ -59,10 +59,10 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
         </Box>
       </Grid>
       {/* Additional Travellers */}
-      <Grid item xs={12}>
+      <Grid item xs={12} md={6}>
         <Box padding="1rem">
           <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
-            Are there additional travellers in your group?
+            * Are there additional travellers in your group?
           </Typography>
           <FormControl component="fieldset">
             <RadioGroup
@@ -79,7 +79,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
       </Grid>
       {formValues.includeAdditionalTravellers && <Grid item xs={12} md={6}>
         <Box padding="1rem">
-          <InputLabel htmlFor="numberTravellers">Number of additional travellers in your group?*</InputLabel>
+          <InputLabel htmlFor="numberTravellers">* Number of additional travellers in your group?</InputLabel>
           <Select
             id="numberTravellers"
             className={classes.select}
@@ -100,6 +100,8 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
             <MenuItem value={6}>6</MenuItem>
             <MenuItem value={7}>7</MenuItem>
             <MenuItem value={8}>8</MenuItem>
+            <MenuItem value={9}>9</MenuItem>
+            <MenuItem value={10}>10</MenuItem>
           </Select>
         </Box>
       </Grid>}
@@ -107,19 +109,21 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
       {formValues.includeAdditionalTravellers && additionalTravellers.map(traveller => traveller.index <= numberAdditionalTravellers ? (
         <Card key={traveller.index} variant="outlined" className={classes.card}>
           <CardContent>
-            <Grid container>
-              <Box padding="1rem" paddingTop="0">
-                <Typography variant="h6">
-                  Additional Traveller Information
-                </Typography>
-                <Typography variant="subtitle1">
-                  For each traveller, please list their last name, first name and date of birth
-                </Typography>
-              </Box>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Box padding="0" paddingTop="0">
+                  <Typography variant="h6">
+                    Additional Traveller Information
+                  </Typography>
+                  <Typography variant="body1">
+                    For each traveller, please list their last name, first name and date of birth
+                  </Typography>
+                </Box>
+              </Grid>
               {/* FIRSTNAME */}
               <Grid item xs={12} md={4}>
-                <Box padding="1rem">
-                  <InputLabel htmlFor="firstName">First Name</InputLabel>
+                <Box paddingTop="1rem">
+                  <InputLabel htmlFor="firstName">* First name</InputLabel>
                   <TextField
                     id="firstName"
                     className={classes.textField}
@@ -133,8 +137,8 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
               </Grid>
               {/* LASTNAME */}
               <Grid item xs={12} md={4}>
-                <Box padding="1rem">
-                  <InputLabel htmlFor="lastName">Last Name</InputLabel>
+                <Box paddingTop="1rem">
+                  <InputLabel htmlFor="lastName">* Last name</InputLabel>
                   <TextField
                     id="lastName"
                     className={classes.textField}
@@ -148,17 +152,20 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
               </Grid>
               {/* DOB */}
               <Grid item xs={12} md={4}>
-                <Box padding="1rem">
+                <Box paddingTop="1rem">
                   <MuiPickersUtilsProvider utils={MomentUtils}>
-                    <InputLabel htmlFor="dob">DoB (MM/dd/yyyy)</InputLabel>
+                    <InputLabel htmlFor="dob">* Date of birth (yyyy/mm/dd)</InputLabel>
                     <KeyboardDatePicker
-                      format="MM/DD/YYYY"
+                      style={{marginTop: '4px'}}
+                      format="YYYY/MM/DD"
                       id="dob"
+                      disableFuture
                       variant="filled"
                       fullWidth
                       onChange={(date) => handleDateChange(date, traveller.index)}
                       inputVariant="filled"
-                      value={traveller.dob || '01/01/1990'}
+                      openTo="year"
+                      value={traveller.dob || '1990/01/01'}
                       KeyboardButtonProps={{ 'aria-label': 'change date' }}
                     />
                   </MuiPickersUtilsProvider>
@@ -168,11 +175,11 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
 
               {/* ESSENTIAL */}
               <Grid item xs={12}>
-                <Box padding="1rem">
+                <Box marginTop="1.5rem">
                   <FormControl fullWidth className={classes.inlineFormControl} component="fieldset">
                     <FormLabel className={classes.formLabel} component="legend">
                       <b>
-                        Is this traveller an <a href="https://www2.gov.bc.ca/gov/content?id=0940F66B87B641909DFDE590435ABD81" target="_blank" rel="noreferrer noopener">essential worker</a>?
+                        Is this traveller an essential worker?
                       </b>
                     </FormLabel>
                     <RadioGroup
@@ -187,7 +194,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
                     </RadioGroup>
                   </FormControl>
                 </Box>
-                <Box width="100%" padding="1rem" marginBottom="1rem">
+                <Box width="100%" paddingTop="1rem" paddingBottom="2rem">
                   <InputLabel htmlFor="role">
                     Please describe employment and your role if you selected yes
                   </InputLabel>

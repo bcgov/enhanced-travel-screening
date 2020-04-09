@@ -23,7 +23,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
     }})
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
-  const provs = ['ab', 'bc', 'sa', 'ma', 'on', 'nb', 'ns', 'nv', 'pei', 'qc', 'nwt', 'yn' ]
+  const provs = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Québec', 'Saskatchewan', 'Yukon' ]
   return (
     <Grid item xs={12}>
       <Grid item xs={12}>
@@ -39,7 +39,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
         {/* FIRSTNAME */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="firstName">First Name* (primary contact)</InputLabel>
+            <InputLabel htmlFor="firstName">* First name (primary contact)</InputLabel>
             <TextField
               id="firstName"
               className={classes.textField}
@@ -48,13 +48,14 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+
             />
           </Box>
         </Grid>
         {/* LASTNAME */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="lastName">Last Name* (primary contact)</InputLabel>
+            <InputLabel htmlFor="lastName">* Last name (primary contact)</InputLabel>
             <TextField
               id="lastName"
               className={classes.textField}
@@ -63,6 +64,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+              required
             />
           </Box>
         </Grid>
@@ -70,17 +72,19 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
             <MuiPickersUtilsProvider utils={MomentUtils}>
-              <InputLabel htmlFor="dob">Date of Birth (MM/dd/yyyy)</InputLabel>
+              <InputLabel htmlFor="dob">* Date of birth (yyyy/mm/dd)</InputLabel>
               <KeyboardDatePicker
-                format="MM/DD/YYYY"
+                format="YYYY/MM/DD"
                 className={classes.select}
                 id="dob"
                 openTo="year"
                 variant="filled"
+                disableFuture
                 fullWidth
                 onChange={handleDateChange}
                 inputVariant="filled"
                 disabled={isDisabled}
+                required
                 value={formValues.dob || '01/01/1990'}
                 KeyboardButtonProps={{ 'aria-label': 'change date' }}
               />
@@ -92,22 +96,26 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
         {/* TELEPHONE */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="telephone">Telephone</InputLabel>
+            <InputLabel htmlFor="telephone">* Phone number</InputLabel>
+            {/* TODO input type tel auto formatting! */}
             <TextField
               id="telephone"
               className={classes.textField}
               name="telephone"
               value={formValues.telephone}
               variant="filled"
+              required
               onChange={handleChange}
               fullWidth
+              inputProps={{ type: 'tel', pattern: 'tel' }}
             />
           </Box>
         </Grid>
         {/* EMAIL */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="email">Email</InputLabel>
+            <InputLabel htmlFor="email">Email (optional)</InputLabel>
+            {/* Validate and approve when email */}
             <TextField
               id="email"
               className={classes.textField}
@@ -116,34 +124,35 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+              inputProps={{ type: 'email' }}
             />
           </Box>
         </Grid>
         {/* REACH */}
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Box padding="1rem">
             <InputLabel htmlFor="reachSelect">What is the best method to reach you?</InputLabel>
             <Select
-              id="reachSelect"
-              className={classes.select}
-              name="reach"
-              value={formValues.reach || ""}
-              variant="filled"
-              onChange={handleChange}
-              fullWidth
-              displayEmpty
-              inputProps={{disabled: isDisabled}}
+          id="reachSelect"
+          className={classes.select}
+          name="reach"
+          value={formValues.reach || ""}
+          variant="filled"
+          onChange={handleChange}
+          fullWidth
+          displayEmpty
+          inputProps={{disabled: isDisabled}}
             >
-              <MenuItem value="" disabled>Please Select</MenuItem>
-              <MenuItem key="reachPhone" value="phone">Phone</MenuItem>
-              <MenuItem key="reachEmail" value="email">Email</MenuItem>
+          <MenuItem value="" disabled>Please Select</MenuItem>
+          <MenuItem key="reachPhone" value="phone">Phone</MenuItem>
+          <MenuItem key="reachEmail" value="email">Email</MenuItem>
             </Select>
           </Box>
-        </Grid>
+        </Grid> */}
         {/* ADDRESS */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="address">Address</InputLabel>
+            <InputLabel htmlFor="address">* Home address</InputLabel>
             <TextField
               id="address"
               className={classes.textField}
@@ -152,13 +161,14 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+              required
             />
           </Box>
         </Grid>
         {/* CITY */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="city">City</InputLabel>
+            <InputLabel htmlFor="city">* City</InputLabel>
             <TextField
               id="city"
               className={classes.textField}
@@ -167,13 +177,14 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+              required
             />
           </Box>
         </Grid>
         {/* PROVINCE */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="provSelect">Province</InputLabel>
+            <InputLabel htmlFor="provSelect">* Province / Territory</InputLabel>
             <Select
               id="provSelect"
               className={classes.select}
@@ -187,17 +198,15 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               inputProps={{disabled: isDisabled}}
             >
               <MenuItem value="" disabled>Please Select</MenuItem>
-              {provs.map((prov) => (
-                <MenuItem key={prov} value={prov}>{prov.toUpperCase()}</MenuItem>
-              ))}
-
+              {provs.map((prov) => <MenuItem key={prov} value={prov}>{prov}</MenuItem>)}
             </Select>
           </Box>
         </Grid>
         {/* POSTAL CODE */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="postalCode">Postal Code</InputLabel>
+            <InputLabel htmlFor="postalCode">* Postal Code</InputLabel>
+            {/* TODO format as a postal code */}
             <TextField
               id="postalCode"
               className={classes.textField}
@@ -206,6 +215,8 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               variant="filled"
               onChange={handleChange}
               fullWidth
+              required
+              inputProps={{ maxLength: 6 }}
             />
           </Box>
         </Grid>
@@ -225,11 +236,12 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
           <Box padding="1rem" paddingBottom="0">
             <FormControl component="fieldset">
               <FormLabel className={classes.formLabel} component="legend">
-                Are you an <a href="https://www2.gov.bc.ca/gov/content?id=0940F66B87B641909DFDE590435ABD81" target="_blank" rel="noreferrer noopener">essential worker</a>?
+                {/* <a href="https://www2.gov.bc.ca/gov/content?id=0940F66B87B641909DFDE590435ABD81" target="_blank" rel="noreferrer noopener"> */}
+                Are you an essential worker?
               </FormLabel>
               <RadioGroup
                 row
-                aria-label="essential worker"
+                aria-label="Are you an essential worker?"
                 name="essential"
                 value={computeRadioValue(formValues.essentialWorker)}
                 onChange={(event) => handleChange({ target: { name: "essentialWorker", value: event.target.value === "yes" }})}>
@@ -240,9 +252,8 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
           </Box>
           <Box width="100%" padding="1rem 1rem 2rem 1rem">
             <InputLabel htmlFor="role">
-              Please describe your employment/role
+              If Yes, please describe your employment/role
             </InputLabel>
-
             <TextField
               id="role"
               onChange={handleChange}

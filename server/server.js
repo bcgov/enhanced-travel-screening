@@ -35,6 +35,7 @@ app.post(`${apiBaseUrl}/login`,
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
+    console.dir(req.body)
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
     // determine if isolation plan can default to accepted
@@ -44,11 +45,10 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       isolationPlan: {
         ableToIsolate,
         supplies,
-        transportation,
       },
     } = req.body;
     const healthStatus = symptoms;
-    const isolationPlanStatus = accomodations && ableToIsolate && supplies && transportation === 'personal';
+    const isolationPlanStatus = accomodations && !ableToIsolate && supplies;
     const item = {
       TableName: formsTable,
       Item: {
@@ -57,6 +57,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
         healthStatus,
         isolationPlanStatus,
         determination: null,
+        notes: null,
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
