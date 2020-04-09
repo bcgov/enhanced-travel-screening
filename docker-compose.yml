@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   application:
-    image: ${PROJECT}:${GIT_LOCAL_BRANCH}
+    image: ${PROJECT}:${IMAGE_TAG}
     container_name: ${PROJECT}
     build:
       context: ./
