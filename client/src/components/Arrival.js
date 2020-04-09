@@ -36,6 +36,7 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
               fullWidth
               onChange={handleDateChange}
               inputVariant="filled"
+              disabled={isDisabled}
               style={{marginTop: '0.25rem'}}
               value={arrival.date || new Date()}
               KeyboardButtonProps={{ 'aria-label': 'change date' }}

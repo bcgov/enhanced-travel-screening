@@ -46,13 +46,13 @@ function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "
           <Card style={{height: '150px', padding: '1rem'}}>
             <CardContent>
               <Grid container>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Box style={{textAlign: 'center'}}>
                     <img style={{height: '50px'}} src={healthStatus === "accepted" ? HealthPass : HealthFail} alt="health status accepted or failed" />
                     <Typography style={healthStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Health Status Complete</Typography>
                   </Box>
-                </Grid>
-                <Grid item xs={6}>
+                </Grid> */}
+                <Grid item xs={12}>
                   <Box style={{textAlign: 'center'}}>
                     <img style={{height: '50px'}} src={isolationPlanStatus === "accepted" ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
                     <Typography style={isolationPlanStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
