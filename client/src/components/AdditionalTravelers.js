@@ -16,7 +16,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => {
+const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalTravellers, isDisabled }) => {
   const [additionalTravellers, setAdditionalTravellers] = useState([]);
   const [numberAdditionalTravellers, setNumberAdditionalTravellers] = useState(0);
   const blankTraveller = (index) => ({
@@ -47,20 +47,39 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => 
     setAdditionalTravellers(additional)
     saveInfo(additional)
   }
+  const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
   return (
     <Grid item xs={12}>
       <Grid item xs={12}>
         <Box padding="1rem">
           <Typography className={classes.cardTitle} variant="h6">
-            Additional Travellers
+            Travel Information
             <hr className={classes.hr} />
           </Typography>
         </Box>
       </Grid>
-      {/* PROVINCE */}
-      <Grid item xs={12} md={6}>
+      {/* Additional Travellers */}
+      <Grid item xs={12}>
         <Box padding="1rem">
-          <InputLabel htmlFor="numberTravellers">Number of household travellers?</InputLabel>
+          <Typography variant="subtitle2" style={{paddingTop: "0.5rem"}}>
+            Are there additional travellers in your group?
+          </Typography>
+          <FormControl component="fieldset">
+            <RadioGroup
+              row
+              aria-label="include additional travellers"
+              name="includeAdditionalTravellers"
+              value={computeRadioValue(formValues.includeAdditionalTravellers)}
+              onChange={(event) => toggleAdditionalTravellers(event.target.value === "yes")}>
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+          </FormControl>
+        </Box>
+      </Grid>
+      {formValues.includeAdditionalTravellers && <Grid item xs={12} md={6}>
+        <Box padding="1rem">
+          <InputLabel htmlFor="numberTravellers">Number of additional travellers in your group?*</InputLabel>
           <Select
             id="numberTravellers"
             className={classes.select}
@@ -73,16 +92,19 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => 
             inputProps={{disabled: isDisabled}}
           >
             <MenuItem value="" disabled>Select...</MenuItem>
-            <MenuItem value={0}>0</MenuItem>
             <MenuItem value={1}>1</MenuItem>
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={3}>3</MenuItem>
             <MenuItem value={4}>4</MenuItem>
+            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={6}>6</MenuItem>
+            <MenuItem value={7}>7</MenuItem>
+            <MenuItem value={8}>8</MenuItem>
           </Select>
         </Box>
-      </Grid>
+      </Grid>}
 
-      {additionalTravellers.map(traveller => traveller.index <= numberAdditionalTravellers ? (
+      {formValues.includeAdditionalTravellers && additionalTravellers.map(traveller => traveller.index <= numberAdditionalTravellers ? (
         <Card key={traveller.index} variant="outlined" className={classes.card}>
           <CardContent>
             <Grid container>
@@ -150,9 +172,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => 
                   <FormControl fullWidth className={classes.inlineFormControl} component="fieldset">
                     <FormLabel className={classes.formLabel} component="legend">
                       <b>
-                        Has your employer designated you as an essential worker?
-                        <br/>
-                        (select no if not applicable)
+                        Is this traveller an <a href="https://www2.gov.bc.ca/gov/content?id=0940F66B87B641909DFDE590435ABD81" target="_blank" rel="noreferrer noopener">essential worker</a>?
                       </b>
                     </FormLabel>
                     <RadioGroup
@@ -169,7 +189,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, isDisabled }) => 
                 </Box>
                 <Box width="100%" padding="1rem" marginBottom="1rem">
                   <InputLabel htmlFor="role">
-                    Please describe your employment and your role if you selected yes.
+                    Please describe employment and your role if you selected yes
                   </InputLabel>
 
                   <TextField

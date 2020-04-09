@@ -39,7 +39,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
         {/* FIRSTNAME */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="firstName">First Name</InputLabel>
+            <InputLabel htmlFor="firstName">First Name* (primary contact)</InputLabel>
             <TextField
               id="firstName"
               className={classes.textField}
@@ -54,7 +54,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
         {/* LASTNAME */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <InputLabel htmlFor="lastName">Last Name</InputLabel>
+            <InputLabel htmlFor="lastName">Last Name* (primary contact)</InputLabel>
             <TextField
               id="lastName"
               className={classes.textField}
@@ -66,6 +66,29 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
             />
           </Box>
         </Grid>
+        {/* DOB */}
+        <Grid item xs={12} md={6}>
+          <Box padding="1rem">
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <InputLabel htmlFor="dob">Date of Birth (MM/dd/yyyy)</InputLabel>
+              <KeyboardDatePicker
+                format="MM/DD/YYYY"
+                className={classes.select}
+                id="dob"
+                openTo="year"
+                variant="filled"
+                fullWidth
+                onChange={handleDateChange}
+                inputVariant="filled"
+                disabled={isDisabled}
+                value={formValues.dob || '01/01/1990'}
+                KeyboardButtonProps={{ 'aria-label': 'change date' }}
+              />
+            </MuiPickersUtilsProvider>
+
+          </Box>
+        </Grid>
+
         {/* TELEPHONE */}
         <Grid item xs={12} md={6}>
           <Box padding="1rem">
@@ -75,36 +98,6 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
               className={classes.textField}
               name="telephone"
               value={formValues.telephone}
-              variant="filled"
-              onChange={handleChange}
-              fullWidth
-            />
-          </Box>
-        </Grid>
-        {/* MOBILE */}
-        <Grid item xs={12} md={6}>
-          <Box padding="1rem">
-            <InputLabel htmlFor="mobilePhone">Mobile Phone</InputLabel>
-            <TextField
-              id="mobilePhone"
-              className={classes.textField}
-              name="mobile"
-              value={formValues.mobile}
-              variant="filled"
-              onChange={handleChange}
-              fullWidth
-            />
-          </Box>
-        </Grid>
-        {/* REACH */}
-        <Grid item xs={12}>
-          <Box padding="1rem">
-            <InputLabel htmlFor="reach">If you do not have a mobile phone, how can we best reach you?</InputLabel>
-            <TextField
-              id="reach"
-              className={classes.textField}
-              name="reach"
-              value={formValues.reach}
               variant="filled"
               onChange={handleChange}
               fullWidth
@@ -126,38 +119,25 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
             />
           </Box>
         </Grid>
-        {/* ESSENTIAL */}
+        {/* REACH */}
         <Grid item xs={12}>
           <Box padding="1rem">
-            <FormControl component="fieldset">
-              <FormLabel className={classes.formLabel} component="legend"><b>Has your employer designated you as an essential worker? (select no if not applicable)</b></FormLabel>
-              <RadioGroup
-                row
-                aria-label="essential worker"
-                name="essential"
-                value={computeRadioValue(formValues.essentialWorker)}
-                onChange={(event) => handleChange({ target: { name: "essentialWorker", value: event.target.value === "yes" }})}>
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </FormControl>
-          </Box>
-          <Box width="100%" padding="1rem" marginBottom="1rem">
-            <InputLabel htmlFor="role">
-              Please describe your employment and your role if you selected yes.
-            </InputLabel>
-
-            <TextField
-              id="role"
+            <InputLabel htmlFor="reachSelect">What is the best method to reach you?</InputLabel>
+            <Select
+              id="reachSelect"
+              className={classes.select}
+              name="reach"
+              value={formValues.reach || ""}
+              variant="filled"
               onChange={handleChange}
-              name="role"
-              className={`${classes.stretch} ${classes.textField}`}
-              variant="outlined"
-              rows="2"
-              multiline
               fullWidth
-              disabled={isDisabled}
-            />
+              displayEmpty
+              inputProps={{disabled: isDisabled}}
+            >
+              <MenuItem value="" disabled>Please Select</MenuItem>
+              <MenuItem key="reachPhone" value="phone">Phone</MenuItem>
+              <MenuItem key="reachEmail" value="email">Email</MenuItem>
+            </Select>
           </Box>
         </Grid>
         {/* ADDRESS */}
@@ -229,43 +209,68 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
             />
           </Box>
         </Grid>
-        {/* HCN */}
-        <Grid item xs={12} md={6}>
+
+        {/* ESSENTIAL */}
+
+        <Grid item xs={12}>
           <Box padding="1rem">
-            <InputLabel htmlFor="hcn">Health Care Number</InputLabel>
+            <Typography className={classes.cardTitle} variant="h6">
+              Essential Worker Status
+              <hr className={classes.hr} />
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box padding="1rem" paddingBottom="0">
+            <FormControl component="fieldset">
+              <FormLabel className={classes.formLabel} component="legend">
+                Are you an <a href="https://www2.gov.bc.ca/gov/content?id=0940F66B87B641909DFDE590435ABD81" target="_blank" rel="noreferrer noopener">essential worker</a>?
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-label="essential worker"
+                name="essential"
+                value={computeRadioValue(formValues.essentialWorker)}
+                onChange={(event) => handleChange({ target: { name: "essentialWorker", value: event.target.value === "yes" }})}>
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+          <Box width="100%" padding="1rem 1rem 2rem 1rem">
+            <InputLabel htmlFor="role">
+              Please describe your employment/role
+            </InputLabel>
+
             <TextField
-              id="hcn"
-              className={classes.textField}
-              name="healthCareNumber"
-              value={formValues.healthCareNumber}
-              variant="filled"
+              id="role"
               onChange={handleChange}
+              name="role"
+              className={`${classes.stretch} ${classes.textField}`}
+              variant="outlined"
+              rows="2"
+              multiline
               fullWidth
+              disabled={isDisabled}
             />
           </Box>
         </Grid>
-        {/* DOB */}
-        <Grid item xs={12} md={6}>
+        {/* HCN
+          <Grid item xs={12} md={6}>
           <Box padding="1rem">
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <InputLabel htmlFor="dob">Date of Birth (MM/dd/yyyy)</InputLabel>
-              <KeyboardDatePicker
-                format="MM/DD/YYYY"
-                className={classes.select}
-                id="dob"
-                openTo="year"
-                variant="filled"
-                fullWidth
-                onChange={handleDateChange}
-                inputVariant="filled"
-                disabled={isDisabled}
-                value={formValues.dob || '01/01/1990'}
-                KeyboardButtonProps={{ 'aria-label': 'change date' }}
-              />
-            </MuiPickersUtilsProvider>
-
+            <InputLabel htmlFor="hcn">Health Care Number</InputLabel>
+            <TextField
+          id="hcn"
+          className={classes.textField}
+          name="healthCareNumber"
+          value={formValues.healthCareNumber}
+          variant="filled"
+          onChange={handleChange}
+          fullWidth
+            />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Grid>
   )

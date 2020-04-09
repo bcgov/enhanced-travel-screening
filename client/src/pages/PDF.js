@@ -22,7 +22,7 @@ const PDF = ({ match: { params }}) => {
 
   return (
      <Grid style={{ height: '100%', overflowY: 'auto'}} item xs={12}>
-       {!loading && <Form initialValues={initialValues} isDisabled />}
+       {!loading && <Form confirmationNumber={id} initialValues={initialValues} isDisabled isPdf={true} />}
      </Grid>
   );
 };

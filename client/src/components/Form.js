@@ -4,6 +4,7 @@ import Routes from '../constants/routes';
 import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
 import Arrival from './Arrival';
+import Disclaimer from './Disclaimer';
 import Symptoms from './Symptoms';
 import IsolationPlan from './IsolationPlan';
 import Certify from './Certify';
@@ -62,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // TODO: Implement `isDisabled` for all form fields
-const Form = ({ initialValues, isDisabled, id = null }) => {
+const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = false }) => {
 
   const classes = useStyles();
   const history = useHistory();
@@ -83,41 +84,23 @@ const Form = ({ initialValues, isDisabled, id = null }) => {
     healthCareNumber: '',
     dob: '',
     householdTravelers: '',
+    includeAdditionalTravellers: null,
     additionalTravelers: [],
     arrival: {
       date: '',
       by: '',
-      flightNumber: '',
       city: '',
       country: ''
     },
-    locations: [],
-    symptoms: {
-      fever: false,
-      cough: false,
-      breathing: false,
-      other: false,
-      none: false,
-      otherSymptoms: ''
-    },
-    riskGroups: {
-      overSixty: false,
-      cardiovascular: false,
-      lung: false,
-      diabetes: false,
-      immune: false,
-      none: false
-    },
+    symptoms: null,
+    accomodations: null,
     isolationPlan: {
       city: '',
       address: '',
       type: '',
-      withProfessional: null,
-      independentTransport: null,
+      ableToIsolate: null,
       supplies: null,
-      suppliesSource: null,
-      support: null,
-      outdoors: null,
+      transportation: ''
     }
   });
   const [certified, toggleCertified] = useState(false);
@@ -125,17 +108,13 @@ const Form = ({ initialValues, isDisabled, id = null }) => {
     const { name, value } = event.target;
     setFormValues(prevState => ({ ...prevState, [name]: value }));
   };
-
+  const toggleAdditionalTravellers = (bool) => setFormValues(prevState => ({ ...prevState, includeAdditionalTravellers: bool }))
   const saveAdditionalTravellers = (additionalTravellers) => setFormValues(prevState => ({ ...prevState, additionalTravellers }))
   const saveArrivalDetails = (name, value) => {
     setFormValues(prevState => ({ ...prevState, arrival: { ...prevState.arrival, [name]: value } }));
   };
-  const saveSymptoms = (name, value) => {
-    setFormValues(prevState => ({ ...prevState, symptoms: { ...prevState.symptoms, [name]: value } }));
-  };
-  const saveRiskGroups = (name, value) => {
-    setFormValues(prevState => ({ ...prevState, riskGroups: { ...prevState.riskGroups, [name]: value } }));
-  };
+  const toggleSymptoms = (bool) => setFormValues(prevState => ({ ...prevState, symptoms: bool }))
+  const toggleAccomodations = (bool) => setFormValues(prevState => ({ ...prevState, accomodations: bool }))
   const saveIsolationPlan = (name, value) => {
     setFormValues(prevState => ({ ...prevState, isolationPlan: { ...prevState.isolationPlan, [name]: value } }));
   };
@@ -179,15 +158,15 @@ const Form = ({ initialValues, isDisabled, id = null }) => {
   return (
     <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 8}>
 
-      {isDisabled && (<SubmissionInfo id={id} />)}
+      {isDisabled && (<SubmissionInfo id={confirmationNumber} isPdf={isPdf} />)}
 
       {!isDisabled && (
         <Box padding='2rem'>
           <Typography variant="h5" gutterBottom>
-            Travel Assesment Form
+            Self-Isolation Plan
           </Typography>
           <Typography variant="body1" gutterBottom>
-            BC has declared a state of emergency. To ensure the safety of all British Columbians, you are being asked to delcare your journey details and plans to self isolate.
+            B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
           </Typography>
         </Box>
       )}
@@ -195,13 +174,13 @@ const Form = ({ initialValues, isDisabled, id = null }) => {
       <Card variant="outlined" className={classes.card}>
         <CardContent>
           <Grid container>
-
+            <Disclaimer />
             <Personal isDisabled={isDisabled} classes={classes} saveInfo={handleChange} formValues={formValues} />
-            <AdditionalTravelers isDisabled={isDisabled} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
+            <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
-            <Symptoms isDisabled={isDisabled} classes={classes} saveSymptoms={saveSymptoms} saveRiskGroups={saveRiskGroups} symptoms={formValues.symptoms} riskGroups={formValues.riskGroups} />
-            <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} />
-            {!isDisabled && <Certify toggleCertified={toggleCertified} certified={certified} />}
+            <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/>
+            <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} accomodations={formValues.accomodations}/>
+            {!isDisabled && <Certify firstName={formValues.firstName} lastName={formValues.lastName} toggleCertified={toggleCertified} certified={certified} />}
 
             {!isDisabled && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
