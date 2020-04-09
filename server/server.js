@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { passport, genTokenForSubmission } = require('./auth.js');
+const { passport, generateJwt, restrictToken } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 
@@ -63,12 +63,11 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ConditionExpression: 'attribute_not_exists(id)',
     };
     await db.put(item).promise();
-    const accessToken = genTokenForSubmission(id);
     res.json({
       id,
       healthStatus,
       isolationPlanStatus,
-      accessToken,
+      accessToken: generateJwt(id, 'pdf'),
     });
   } catch (error) {
     res.status(500).json({ error: `Failed to create submission. ${error.message}` });
@@ -80,6 +79,7 @@ app.patch(`${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const { id } = req.params;
+    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
     const params = {
       TableName: formsTable,
       Key: { id },
@@ -93,9 +93,9 @@ app.patch(`${apiBaseUrl}/form/:id`,
     };
     try {
       await db.update(params).promise();
-      res.json({ id });
+      return res.json({ id });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to update submission' });
+      return res.status(500).json({ error: 'Failed to update submission' });
     }
   });
 
@@ -104,6 +104,7 @@ app.get(`${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const { id } = req.params;
+    if (!restrictToken(req.user, '*', [id])) return res.status(401).send('Unathorized');
     const params = {
       TableName: formsTable,
       Key: { id },
