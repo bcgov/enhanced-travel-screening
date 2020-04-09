@@ -136,7 +136,10 @@ app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
 // Validate JWT
 app.get(`${apiBaseUrl}/validate`,
   passport.authenticate('jwt', { session: false }),
-  (req, res) => res.json({}));
+  (req, res) => {
+    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
+    return res.json({});
+  });
 
 // Client app
 if (process.env.NODE_ENV === 'production') {
