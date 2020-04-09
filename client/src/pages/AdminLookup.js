@@ -1,19 +1,18 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import CardContent from '@material-ui/core/CardContent';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import { Formik, Form, Field } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import * as Yup from 'yup';
 
 import Routes from '../constants/routes';
+import { LookupSchema } from '../validation-schemas';
 
 import Page from '../components/Page';
+import { RenderTextField } from '../components/fields';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -43,11 +42,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LookupSchema = Yup.object().shape({
-  confirmationNumber: Yup.string()
-    .required('Required'),
-});
-
 const AdminLookup = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -72,28 +66,24 @@ const AdminLookup = () => {
               >
                 <Form>
                   <Grid container spacing={3}>
+
+                    {/** Title */}
                     <Grid item xs={12}>
                       <Typography className={classes.cardTitle} variant="h2">
                         Submission Lookup
                       </Typography>
                     </Grid>
+
                     <Grid item xs={12} container>
 
                       {/** Confirmation Number */}
                       <Grid item xs={12} sm={7} md={8}>
-                        <Field name="confirmationNumber">
-                          {({ field, meta }) => (
-                            <TextField
-                              className={classes.textField}
-                              placeholder="Enter Confirmation Number eg: BC12345"
-                              variant="outlined"
-                              fullWidth
-                              error={meta.touched && !!meta.error}
-                              helperText={(meta.touched && !!meta.error) && <FormHelperText error>{meta.error}</FormHelperText>}
-                              {...field}
-                            />
-                          )}
-                        </Field>
+                        <Field
+                          className={classes.textField}
+                          name="confirmationNumber"
+                          component={RenderTextField}
+                          placeholder="Enter Confirmation Number eg: BC12345"
+                        />
                       </Grid>
 
                       {/** Submit */}

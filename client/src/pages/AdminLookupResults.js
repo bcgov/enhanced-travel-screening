@@ -1,16 +1,18 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
+import { Formik, Form, Field } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
+import { SidebarSchema } from '../validation-schemas';
+
 import Page from '../components/Page';
-import Form from '../components/Form';
+import UserForm from '../components/Form';
+import { RenderButtonGroup, RenderTextField } from '../components/fields';
 
 const useStyles = makeStyles((theme) => ({
   statusWrapper: {
@@ -35,15 +37,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     lineHeight: '24px',
   },
-  buttonGroup: {
-    '& > button': {
-      padding: theme.spacing(2),
-      fontWeight: 'bold',
-      fontSize: '13px',
-      lineHeight: '18px',
-      letterSpacing: '0.81px',
-    },
-  },
   divider: {
     height: '3px',
     backgroundColor: '#E2A014',
@@ -58,19 +51,25 @@ const useStyles = makeStyles((theme) => ({
 const AdminLookupResults = ({ match: { params }}) => {
   const classes = useStyles();
   const history = useHistory();
-  const [error, setError] = useState(null);
-  const [updateSuccess, setUpdateSuccess] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingDetermination, setLoadingDetermination] = useState(false);
-  const [initialValues, setInitialValues] = useState(null);
-  const [sidebarFormValues, setSidebarFormValues] = useState({
-    determination: null,
-    notes: null,
+  const [lookupError, setLookupError] = useState(null);
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(null);
+  const [initialUserFormValues, setInitialUserFormValues] = useState(null);
+  const [initialSidebarValues, setInitialSidebarValues] = useState({
+    determination: '',
+    notes: '',
   });
 
+  /**
+   * On page load, grab the ID from the url and perform a search
+   * query to find the matching form data.
+   */
   useEffect(() => {
     (async () => {
-      setLoading(true);
+      setLookupLoading(true);
+
       const jwt = window.localStorage.getItem('jwt');
       const response = await fetch(`/api/v1/form/${params.id}`, {
         headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
@@ -79,49 +78,39 @@ const AdminLookupResults = ({ match: { params }}) => {
 
       if (response.ok) {
         const { determination, notes, ...rest } = await response.json();
-        setInitialValues(rest);
-        setSidebarFormValues({ determination, notes });
+        setInitialUserFormValues(rest);
+        setInitialSidebarValues({ determination, notes });
       } else {
-        setError(`Failed to find submission with ID ${params.id}`);
+        setLookupError(`Failed to find submission with ID ${params.id}`);
       }
-      setLoading(false);
+
+      setLookupLoading(false);
     })();
   }, [params.id]);
 
-  const handleChange = ({ name, value }) => {
-    setSidebarFormValues(prevState => ({ ...prevState, [name]: value }));
-  };
+  const handleSubmit = async (values) => {
+    setSubmitLoading(true);
 
-  const handleSubmit = async () => {
-    setLoadingDetermination(true)
-    try {
-      const jwt = window.localStorage.getItem('jwt');
-      const response = await fetch(`/api/v1/form/${params.id}`, {
-        headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
-        method: 'PATCH',
-        body: JSON.stringify({ ...sidebarFormValues })
-      });
-      if (response.ok) {
-        setUpdateSuccess(true);
-      } else {
-        throw new Error(response.error || 'Failed to update this submission.');
-      }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoadingDetermination(false);
-    }
+    const jwt = window.localStorage.getItem('jwt');
+    const response = await fetch(`/api/v1/form/${params.id}`, {
+      headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
+      method: 'PATCH',
+      body: JSON.stringify({ ...values })
+    });
+
+    if (response.ok) setSubmitSuccess(true);
+    else setSubmitError(response.error || 'Failed to update this submission.');
+    setSubmitLoading(false);
   };
 
   return (
    <Page>
-     {(loading || error) ? (
+     {(lookupLoading || lookupError) ? (
        <div className={classes.statusWrapper}>
-         {loading && <CircularProgress />}
-         {/* TODO error type? if submission update fails this becomes misleading */}
-         {error && (
+         {lookupLoading && <CircularProgress />}
+         {lookupError && (
            <Container maxWidth="sm" align="center">
-             <Typography paragraph>Lookup failed... {error.message || error}</Typography>
+             <Typography paragraph>Lookup failed... {lookupError.message || lookupError}</Typography>
              <Button
                className={classes.button}
                variant="contained"
@@ -139,87 +128,75 @@ const AdminLookupResults = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} md={8}>
-           <Form initialValues={initialValues} isDisabled confirmationNumber={params.id} isPdf={false} />
+           <UserForm initialValues={initialUserFormValues} isDisabled id={params.id} isPdf={false} />
          </Grid>
 
          {/** Sidebar */}
          <Grid className={classes.sidebarWrapper} item xs={12} md={4}>
-           <Grid container spacing={4}>
-             <Grid item xs={12}>
-               <Typography className={classes.sidebarTitle} variant="h2">
-                 Provincial Official Determination
-               </Typography>
-               <hr className={classes.divider} />
-             </Grid>
-             <Grid item xs={12}>
-               <Typography style={{ marginBottom: "1rem" }} variant="h6">Determination</Typography>
-               <ButtonGroup
-                 className={classes.buttonGroup}
-                 orientation="vertical"
-                 color="primary"
-                 fullWidth
-               >
-                 <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'support' })}
-                   variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
-                   style={{
-                     backgroundColor: sidebarFormValues.determination === 'support' ? '#F5A623' : 'unset',
-                     boxShadow: 'none',
-                     fontSize: '1rem',
-                     color: sidebarFormValues.determination === 'support' ? 'black' : '#002C71'
-                   }}
-                 >
-                   Support Needed
-                 </Button>
-                 <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'accepted' })}
-                   variant={sidebarFormValues.determination === 'accepted' ? 'contained' : 'outlined'}
-                   style={{
-                     boxShadow: 'none',
-                     fontSize: '1rem'
-                   }}
-                 >
-                   No Support Needed
-                 </Button>
-                 {/* <Button
-                   onClick={(e) => handleChange({ name: 'determination', value: 'rejected' })}
-                   variant={sidebarFormValues.determination === 'rejected' ? 'contained' : 'outlined'}
-                   >
-                   PLAN NOT ACCEPTED
-                 </Button> */}
-               </ButtonGroup>
-             </Grid>
-             <Grid item xs={12}>
-               <Typography variant="h6">Notes*</Typography>
-               <TextField
-                 value={sidebarFormValues.notes || ''}
-                 name="notes"
-                 onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
-                 variant="outlined"
-                 placeholder="Add notes to support your decision..."
-                 multiline
-                 rows={10}
-                 fullWidth
-               />
-             </Grid>
-             <Grid item xs={12}>
-               {
-                 loadingDetermination ? <CircularProgress /> : (
-                   <Button
-                     className={classes.button}
-                     variant="contained"
-                     color="primary"
-                     onClick={handleSubmit}
-                     fullWidth
-                     disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
-                   >
-                     Submit
-                   </Button>
-                 )
-               }
-             </Grid>
-             {updateSuccess && <Typography textAlign="center" color="secondary">Submission Updated</Typography>}
-           </Grid>
+           <Formik
+             initialValues={initialSidebarValues}
+             validationSchema={SidebarSchema}
+             onSubmit={handleSubmit}
+           >
+             <Form>
+               <Grid container spacing={3}>
+
+                 {/** Title */}
+                 <Grid item xs={12}>
+                   <Typography className={classes.sidebarTitle} variant="h2">
+                     Public Health Official Determination
+                   </Typography>
+                   <hr className={classes.divider} />
+                 </Grid>
+
+                 {/** Determination */}
+                 <Grid item xs={12}>
+                   <Typography paragraph variant="body1"><b>Determination*</b></Typography>
+                   <Field
+                     name="determination"
+                     component={RenderButtonGroup}
+                     options={[
+                       { value: 'support', label: 'Support Needed', color: 'secondary' },
+                       { value: 'accepted', label: 'Isolation Plan Approved', color: 'primary' },
+                     ]}
+                   />
+                 </Grid>
+
+                 {/** Notes */}
+                 <Grid item xs={12}>
+                   <Typography paragraph variant="body1"><b>Notes*</b></Typography>
+                   <Field
+                     name="notes"
+                     component={RenderTextField}
+                     placeholder="Add notes to support your decision..."
+                     multiline
+                     rows={10}
+                   />
+                 </Grid>
+
+                 {/** Submit */}
+                 <Grid item xs={12}>
+                   {submitLoading ? <CircularProgress /> :
+                     <Button
+                       className={classes.button}
+                       variant="contained"
+                       color="primary"
+                       type="submit"
+                       fullWidth
+                     >
+                       Submit Determination
+                     </Button>
+                   }
+                 </Grid>
+
+                 {/** Submit Success / Error */}
+                 <Grid item xs={12}>
+                   {submitError && <Typography color="error">{submitError}</Typography>}
+                   {submitSuccess && <Typography color="primary">Submission Updated</Typography>}
+                 </Grid>
+               </Grid>
+             </Form>
+           </Formik>
          </Grid>
        </Fragment>
      )}
