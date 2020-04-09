@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
       - master
-    types: [closed]
+    # types: [closed]
 
 jobs:
   dev_deploy:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     name: Deploy to Dev
     runs-on: ubuntu-latest
 
@@ -21,9 +21,7 @@ jobs:
           echo ::set-env name=REGION::${{ secrets.REGION }}
           echo ::set-env name=AWS_ACCESS_KEY_ID::${{ secrets.AWS_ACCESS_KEY_ID }}
           echo ::set-env name=AWS_SECRET_ACCESS_KEY:${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          echo ::set-env name=DEPLOY_ENV::"enhanced-travel-screening-dev"
-          echo ::set-env name=MERGE_BRANCH::"master"
-          echo ::set-env name=GIT_LOCAL_BRANCH::${{ github.head_ref }}     
+          echo ::set-env name=DEPLOY_ENV::"enhanced-travel-screening-dev"   
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +32,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.REGION }}
-            
+      
       - name: Pipeline Build
         run: make pipeline-build
       
