@@ -142,7 +142,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     } catch (error) {
       console.error(error);
       setError(error.message);
-    } finally {
       toggleLoading(false);
     }
   };
