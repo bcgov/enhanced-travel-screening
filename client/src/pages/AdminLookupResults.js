@@ -185,7 +185,7 @@ const AdminLookupResults = ({ match: { params }}) => {
              <Grid item xs={12}>
                <Typography variant="h6">Notes*</Typography>
                <TextField
-                 value={sidebarFormValues.notes}
+                 value={sidebarFormValues.notes || ''}
                  name="notes"
                  onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                  variant="outlined"
