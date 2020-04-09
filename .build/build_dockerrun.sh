@@ -17,7 +17,7 @@ cat << EOF
     {
       "essential": true,
       "name": "application",
-      "image": "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT:$IMAGE_TAG",
+      "image": "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$PROJECT:$MERGE_BRANCH",
       "memory": 256,
       "portMappings": [
         {
