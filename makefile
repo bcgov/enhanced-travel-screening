@@ -5,7 +5,7 @@
 export $(shell sed 's/=.*//' .env)
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
-export COMMIT_SHA?=$(shell git rev-parse --short=8 HEAD)
+export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
 # original IMAGE_TAG=${DEPLOY_DATE}-${COMMIT_SHA}
 export IMAGE_TAG=${COMMIT_SHA}
 
