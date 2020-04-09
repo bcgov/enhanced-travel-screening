@@ -14,6 +14,7 @@ FROM node:12 AS server
 # Run server
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
+RUN ls / && ls /client
 COPY server/package*.json ./
 RUN npm ci
 COPY server/. .
