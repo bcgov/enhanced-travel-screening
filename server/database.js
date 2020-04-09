@@ -4,6 +4,7 @@ const { hashPassword } = require('./auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
+const databaseSuffix = process.env.DB_SUFFIX || 'development';
 const nodeEnv = process.env.NODE_ENV || 'development';
 AWS.config.update({
   region: 'ca-central-1',
@@ -53,6 +54,6 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports = {
   db: dbClient,
-  usersTable: `ets-users-${nodeEnv}`,
-  formsTable: `ets-forms-${nodeEnv}`,
+  usersTable: `ets-users-${databaseSuffix}`,
+  formsTable: `ets-forms-${databaseSuffix}`,
 };
