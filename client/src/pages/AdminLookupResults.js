@@ -64,8 +64,8 @@ const AdminLookupResults = ({ match: { params }}) => {
   const [loadingDetermination, setLoadingDetermination] = useState(false);
   const [initialValues, setInitialValues] = useState(null);
   const [sidebarFormValues, setSidebarFormValues] = useState({
-    determination: '',
-    notes: '',
+    determination: null,
+    notes: null,
   });
 
   useEffect(() => {
@@ -78,8 +78,9 @@ const AdminLookupResults = ({ match: { params }}) => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setInitialValues(data);
+        const { determination, notes, ...rest } = await response.json();
+        setInitialValues(rest);
+        setSidebarFormValues({ determination, notes });
       } else {
         setError(`Failed to find submission with ID ${params.id}`);
       }
@@ -117,6 +118,7 @@ const AdminLookupResults = ({ match: { params }}) => {
      {(loading || error) ? (
        <div className={classes.statusWrapper}>
          {loading && <CircularProgress />}
+         {/* TODO error type? if submission update fails this becomes misleading */}
          {error && (
            <Container maxWidth="sm" align="center">
              <Typography paragraph>Lookup failed... {error.message || error}</Typography>
@@ -137,7 +139,7 @@ const AdminLookupResults = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} md={8}>
-           <Form initialValues={initialValues} isDisabled id={params.id} />
+           <Form initialValues={initialValues} isDisabled confirmationNumber={params.id} isPdf={false} />
          </Grid>
 
          {/** Sidebar */}
@@ -183,7 +185,7 @@ const AdminLookupResults = ({ match: { params }}) => {
              <Grid item xs={12}>
                <Typography variant="h6">Notes*</Typography>
                <TextField
-                 value={sidebarFormValues.notes}
+                 value={sidebarFormValues.notes || ''}
                  name="notes"
                  onChange={(e) => handleChange({ name: e.target.name, value: e.target.value })}
                  variant="outlined"
@@ -194,9 +196,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                />
              </Grid>
              <Grid item xs={12}>
-               {loadingDetermination
-                 ? <CircularProgress />
-                 : <Button
+               {
+                 loadingDetermination ? <CircularProgress /> : (
+                   <Button
                      className={classes.button}
                      variant="contained"
                      color="primary"
@@ -204,8 +206,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                      fullWidth
                      disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
                    >
-                    Submit Determination
+                     Submit Determination
                    </Button>
+                 )
                }
              </Grid>
              {updateSuccess && <Typography textAlign="center" color="secondary">Submission Updated</Typography>}

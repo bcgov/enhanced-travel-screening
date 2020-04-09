@@ -62,11 +62,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// TODO: Implement `isDisabled` for all form fields
 const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = false }) => {
 
   const classes = useStyles();
   const history = useHistory();
+
+  const [loading, toggleLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [certified, toggleCertified] = useState(false);
 
   const [formValues, setFormValues] = useState(initialValues ? initialValues : {
     firstName: '',
@@ -100,7 +103,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
       transportation: ''
     }
   });
-  const [certified, toggleCertified] = useState(false);
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormValues(prevState => ({ ...prevState, [name]: value }));
@@ -117,25 +119,30 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(`summit event`)
-    const response = await fetch('/api/v1/form', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(formValues)
-    });
-    if (response.ok) {
-      const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
-      if (error) {
-        // the definition of elegance
-        alert(error.message);
+    toggleLoading(true);
+    try {
+      const response = await fetch('/api/v1/form', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(formValues)
+      });
+      if (response.ok) {
+        const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
+        if (error) {
+          throw new Error(error.message || 'Failed to submit this form');
+        } else {
+          history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
+        }
       } else {
-        history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
+        throw new Error(response.error || response.statusText || 'Server error');
       }
-    } else {
-      console.error(response);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+      toggleLoading(false);
     }
   };
 
@@ -155,10 +162,10 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   return (
     <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 8}>
 
-      {isDisabled && (<SubmissionInfo id={confirmationNumber} isPdf={isPdf} />)}
+      {isDisabled && (<SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />)}
 
       {!isDisabled && (
-        <Box padding='2rem'>
+        <Box padding='2rem 2rem 1rem 2rem'>
           <Typography variant="h5" gutterBottom>
             Self-Isolation Plan
           </Typography>
@@ -179,6 +186,18 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} accomodations={formValues.accomodations}/>
             {!isDisabled && <Certify firstName={formValues.firstName} lastName={formValues.lastName} toggleCertified={toggleCertified} certified={certified} />}
 
+            {error && (
+              <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
+                <Grid item xs={12}>
+                  <Box padding="1rem">
+                    <Typography variant="body1" color="error">
+                      {error}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            )}
+
             {!isDisabled && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
                 <Grid item xs={4}>
@@ -187,10 +206,10 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
                     variant="contained"
                     color="primary"
                     onClick={handleSubmit}
-                    disabled={!canSubmitForm()}
+                    disabled={!canSubmitForm() || loading}
                     fullWidth
                   >
-                    Submit Form
+                    {loading ? 'Processing...' : 'Submit Form'}
                   </Button>
                 </Grid>
               </Grid>
