@@ -105,9 +105,14 @@ const theme = createMuiTheme({
       selectMenu: {
         height: '31px',
         paddingTop: '10px',
-        paddingLeft: '4px'
-      }
-    }
+        paddingLeft: '4px',
+      },
+    },
+    MuiFormHelperText: {
+      contained: {
+        marginLeft: 0,
+      },
+    },
   },
 });
 
