@@ -128,7 +128,7 @@ const AdminLookupResults = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} md={8}>
-           <UserForm initialValues={initialUserFormValues} isDisabled id={params.id} isPdf={false} />
+           <UserForm initialValues={initialUserFormValues} isDisabled confirmationNumber={params.id} isPdf={false} />
          </Grid>
 
          {/** Sidebar */}
