@@ -148,13 +148,13 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
           </Select>
         </Box>
       </Grid>
-      <div style={{
+      {!isDisabled && <div style={{
         margin: '2rem 0 0 0',
         boxSizing: 'border-box',
         height: '2px',
         width: '100%',
         border: '1px solid #CCCCCC',
-      }}></div>
+      }}></div>}
     </Grid>
   )
 }
