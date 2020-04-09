@@ -4,6 +4,9 @@ const puppeteer = require('puppeteer');
 
 const frontendUrl = process.env.FE_URL || 'http://localhost:4000';
 
+// Creates headless browser to hit FE PDF render route
+// Uses JWT access token in URL
+// FE fetches data from API using JWT
 const createPdf = async (id, accessToken) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

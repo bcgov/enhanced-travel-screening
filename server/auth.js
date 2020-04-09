@@ -13,6 +13,13 @@ const hashPassword = (password, salt) => (
   scryptSync(password, `${passwordSalt}${salt}`, 64).toString('hex')
 );
 
+// Create JWT for admin user or PDF generation
+// PDF JWTs should only have access to form with ID matchin sub property
+const generateJwt = (id, type = 'user') => jwt.sign({
+  sub: id,
+  type,
+}, jwtSecret, { expiresIn: type === 'user' ? '24h' : '1h' });
+
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
 // Could be refactored into database.js
@@ -27,7 +34,6 @@ const getUser = async (id) => {
 
 // Login method with username and password in POST request
 // Creates JWT and sets as user.token
-// TODO: Add expiry date to JWT
 passport.use('login', new LocalStrategy(
   async (username, password, done) => {
     try {
@@ -35,9 +41,7 @@ passport.use('login', new LocalStrategy(
       if (user.salt && user.password !== hashPassword(password, user.salt)) {
         return done(null, false); // Incorrect password
       }
-      user.token = jwt.sign({
-        sub: username,
-      }, jwtSecret, { expiresIn: '24h' });
+      user.token = generateJwt(username);
       return done(null, user); // Success
     } catch (error) {
       return done(null, false); // Invalid user ID
@@ -53,20 +57,29 @@ passport.use('jwt', new JwtStrategy(
     secretOrKey: jwtSecret,
   },
   async (payload, done) => {
-    try {
-      // const user = await getUser(payload.sub);
-      done(null, payload.sub); // Success
-    } catch (error) {
-      done(null, false); // Invalid user ID
-    }
+    done(null, { id: payload.sub, type: payload.type }); // Success
   },
 ));
 
-function genTokenForSubmission(id) {
-  const token = jwt.sign({
-    sub: id,
-  }, jwtSecret, { expiresIn: '1h' });
-  return token;
-}
+// Ensure token is of accepted type and limit to specific IDs
+// Supply array or * to accept all IDs of a type
+const restrictToken = (user, userIds, pdfIds) => {
+  if (!user) return false; // No user object supplied
+  switch (user.type) {
+    case 'user':
+      if (!userIds) return false; // No accepted user IDs
+      if (userIds === '*' || userIds.includes(user.id)) return true; // User token ID not allowed
+      break;
+    case 'pdf':
+      if (!pdfIds) return false; // No accepted user IDs
+      if (pdfIds === '*' || pdfIds.includes(user.id)) return true; // PDF token ID not allowed
+      break;
+    default:
+      return false; // Unaccepted token type
+  }
+  return false;
+};
 
-module.exports = { passport, hashPassword, genTokenForSubmission };
+module.exports = {
+  passport, hashPassword, generateJwt, restrictToken,
+};
