@@ -64,8 +64,8 @@ const AdminLookupResults = ({ match: { params }}) => {
   const [loadingDetermination, setLoadingDetermination] = useState(false);
   const [initialValues, setInitialValues] = useState(null);
   const [sidebarFormValues, setSidebarFormValues] = useState({
-    determination: '',
-    notes: '',
+    determination: null,
+    notes: null,
   });
 
   useEffect(() => {
@@ -78,8 +78,9 @@ const AdminLookupResults = ({ match: { params }}) => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setInitialValues(data);
+        const { determination, notes, ...rest } = await response.json();
+        setInitialValues(rest);
+        setSidebarFormValues({ determination, notes });
       } else {
         setError(`Failed to find submission with ID ${params.id}`);
       }
@@ -195,9 +196,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                />
              </Grid>
              <Grid item xs={12}>
-               {loadingDetermination
-                 ? <CircularProgress />
-                 : <Button
+               {
+                 loadingDetermination ? <CircularProgress /> : (
+                   <Button
                      className={classes.button}
                      variant="contained"
                      color="primary"
@@ -205,8 +206,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                      fullWidth
                      disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
                    >
-                    Submit Determination
+                     Submit Determination
                    </Button>
+                 )
                }
              </Grid>
              {updateSuccess && <Typography textAlign="center" color="secondary">Submission Updated</Typography>}

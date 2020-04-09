@@ -66,7 +66,7 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
             <MenuItem key="arrivalSea" value="sea">Sea</MenuItem>
           </Select>
         </Box>
-      </Grid> */}
+      </Grid>
       {/* CITY */}
       <Grid item xs={12} md={4}>
         <Box padding="1rem">
