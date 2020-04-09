@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
       - master
-    # types: [closed]
+    types: [closed]
 
 jobs:
   dev_deploy:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     name: Deploy to Dev
     runs-on: ubuntu-latest
 
@@ -26,25 +26,22 @@ jobs:
           echo ::set-env name=AWS_SECRET_ACCESS_KEY:${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo ::set-env name=DEPLOY_ENV::"enhanced-travel-screening-dev"
           echo ::set-env name=GITHUB_SHA::$(git rev-parse --short=4 ${{ github.sha }})
-      
-      - name: Pipeline Build
-        run: make print-status
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.REGION }}
             
-      # - name: Pipeline Build
-      #   run: make pipeline-build
+      - name: Pipeline Build
+        run: make pipeline-build
       
-      # - name: Pipeline Push
-      #   run: make gh-pipeline-push
+      - name: Pipeline Push
+        run: make gh-pipeline-push
       
-      # - name: Deploy Prep
-      #   run: make gh-pipeline-deploy-prep
+      - name: Deploy Prep
+        run: make gh-pipeline-deploy-prep
 
-      # - name: Deploy Version
-      #   run: make gh-pipeline-deploy-version
+      - name: Deploy Version
+        run: make gh-pipeline-deploy-version
