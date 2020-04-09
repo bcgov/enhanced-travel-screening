@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     boxShadow: '0 0 15px 0 rgba(0,0,0,0.2)',
     backgroundColor: '#FFFFFF',
-    padding: theme.spacing(4, 3),
+    padding: theme.spacing(4),
   },
   sidebarTitle: {
     fontSize: '18px',
