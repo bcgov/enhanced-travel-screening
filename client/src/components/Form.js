@@ -163,7 +163,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   return (
     <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 8}>
 
-      {isDisabled && (<SubmissionInfo id={confirmationNumber} isPdf={isPdf} />)}
+      {isDisabled && (<SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />)}
 
       {!isDisabled && (
         <Box padding='2rem 2rem 1rem 2rem'>

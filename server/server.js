@@ -58,7 +58,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
         healthStatus,
         isolationPlanStatus,
         determination: null,
-        notes: '',
+        notes: null,
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };

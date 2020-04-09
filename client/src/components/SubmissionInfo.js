@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Grid, Card, CardContent, Typography } from '@material-ui/core';
-import HealthPass from '../assets/images/icon_health_pass.svg';
-import HealthFail from '../assets/images/icon_health_fail.svg';
+// import HealthPass from '../assets/images/icon_health_pass.svg';
+// import HealthFail from '../assets/images/icon_health_fail.svg';
 import PlanPass from '../assets/images/icon_isolation_pass.svg';
 import PlanFail from '../assets/images/icon_isolation_fail.svg';
 
@@ -28,7 +28,7 @@ const failStyles = {
   marginTop: '10px',
 }
 
-function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "support", isPdf = false }) {
+function SubmissionInfo ({ id, healthStatus, isolationPlanStatus, isPdf = false }) {
   return (
     <Box padding='1.5rem 1rem 1rem 1rem'>
       <Grid container spacing={4}>
@@ -54,8 +54,8 @@ function SubmissionInfo ({ id, healthStatus = "support", isolationPlanStatus = "
                 </Grid> */}
                 <Grid item xs={12}>
                   <Box style={{textAlign: 'center'}}>
-                    <img style={{height: '50px'}} src={isolationPlanStatus === "accepted" ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
-                    <Typography style={isolationPlanStatus === "accepted" ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
+                    <img style={{height: '50px'}} src={isolationPlanStatus ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
+                    <Typography style={isolationPlanStatus ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
                   </Box>
                 </Grid>
               </Grid>

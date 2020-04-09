@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 
-const frontendUrl = process.env.FE_URL || 'http://localhost:80';
+const frontendUrl = process.env.NODE_ENV === 'production' ? 'http://localhost:80' : 'http://localhost:4000';
 
 // Creates headless browser to hit FE PDF render route
 // Uses JWT access token in URL
