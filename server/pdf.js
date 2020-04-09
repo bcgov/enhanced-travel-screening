@@ -22,7 +22,7 @@ const createPdf = async (id, accessToken) => {
     return { path: pdfPath, length: pdf.length };
   } catchh (error) {
     console.error(error);
-    return error
+    return error;
   }
 };
 
