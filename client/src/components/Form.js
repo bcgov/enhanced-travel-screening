@@ -187,7 +187,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/>
             <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} accomodations={formValues.accomodations}/>
             {!isDisabled && <Certify firstName={formValues.firstName} lastName={formValues.lastName} toggleCertified={toggleCertified} certified={certified} />}
-
             {error && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
                 <Grid item xs={12}>
