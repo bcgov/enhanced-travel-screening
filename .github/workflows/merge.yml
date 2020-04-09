@@ -25,7 +25,7 @@ jobs:
           echo ::set-env name=AWS_ACCESS_KEY_ID::${{ secrets.AWS_ACCESS_KEY_ID }}
           echo ::set-env name=AWS_SECRET_ACCESS_KEY:${{ secrets.AWS_SECRET_ACCESS_KEY }}
           echo ::set-env name=DEPLOY_ENV::"enhanced-travel-screening-dev"
-          echo ::set-env name=COMMIT_SHA::$(git rev-parse --short=4 ${{ github.sha }})
+          echo git rev-parse --short=4 ${{ github.sha }})
       
       - name: Pipeline Build
         run: make print-status
