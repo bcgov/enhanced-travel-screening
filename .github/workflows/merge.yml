@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
       - master
-    # types: [closed]
+    types: [closed]
 
 jobs:
   dev_deploy:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     name: Deploy to Dev
     runs-on: ubuntu-latest
 
