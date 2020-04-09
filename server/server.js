@@ -37,11 +37,27 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
+    // determine if isolation plan can default to accepted
+    const {
+      symptoms,
+      accomodations,
+      isolationPlan: {
+        ableToIsolate,
+        supplies,
+        transportation,
+      },
+    } = req.body;
+    const healthStatus = symptoms;
+    const isolationPlanStatus = accomodations && ableToIsolate && supplies && transportation === 'personal';
     const item = {
       TableName: formsTable,
       Item: {
         ...scrubbed,
         id,
+        healthStatus,
+        isolationPlanStatus,
+        determination: null,
+        notes: '',
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
@@ -49,8 +65,8 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const accessToken = genTokenForSubmission(id);
     res.json({
       id,
-      healthStatus: 'accepted',
-      isolationPlanStatus: 'accepted',
+      healthStatus,
+      isolationPlanStatus,
       accessToken,
     });
   } catch (error) {

@@ -62,7 +62,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// TODO: Implement `isDisabled` for all form fields
 const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = false }) => {
 
   const classes = useStyles();
@@ -127,12 +126,12 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
       body: JSON.stringify(formValues)
     });
     if (response.ok) {
-      const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
+      const { id, error, accessToken } = await response.json();
       if (error) {
         // the definition of elegance
         alert(error.message);
       } else {
-        history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
+        history.push(Routes.Confirmation, { id, accessToken });
       }
     } else {
       console.error(response);
