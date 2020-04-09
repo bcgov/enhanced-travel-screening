@@ -72,7 +72,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     firstName: '',
     lastName: '',
     telephone: '',
-    mobile: '',
     reach: '',
     email: '',
     essentialWorker: null,
@@ -81,9 +80,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     city: '',
     province: '',
     postalCode: '',
-    healthCareNumber: '',
     dob: '',
-    householdTravelers: '',
     includeAdditionalTravellers: null,
     additionalTravelers: [],
     arrival: {
