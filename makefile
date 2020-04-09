@@ -8,7 +8,7 @@ export DEPLOY_DATE?=$(shell date '+%Y%m%d%H%M')
 export IMAGE_TAG="${DEPLOY_DATE}-${COMMIT_SHA}"
 
 define deployTag
-"${PROJECT}-${DEPLOY_DATE}"
+	"${PROJECT}-${DEPLOY_DATE}"
 endef
 
 
