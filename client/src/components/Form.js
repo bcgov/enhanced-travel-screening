@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import Grid from '@material-ui/core/Grid';
+import CardContent from '@material-ui/core/CardContent';
+import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import Routes from '../constants/routes';
+
+import { Routes } from '../constants';
+
 import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
 import Arrival from './Arrival';
@@ -9,14 +18,6 @@ import IsolationPlan from './IsolationPlan';
 import Certify from './Certify';
 import SubmissionInfo from './SubmissionInfo';
 import { Contact } from './Contact';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
-import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   primaryText: {
@@ -34,10 +35,6 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '24px',
   },
   textField: {
-    '& > .MuiOutlinedInput-root': {
-      borderTopRightRadius: '0',
-      borderBottomRightRadius: '0',
-    },
     marginTop: '0.25rem',
     maxHeight: '40px'
   },
@@ -73,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = false }) => {
-
   const classes = useStyles();
   const history = useHistory();
 
@@ -115,6 +111,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     },
     certified: false
   });
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormValues(prevState => ({ ...prevState, [name]: value }));
@@ -131,8 +128,9 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   const saveIsolationPlan = (name, value) => {
     setFormValues(prevState => ({ ...prevState, isolationPlan: { ...prevState.isolationPlan, [name]: value } }));
   };
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+
+  const handleSubmit = async () => {
+
     toggleLoading(true);
     try {
       const response = await fetch('/api/v1/form', {
@@ -154,7 +152,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
         throw new Error(response.error || response.statusText || 'Server error');
       }
     } catch (error) {
-      console.error(error);
       setError(error.message);
     } finally {
       toggleLoading(false);
@@ -170,10 +167,10 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
         input.setAttribute('disabled', true)
       }
     }
-  }, [isDisabled])
+  }, [isDisabled]);
 
   return (
-    <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 8}>
+    <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8}>
 
       {isDisabled && (<SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />)}
 
@@ -215,6 +212,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
                 </Grid>
               </Grid>
             )}
+
             {!isDisabled && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>
                 <Box padding="1rem">
@@ -237,6 +235,8 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
           </Grid>
         </CardContent>
       </Card>
+
+
       <Box padding="1rem">
         <Contact classes={classes} />
       </Box>

@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -10,8 +9,8 @@ import { useHistory } from 'react-router-dom';
 
 import { SidebarSchema } from '../validation-schemas';
 
-import Page from '../components/Page';
 import UserForm from '../components/Form';
+import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,18 +32,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   sidebarTitle: {
-    fontSize: '18px',
+    fontSize: '20px',
     fontWeight: 'bold',
     lineHeight: '24px',
-  },
-  divider: {
-    height: '3px',
-    backgroundColor: '#E2A014',
-    color: '#E2A014',
-    borderStyle: 'solid',
-  },
-  button: {
-    height: '54px',
   },
 }));
 
@@ -69,7 +59,6 @@ const AdminLookupResults = ({ match: { params }}) => {
   useEffect(() => {
     (async () => {
       setLookupLoading(true);
-
       const jwt = window.localStorage.getItem('jwt');
       const response = await fetch(`/api/v1/form/${params.id}`, {
         headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
@@ -83,14 +72,12 @@ const AdminLookupResults = ({ match: { params }}) => {
       } else {
         setLookupError(`Failed to find submission with ID ${params.id}`);
       }
-
       setLookupLoading(false);
     })();
   }, [params.id]);
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
-
     const jwt = window.localStorage.getItem('jwt');
     const response = await fetch(`/api/v1/form/${params.id}`, {
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
@@ -110,16 +97,12 @@ const AdminLookupResults = ({ match: { params }}) => {
          {lookupLoading && <CircularProgress />}
          {lookupError && (
            <Container maxWidth="sm" align="center">
-             <Typography paragraph>Lookup failed... {lookupError.message || lookupError}</Typography>
+             <Typography paragraph>{lookupError.message || lookupError}</Typography>
              <Button
-               className={classes.button}
-               variant="contained"
-               color="primary"
-               size="large"
+               text="Back to Lookup"
                onClick={() => history.push('/lookup')}
-             >
-               Back to Lookup
-             </Button>
+               fullWidth={false}
+             />
            </Container>
          )}
        </div>
@@ -128,7 +111,12 @@ const AdminLookupResults = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} md={8}>
-           <UserForm initialValues={initialUserFormValues} isDisabled confirmationNumber={params.id} isPdf={false} />
+           <UserForm
+             initialValues={initialUserFormValues}
+             isDisabled
+             confirmationNumber={params.id}
+             isPdf={false}
+           />
          </Grid>
 
          {/** Sidebar */}
@@ -144,9 +132,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                  {/** Title */}
                  <Grid item xs={12}>
                    <Typography className={classes.sidebarTitle} variant="h2">
-                     Public Health Official Determination
+                     Provincial Official Determination
                    </Typography>
-                   <hr className={classes.divider} />
+                   <Divider />
                  </Grid>
 
                  {/** Determination */}
@@ -157,7 +145,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                      component={RenderButtonGroup}
                      options={[
                        { value: 'support', label: 'Support Needed', color: 'secondary' },
-                       { value: 'accepted', label: 'Isolation Plan Approved', color: 'primary' },
+                       { value: 'accepted', label: 'No Support Needed', color: 'primary' },
                      ]}
                    />
                  </Grid>
@@ -169,6 +157,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                      name="notes"
                      component={RenderTextField}
                      placeholder="Add notes to support your decision..."
+                     variant="outlined"
                      multiline
                      rows={10}
                    />
@@ -176,17 +165,11 @@ const AdminLookupResults = ({ match: { params }}) => {
 
                  {/** Submit */}
                  <Grid item xs={12}>
-                   {submitLoading ? <CircularProgress /> :
-                     <Button
-                       className={classes.button}
-                       variant="contained"
-                       color="primary"
-                       type="submit"
-                       fullWidth
-                     >
-                       Submit Determination
-                     </Button>
-                   }
+                   <Button
+                     type="submit"
+                     text="Submit"
+                     loading={submitLoading}
+                   />
                  </Grid>
 
                  {/** Submit Success / Error */}

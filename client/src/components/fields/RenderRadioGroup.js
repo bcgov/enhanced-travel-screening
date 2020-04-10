@@ -1,19 +1,23 @@
-import React from 'react';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import React, { Fragment } from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
+import { InputFieldError, InputFieldLabel } from '../generic';
+
 const RenderRadioGroup = ({
   field,
-  form: { touched, errors },
+  form,
+  label,
   options,
   disabled,
   ...props
 }) => {
+  const touched = form.errors[field.name];
+  const error = form.errors[field.name];
   return (
-    <FormControl component="fieldset">
+    <Fragment>
+      {label && <InputFieldLabel label={label} />}
       <RadioGroup
         {...field}
         {...props}
@@ -24,13 +28,14 @@ const RenderRadioGroup = ({
             value={option.value}
             checked={field.value === option.value}
             label={option.label}
+            disabled={disabled}
             labelPlacement="end"
             control={<Radio color={option.color || 'primary'} />}
           />
         ))}
       </RadioGroup>
-      {(touched[field.name] && !!errors[field.name]) && <FormHelperText error>{errors[field.name]}</FormHelperText>}
-    </FormControl>
+      {(touched && error) && <InputFieldError error={error} />}
+    </Fragment>
   );
 };
 

@@ -7,12 +7,9 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-import Routes from './constants/routes';
-
-import OpenSansRegularFont from './assets/fonts/OpenSans-Regular.ttf';
-import OpenSansBoldFont from './assets/fonts/OpenSans-Bold.ttf';
 import LatoRegularFont from './assets/fonts/Lato-Regular.ttf';
 import LatoBoldFont from './assets/fonts/Lato-Bold.ttf';
+import { Routes } from './constants';
 
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
@@ -23,18 +20,6 @@ const PDF = lazy(() => import('./pages/PDF'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminLookup = lazy(() => import('./pages/AdminLookup'));
 const AdminLookupResults = lazy(() => import('./pages/AdminLookupResults'));
-
-const openSansRegular = {
-  fontFamily: 'Open Sans',
-  fontWeight: 400,
-  src: `url(${OpenSansRegularFont}) format('truetype')`,
-};
-
-const openSansBold = {
-  fontFamily: 'Open Sans',
-  fontWeight: 700,
-  src: `url(${OpenSansBoldFont}) format('truetype')`,
-};
 
 const latoRegular = {
   fontFamily: 'Lato',
@@ -65,25 +50,35 @@ const theme = createMuiTheme({
 
   // Typography
   typography: {
-    fontFamily: 'Lato, Open Sans, sans-serif',
+    fontFamily: 'Lato, sans-serif',
   },
 
   // Component Overrides
   overrides: {
     MuiCssBaseline: {
       '@global': {
-        '@font-face': [latoRegular, latoBold, openSansRegular, openSansBold],
+        '@font-face': [latoRegular, latoBold],
       },
     },
     MuiButton: {
       root: {
         fontSize: '17px',
+        fontWeight: 'bold',
         lineHeight: '22px',
         textTransform: 'capitalize',
+        height: '52px',
       },
       outlined: {
         border: '2px solid #FFFFFF',
       },
+    },
+    MuiFormLabel: {
+      root: {
+        color: 'inherit',
+        '&.Mui-focused': {
+          color: 'inherit'
+        }
+      }
     },
     MuiInputBase: {
       input: {
@@ -105,23 +100,10 @@ const theme = createMuiTheme({
     },
     MuiSelect: {
       selectMenu: {
-        height: '31px',
+        height: '30px',
         paddingTop: '10px',
         paddingLeft: '4px',
       },
-    },
-    MuiFormHelperText: {
-      contained: {
-        marginLeft: 0,
-      },
-    },
-    MuiFormLabel: {
-      root: {
-        color: 'inherit',
-        '&.Mui-focused': {
-          color: 'inherit'
-        }
-      }
     },
   },
 });

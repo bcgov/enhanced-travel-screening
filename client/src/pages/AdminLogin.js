@@ -1,39 +1,18 @@
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import { Formik, Form, Field } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
-import Routes from '../constants/routes';
+import { Routes } from '../constants';
 import { LoginSchema } from '../validation-schemas';
 
-import Page from '../components/Page';
+import { Page, Button, Card } from '../components/generic';
 import { RenderTextField } from '../components/fields';
-
-const useStyles = makeStyles((theme) => ({
-  card: {
-    border: '2px solid #D7D7D7',
-    padding: theme.spacing(4, 2),
-    margin: theme.spacing(2),
-    borderRadius: '8px',
-  },
-  cardTitle: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  submitBtn: {
-    height: '54px',
-  },
-}));
 
 const AdminLogin = () => {
   const history = useHistory();
-  const classes = useStyles();
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const initialValues = {
     username: '',
@@ -41,6 +20,7 @@ const AdminLogin = () => {
   };
 
   const handleSubmit = async (values) => {
+    setSubmitLoading(true);
     const response = await fetch('/api/v1/login', {
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
       method: 'POST',
@@ -54,73 +34,61 @@ const AdminLogin = () => {
     } else {
       setSubmitError(response.error || response.statusText || response);
     }
+    setSubmitLoading(false);
   };
 
   return (
     <Page >
       <Grid container alignItems="center" justify="center" >
         <Grid item xs={12} sm={8} md={6} lg={4} xl={3}>
-          <Card className={classes.card} variant="outlined">
-            <CardContent>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={LoginSchema}
-                onSubmit={handleSubmit}
-              >
-                <Form>
-                  <Grid container spacing={3}>
+          <Card title="Provincial Official Login">
+            <Formik
+              initialValues={initialValues}
+              validationSchema={LoginSchema}
+              onSubmit={handleSubmit}
+            >
+              <Form>
+                <Grid container spacing={3}>
 
-                    {/** Title */}
+                  {/** Username */}
+                  <Grid item xs={12}>
+                    <Field
+                      name="username"
+                      component={RenderTextField}
+                      label="Username"
+                    />
+                  </Grid>
+
+                  {/** Password */}
+                  <Grid item xs={12}>
+                    <Field
+                      name="password"
+                      component={RenderTextField}
+                      label="Password"
+                      type="password"
+                    />
+                  </Grid>
+
+                  {/** Submit */}
+                  <Grid item xs={12}>
+                    <Button
+                      type="submit"
+                      text="Login"
+                      loading={submitLoading}
+                    />
+                  </Grid>
+
+                  {/** Submit Errors */}
+                  {submitError && (
                     <Grid item xs={12}>
-                      <Typography className={classes.cardTitle} variant="h2">
-                        Public Health Official Login
+                      <Typography color="error">
+                        Login failed... {submitError.message || submitError}
                       </Typography>
                     </Grid>
-
-                    {/** Username */}
-                    <Grid item xs={12}>
-                      <Field
-                        name="username"
-                        component={RenderTextField}
-                        label="Username"
-                      />
-                    </Grid>
-
-                    {/** Password */}
-                    <Grid item xs={12}>
-                      <Field
-                        name="password"
-                        component={RenderTextField}
-                        label="Password"
-                        type="password"
-                      />
-                    </Grid>
-
-                    {/** Submit */}
-                    <Grid item xs={12}>
-                      <Button
-                        className={classes.submitBtn}
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        fullWidth
-                      >
-                        Login
-                      </Button>
-                    </Grid>
-
-                    {/** Submit Errors */}
-                    {submitError && (
-                      <Grid item xs={12}>
-                        <Typography color="error">
-                          Login failed... {submitError.message || submitError}
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Form>
-              </Formik>
-            </CardContent>
+                  )}
+                </Grid>
+              </Form>
+            </Formik>
           </Card>
         </Grid>
       </Grid>

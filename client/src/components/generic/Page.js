@@ -2,17 +2,17 @@ import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Header from './Header';
+import { Header } from './Header';
 
 const useStyles = makeStyles(() => ({
   root: {
     minHeight: 'calc(100vh - 82px)',
     height: 'calc(100vh - 82px)',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F6FA',
   },
 }));
 
-const Page = ({ headerChildren, children }) => {
+const Page = ({ children }) => {
   const classes = useStyles();
   return (
     <Fragment>
@@ -24,4 +24,4 @@ const Page = ({ headerChildren, children }) => {
   );
 };
 
-export default Page;
+export { Page };
