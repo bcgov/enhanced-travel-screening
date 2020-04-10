@@ -117,7 +117,7 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
                 row
                 aria-label="able to isolate from immuno compromiseed"
                 name="ableToIsolate"
-                value={computeRadioValue(ableToIsolate)}
+                value={computeRadioValue(ableToIsolate === null ? ableToIsolate : !ableToIsolate)}
                 onChange={(event) => toggleAble(event.target.value === "no")}>
                 <FormControlLabel value="yes" control={<Radio />} label="Yes" />
                 <FormControlLabel value="no" control={<Radio />} label="No" />

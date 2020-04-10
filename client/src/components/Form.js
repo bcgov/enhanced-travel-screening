@@ -5,7 +5,6 @@ import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
 import Arrival from './Arrival';
 import Disclaimer from './Disclaimer';
-// import Symptoms from './Symptoms';
 import IsolationPlan from './IsolationPlan';
 import Certify from './Certify';
 import SubmissionInfo from './SubmissionInfo';
