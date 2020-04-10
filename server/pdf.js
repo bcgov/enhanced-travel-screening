@@ -8,7 +8,7 @@ const frontendUrl = process.env.NODE_ENV === 'production' ? 'http://localhost:80
 // Uses JWT access token in URL
 // FE fetches data from API using JWT
 const createPdf = async (id, accessToken) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   await page.goto(`${frontendUrl}/renderpdf/${id}/${accessToken}`, {
     waitUntil: 'networkidle2',
