@@ -75,7 +75,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   const [loading, toggleLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const today = new Date().toLocaleDateString('fr-CA').replace('-', '/');
+  const today = new Date().toLocaleDateString('fr-CA').replace('-', '/').replace('-', '/');
 
   const [formValues, setFormValues] = useState(initialValues ? initialValues : {
     firstName: '',
