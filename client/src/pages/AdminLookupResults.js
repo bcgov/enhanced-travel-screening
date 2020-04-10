@@ -147,7 +147,7 @@ const AdminLookupResults = ({ match: { params }}) => {
            <Grid container spacing={4}>
              <Grid item xs={12}>
                <Typography className={classes.sidebarTitle} variant="h2">
-                 Public Health Official Determination
+                 Provincial Official Determination
                </Typography>
                <hr className={classes.divider} />
              </Grid>
@@ -164,6 +164,9 @@ const AdminLookupResults = ({ match: { params }}) => {
                    variant={sidebarFormValues.determination === 'support' ? 'contained' : 'outlined'}
                    style={{
                      backgroundColor: sidebarFormValues.determination === 'support' ? '#F5A623' : 'unset',
+                     boxShadow: 'none',
+                     fontSize: '1rem',
+                     color: sidebarFormValues.determination === 'support' ? 'black' : '#002C71'
                    }}
                  >
                    Support Needed
@@ -171,6 +174,10 @@ const AdminLookupResults = ({ match: { params }}) => {
                  <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'accepted' })}
                    variant={sidebarFormValues.determination === 'accepted' ? 'contained' : 'outlined'}
+                   style={{
+                     boxShadow: 'none',
+                     fontSize: '1rem'
+                   }}
                  >
                    Isolation Plan Approved
                  </Button>

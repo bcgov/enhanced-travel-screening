@@ -6,26 +6,26 @@ import PlanPass from '../assets/images/icon_isolation_pass.svg';
 import PlanFail from '../assets/images/icon_isolation_fail.svg';
 
 const passStyles = {
-  height: '36px',
-  color: '#16C92E',
+  // height: '36px',
+  // color: '#16C92E',
   fontfamily: 'Lato',
-  fontsize: '12px',
   fontweight: 'bold',
   letterSpacing: 0,
   lineHeight: '18px',
   textAlign: 'center',
-  marginTop: '10px',
+  marginLeft: '10px',
+  color: 'black',
 }
 const failStyles = {
-  height: '36px',
-  color: '#FF534A',
+  // height: '36px',
+  // color: '#FF534A',
   fontFamily: 'Lato',
-  fontSize: '12px',
   fontWeight: 'bold',
   letterSpacing: 0,
   lineHeight: '18px',
   textAlign: 'center',
-  marginTop: '10px',
+  marginLeft: '10px',
+  color: 'black',
 }
 
 function SubmissionInfo ({ id, healthStatus, isolationPlanStatus, isPdf = false }) {
@@ -53,9 +53,9 @@ function SubmissionInfo ({ id, healthStatus, isolationPlanStatus, isPdf = false 
                   </Box>
                 </Grid> */}
                 <Grid item xs={12}>
-                  <Box style={{textAlign: 'center'}}>
-                    <img style={{height: '50px'}} src={isolationPlanStatus ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
-                    <Typography style={isolationPlanStatus ? passStyles : failStyles} variant="subtitle1">Isolation Plan Status Complete</Typography>
+                  <Box style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                    <img style={{height: '80px', marginRight: '10px'}} src={isolationPlanStatus ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
+                    <Typography style={isolationPlanStatus ? passStyles : failStyles} variant="h6">Isolation Plan Status</Typography>
                   </Box>
                 </Grid>
               </Grid>
