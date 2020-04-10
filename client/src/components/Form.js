@@ -95,6 +95,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
       date: '',
       by: '',
       from: '',
+      flight: ''
     },
     symptoms: null,
     accomodations: null,
