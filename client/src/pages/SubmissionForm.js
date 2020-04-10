@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Page from '../components/Page';
 import Form from '../components/Form';
+import { Page } from '../components/generic';
 
 const SubmissionForm = () => {
   return (

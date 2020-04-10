@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
+
+import { InputFieldError } from '../generic';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,13 +26,15 @@ const useStyles = makeStyles((theme) => ({
 
 const RenderButtonGroup = ({
   field,
-  form: { errors },
+  form,
   options,
   ...props
 }) => {
   const classes = useStyles();
   const [_, __, helpers] = useField(field.name);
   const { setValue } = helpers;
+  const touched = form.errors[field.name];
+  const error = form.errors[field.name];
   return (
     <Fragment>
       <ButtonGroup
@@ -42,7 +45,7 @@ const RenderButtonGroup = ({
       >
         {options.map((option) => (
           <Button
-            className={classnames(classes.button, { [classes.buttonError]: !!errors[field.name] })}
+            className={classnames(classes.button, { [classes.buttonError]: !!error })}
             key={option.value}
             onClick={(e) => setValue(option.value)}
             variant={(option.value === field.value) ? 'contained' : 'outlined'}
@@ -52,7 +55,7 @@ const RenderButtonGroup = ({
           </Button>
         ))}
       </ButtonGroup>
-      {!!errors[field.name] && <FormHelperText error>{errors[field.name]}</FormHelperText>}
+      {(touched && error) && <InputFieldError error={error} />}
     </Fragment>
   );
 };

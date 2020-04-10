@@ -1,39 +1,24 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
-import CardContent from '@material-ui/core/CardContent';
 import { Formik, Form, Field } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
-import Routes from '../constants/routes';
+import { Routes } from '../constants';
 import { LookupSchema } from '../validation-schemas';
 
-import Page from '../components/Page';
+import { Page, Card, Button } from '../components/generic';
 import { RenderTextField } from '../components/fields';
 
 const useStyles = makeStyles((theme) => ({
-  card: {
-    border: '2px solid #D7D7D7',
-    padding: theme.spacing(4, 2),
-    margin: theme.spacing(2),
-    borderRadius: '8px',
-  },
-  cardTitle: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  textField: {
+  confirmationNumber: {
     '& > .MuiOutlinedInput-root': {
+      height: '52px',
       borderTopRightRadius: '0',
       borderBottomRightRadius: '0',
     },
   },
-  button: {
-    height: '56px',
+  viewSubmission: {
     borderTopLeftRadius: '0',
     borderBottomLeftRadius: '0',
     [theme.breakpoints.down('xs')]: {
@@ -57,52 +42,37 @@ const AdminLookup = () => {
     <Page>
       <Grid container alignItems="center" justify="center">
         <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
-          <Card className={classes.card} variant="outlined">
-            <CardContent>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={LookupSchema}
-                onSubmit={handleSubmit}
-              >
-                <Form>
-                  <Grid container spacing={3}>
+          <Card title="Submission Lookup">
+            <Formik
+              initialValues={initialValues}
+              validationSchema={LookupSchema}
+              onSubmit={handleSubmit}
+            >
+              <Form>
+                <Grid container>
 
-                    {/** Title */}
-                    <Grid item xs={12}>
-                      <Typography className={classes.cardTitle} variant="h2">
-                        Submission Lookup
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} container>
-
-                      {/** Confirmation Number */}
-                      <Grid item xs={12} sm={7} md={8}>
-                        <Field
-                          className={classes.textField}
-                          name="confirmationNumber"
-                          component={RenderTextField}
-                          placeholder="Enter Confirmation Number eg: BC12345"
-                        />
-                      </Grid>
-
-                      {/** Submit */}
-                      <Grid item xs={12} sm={5} md={4}>
-                        <Button
-                          className={classes.button}
-                          variant="contained"
-                          color="primary"
-                          type="submit"
-                          fullWidth
-                        >
-                          View Submission
-                        </Button>
-                      </Grid>
-                    </Grid>
+                  {/** Confirmation Number */}
+                  <Grid item xs={12} sm={7} md={8}>
+                    <Field
+                      className={classes.confirmationNumber}
+                      name="confirmationNumber"
+                      component={RenderTextField}
+                      variant="outlined"
+                      placeholder="Enter Confirmation Number eg: BC12345"
+                    />
                   </Grid>
-                </Form>
-              </Formik>
-            </CardContent>
+
+                  {/** Submit */}
+                  <Grid item xs={12} sm={5} md={4}>
+                    <Button
+                      className={classes.viewSubmission}
+                      type="submit"
+                      text="View Submission"
+                    />
+                  </Grid>
+                </Grid>
+              </Form>
+            </Formik>
           </Card>
         </Grid>
       </Grid>

@@ -6,10 +6,9 @@ import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import Routes from '../constants/routes';
-
-import DesktopLogo from '../assets/images/desktop-logo.svg';
-import MobileLogo from '../assets/images/mobile-logo.svg';
+import DesktopLogo from '../../assets/images/desktop-logo.svg';
+import MobileLogo from '../../assets/images/mobile-logo.svg';
+import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,4 +99,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export { Header };

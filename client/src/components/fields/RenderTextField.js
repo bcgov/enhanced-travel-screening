@@ -1,21 +1,29 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import TextField from '@material-ui/core/TextField';
+
+import { InputFieldLabel, InputFieldError } from '../generic';
 
 const RenderTextField = ({
   field,
-  form: { touched, errors },
+  form,
+  label,
   options,
   ...props
 }) => {
+  const touched = form.errors[field.name];
+  const error = form.errors[field.name];
   return (
-    <TextField
-      variant="outlined"
-      fullWidth
-      error={touched[field.name] && !!errors[field.name]}
-      helperText={(touched[field.name] && !!errors[field.name]) && errors[field.name]}
-      {...field}
-      {...props}
-    />
+    <Fragment>
+      {label && <InputFieldLabel label={label} />}
+      <TextField
+        variant="filled"
+        fullWidth
+        error={touched && !!error}
+        {...field}
+        {...props}
+      />
+      {(touched && error) && <InputFieldError error={error} />}
+    </Fragment>
   );
 };
 
