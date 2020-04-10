@@ -1,12 +1,9 @@
 import * as Yup from 'yup';
 
-// TODO: Add `username` to validation once backend work complete.
+// TODO: Add `.email()` to `username` once backend work is complete.
 export const LoginSchema = Yup.object().shape({
-  // username: Yup.string()
-  //   .email('Invalid email')
-  //   .required('Required'),
-  password: Yup.string()
-    .required('Required'),
+  username: Yup.string().required('Required'),
+  password: Yup.string().required('Required'),
 });
 
 export const LookupSchema = Yup.object().shape({
