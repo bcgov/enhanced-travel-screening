@@ -68,7 +68,7 @@ const AdminLogin = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Typography className={classes.cardTitle} variant="h2">
-                    Public Health Official Login
+                    Provincial Official Login
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>

@@ -23,8 +23,8 @@ const Contact = function({ classes }) {
             <Button className={classes.contactButton} variant="outlined" color="primary"><a style={aColor} href="tel:+16044120957">1-604-412-0957</a></Button>
           </p>
           <p><b>Within Canada</b></p>
-          <p><Button className={classes.contactButton} color="primary" variant="outlined">Text<a style={aColor} href="tel:+16046300300">1-604-630-0300</a></Button></p>
-          <p><Button className={classes.contactButton} color="primary" variant="outlined">Call<a style={aColor} href="tel:+1888COVID19">1-888-COVID19</a></Button></p>
+          <p><Button className={classes.contactButton} color="primary" variant="outlined">Text&nbsp;<a style={aColor} href="tel:+16046300300">1-604-630-0300</a></Button></p>
+          <p><Button className={classes.contactButton} color="primary" variant="outlined">Call&nbsp;<a style={aColor} href="tel:+1888COVID19">1-888-COVID19</a></Button></p>
           <p><a style={aColor} href="tel:+18882684319">(1-888-268-4319)</a></p>
           <p>Standard message and data rates may apply.</p>
           <hr />

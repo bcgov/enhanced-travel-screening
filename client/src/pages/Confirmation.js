@@ -49,109 +49,107 @@ function Confirmation ({ location: { state } }) {
 
   return (
     <Page>
-      <Grid className={classes.root} style={{margin: "0 1rem"}} container justify="center">
-        {(!id || !accessToken) ? (
-          <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+      <Grid className={classes.root} style={{ margin: "0 1rem" }} container justify="center">
+        {
+          (!id || !accessToken) ? (
+            <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+              <Box margin="2rem 0">
+                <Typography variant="h4">
+                  No submission detected, please create a new submission.
+                </Typography>
+              </Box>
+            </Grid>
+          ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
             <Box margin="2rem 0">
-              <Typography variant="h4">
-                No submission detected, please create a new submission.
+              <Typography variant="h6">
+                Thank you. Your form has been submitted.
+              </Typography>
+              <Typography variant="h6">
+                DO NOT CLOSE THIS PAGE.
               </Typography>
             </Box>
-          </Grid>
-        ) : <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
-          <Box margin="2rem 0">
-            <Typography variant="h6">
-              Thank you. Your form has been submitted.
-            </Typography>
-            <Typography variant="h6">
-              DO NOT CLOSE THIS PAGE.
-            </Typography>
-          </Box>
-
-          <Card variant="outlined">
-            <CardContent>
-
-              <Grid container>
-                <Grid item xs={12}>
-                  <Box padding="0" paddingTop="0">
-                    <Typography variant="h5">
-                      Proceed to the provincial check point, if available at your location, where you may be asked to confirm how you will comply with the provincial order to self isolate.
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      You may be asked to present your confirmation number.
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Hidden smDown>
-                  <Grid item md={3}></Grid>
-                </Hidden>
-                <Grid item xs={12} md={6}>
-                  {
-                    isolationPlanStatus
-                      ?
-                        <Card style={{margin: '15px'}}>
+            <Card variant="outlined">
+              <CardContent>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Box padding="0" paddingTop="0">
+                      <Typography variant="h5">
+                        Proceed to the provincial check point, if available at your location, where you may be asked to confirm how you will comply with the provincial order to self isolate.
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        You may be asked to present your confirmation number.
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Hidden smDown>
+                    <Grid item md={3}></Grid>
+                  </Hidden>
+                  <Grid item xs={12} md={6}>
+                    {
+                      isolationPlanStatus
+                        ?
+                          <Card style={{ margin: "15px" }}>
+                            <CardContent>
+                              <Typography variant="subtitle1">Confirmation Number</Typography>
+                              <Typography variant="h2" style={{ color: "#16C92E" }}>
+                                {id}
+                              </Typography>
+                              <Grid container style={{ marginTop: "1rem" }}>
+                                {/* <Grid item xs={6}>
+                                  <img src={Health} alt="health status" />
+                                  <Typography variant="subtitle1">Health Status Complete</Typography>
+                                </Grid> */}
+                                <Grid item xs={12}>
+                                  <img src={PlanPass} alt="Isolation plan" style={{ width: "128px"}} />
+                                  <Typography variant="subtitle1" style={{ marginTop: "0.5rem" }}>Isolation Plan Status</Typography>
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+                          </Card>
+                        :
+                        <Card style={{ margin: '15px', color: 'white', backgroundColor: '#002C71' }}>
                           <CardContent>
-                            <Typography variant="subtitle1">Confirmation Number</Typography>
-                            <Typography variant="h2" style={{color: "#16C92E"}}>
+                            <Typography variant="subtitle1" style={{ marginTop: "16px" }}>Confirmation Number</Typography>
+                            <Typography variant="h2">
                               {id}
                             </Typography>
-                            <Grid container style={{marginTop: "1rem"}}>
+                            <Grid container style={{ marginTop: "1rem" }}>
                               {/* <Grid item xs={6}>
                                 <img src={Health} alt="health status" />
                                 <Typography variant="subtitle1">Health Status Complete</Typography>
                               </Grid> */}
                               <Grid item xs={12}>
-                                <img src={PlanPass} alt="Isolation plan" style={{ width: "128px"}} />
-                                <Typography variant="subtitle1" style={{marginTop: "0.5rem"}}>Isolation Plan Status</Typography>
+                                <img src={PlanFail} alt="Isolation plan" style={{ width: "128px" }} />
+                                <Typography variant="subtitle1" style={{ marginTop: "16px" }}>Isolation Plan Status</Typography>
                               </Grid>
                             </Grid>
                           </CardContent>
                         </Card>
-                      :
-                      <Card style={{ margin: '15px', color: 'white', backgroundColor: '#002C71' }}>
-                        <CardContent>
-                          <Typography variant="subtitle1" style={{marginTop: "16px"}}>Confirmation Number</Typography>
-                          <Typography variant="h2">
-                            {id}
-                          </Typography>
-                          <Grid container style={{marginTop: "1rem"}}>
-                            {/* <Grid item xs={6}>
-                              <img src={Health} alt="health status" />
-                              <Typography variant="subtitle1">Health Status Complete</Typography>
-                            </Grid> */}
-                            <Grid item xs={12}>
-                              <img src={PlanFail} alt="Isolation plan" style={{ width: "128px"}} />
-                              <Typography variant="subtitle1" style={{marginTop: "16px"}}>Isolation Plan Status</Typography>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Card>
-                  }
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          {accessToken &&
-            <Card variant="outlined" style={{marginTop: "1.5rem"}}>
-              <CardContent>
-                <Grid item xs={12} md={6} style={{margin: "auto"}}>
-                  <Typography variant="h6">Download your form submission as a PDF document.</Typography>
-                  <Typography variant="subtitle1">Use the button below to download your submission as a PDF (.pdf) document for your records.</Typography>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    color="primary"
-                    style={{marginTop: "1rem"}}
-                    onClick={genPDF}
-                    fullWidth
-                  >
-                  Download PDF of Submission</Button>
+                    }
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
-          }
-        </Grid>}
+            {accessToken &&
+              <Card variant="outlined" style={{ marginTop: "1.5rem" }}>
+                <CardContent>
+                  <Grid item xs={12} md={6} style={{ margin: "auto" }}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      color="primary"
+                      style={{ marginTop: "1rem" }}
+                      onClick={genPDF}
+                      fullWidth
+                    >
+                      Download Submission PDF
+                    </Button>
+                  </Grid>
+                </CardContent>
+              </Card>
+            }
+          </Grid>
+        }
       </Grid>
     </Page>
   )

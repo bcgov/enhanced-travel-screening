@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography, Grid, InputLabel, TextField, MenuItem, Select, Radio, RadioGroup, FormControl, FormControlLabel } from '@material-ui/core';
 
-const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolationPlan, formValues, isDisabled }) => {
-  const { isolationPlan } = formValues;
+const IsolationPlan = ({ classes, toggleAccomodations, toggleAssistance, saveIsolationPlan, formValues, isDisabled, setTransportation }) => {
+  const { isolationPlan, accomodations, accomodationAssistance, transportation } = formValues;
   const handleChange = (e) => {
     saveIsolationPlan(e.target.name, e.target.value)
   }
@@ -97,8 +97,8 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
                 row
                 aria-label="able to isolate from immuno compromiseed"
                 name="ableToIsolate"
-                value={computeRadioValue(isolationPlan.ableToIsolate)}
-                onChange={(event) => handleChange({ target: { name: "ableToIsolate", value: event.target.value === "yes" }})}>
+                value={computeRadioValue(accomodationAssistance)}
+                onChange={(event) => toggleAssistance(event.target.value === "yes")}>
                 <FormControlLabel value="yes" control={<Radio />} label="Yes" />
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>
@@ -127,7 +127,6 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
 
       <Grid item xs={12}>
         <Box marginTop="0.75rem">
-
           <InputLabel htmlFor="transportation">
             What form of transportation will you take to your self-isolation location?*
           </InputLabel>
@@ -136,9 +135,9 @@ const IsolationPlan = ({ classes, accomodations, toggleAccomodations, saveIsolat
             id="transportation"
             className={classes.select}
             name="transportation"
-            value={isolationPlan.transportation}
+            value={transportation}
             variant="filled"
-            onChange={handleChange}
+            onChange={setTransportation}
             fullWidth
             displayEmpty
             inputProps={{disabled: isDisabled}}

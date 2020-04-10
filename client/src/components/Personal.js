@@ -19,7 +19,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
   const handleDateChange = (date) => {
     saveInfo({ target: {
       name: 'dob',
-      value: date.format('MM/DD/YYYY')
+      value: date.format('YYYY/MM/DD')
     }})
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"

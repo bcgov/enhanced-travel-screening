@@ -12,7 +12,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/picker
 const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
   const { arrival } = formValues;
   const handleDateChange = (date, index) => {
-    saveInfo('date', date.format('MM/DD/YYYY'))
+    saveInfo('date', date.format('YYYY/MM/DD'))
   }
   return (
     <Grid container>
@@ -38,7 +38,7 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
               inputVariant="filled"
               disabled={isDisabled}
               style={{marginTop: '0.25rem'}}
-              value={arrival.date || new Date()}
+              value={arrival.date}
               KeyboardButtonProps={{ 'aria-label': 'change date' }}
             />
           </MuiPickersUtilsProvider>
