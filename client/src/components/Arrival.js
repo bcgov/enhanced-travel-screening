@@ -70,12 +70,12 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
       {/* Flight # */}
       <Grid item xs={12} md={6}>
         <Box padding="1rem">
-          <InputLabel htmlFor="arrival_country">Airline / Flight Number (if applicable)</InputLabel>
+          <InputLabel htmlFor="arrival_fn">Airline / Flight Number (if applicable)</InputLabel>
           <TextField
-            id="arrival_country"
+            id="arrival_fn"
             className={classes.textField}
-            name="country"
-            value={arrival.from}
+            name="flight"
+            value={arrival.flight}
             onChange={(e) => saveInfo(e.target.name, e.target.value)}
             variant="filled"
             fullWidth
@@ -89,8 +89,8 @@ const Arrival = ({ classes, saveInfo, formValues, isDisabled }) => {
           <TextField
             id="arrival_city"
             className={classes.textField}
-            name="city"
-            value={arrival.city}
+            name="from"
+            value={arrival.from}
             onChange={(e) => saveInfo(e.target.name, e.target.value)}
             variant="filled"
             fullWidth
