@@ -35,23 +35,14 @@ app.post(`${apiBaseUrl}/login`,
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
-    console.dir(req.body)
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
-    // determine if isolation plan can default to accepted
-    const {
-      symptoms,
-      accomodations,
-      ableToIsolate,
-    } = req.body;
-    const healthStatus = symptoms;
-    const isolationPlanStatus = accomodations && ableToIsolate;
+    const isolationPlanStatus = scrubbed.accomodations && !scrubbed.accomodationAssistance;
     const item = {
       TableName: formsTable,
       Item: {
         ...scrubbed,
         id,
-        healthStatus,
         isolationPlanStatus,
         determination: null,
         notes: null,
@@ -61,7 +52,6 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     await db.put(item).promise();
     res.json({
       id,
-      healthStatus,
       isolationPlanStatus,
       accessToken: generateJwt(id, 'pdf'),
     });
