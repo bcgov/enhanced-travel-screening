@@ -148,16 +148,16 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
         if (error) {
           throw new Error(error.message || 'Failed to submit this form');
         } else {
+          toggleLoading(false);
           history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
         }
       } else {
         throw new Error(response.error || response.statusText || 'Server error');
       }
     } catch (error) {
+      toggleLoading(false);
       console.error(error);
       setError(error.message);
-    } finally {
-      toggleLoading(false);
     }
   };
 
