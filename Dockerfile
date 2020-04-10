@@ -14,9 +14,9 @@ FROM node:12 AS server
 # Run server
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
-RUN ls / && ls /client
+
 COPY server/package*.json ./
-RUN npm ci
+RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
 
 EXPOSE 80
