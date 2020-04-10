@@ -50,7 +50,7 @@ const theme = createMuiTheme({
 
   // Typography
   typography: {
-    fontFamily: 'Lato, Open Sans, sans-serif',
+    fontFamily: 'Lato, sans-serif',
   },
 
   // Component Overrides
@@ -68,6 +68,9 @@ const theme = createMuiTheme({
         textTransform: 'capitalize',
         height: '52px',
       },
+      outlined: {
+        border: '2px solid #FFFFFF',
+      },
     },
     MuiFormLabel: {
       root: {
@@ -76,6 +79,31 @@ const theme = createMuiTheme({
           color: 'inherit'
         }
       }
+    },
+    MuiInputBase: {
+      input: {
+        '&.MuiFilledInput-input&:not(.MuiSelect-selectMenu)': {
+          height: '40px',
+          lineHeight: '18px',
+        },
+      },
+    },
+    MuiFilledInput: {
+      root: {
+        borderTopLeftRadius: '3px',
+        borderTopRightRadius: '3px',
+      },
+      input: {
+        padding: 0,
+        paddingLeft: '4px'
+      }
+    },
+    MuiSelect: {
+      selectMenu: {
+        height: '30px',
+        paddingTop: '10px',
+        paddingLeft: '4px',
+      },
     },
   },
 });

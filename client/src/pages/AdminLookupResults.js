@@ -59,7 +59,6 @@ const AdminLookupResults = ({ match: { params }}) => {
   useEffect(() => {
     (async () => {
       setLookupLoading(true);
-
       const jwt = window.localStorage.getItem('jwt');
       const response = await fetch(`/api/v1/form/${params.id}`, {
         headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
@@ -73,14 +72,12 @@ const AdminLookupResults = ({ match: { params }}) => {
       } else {
         setLookupError(`Failed to find submission with ID ${params.id}`);
       }
-
       setLookupLoading(false);
     })();
   }, [params.id]);
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
-
     const jwt = window.localStorage.getItem('jwt');
     const response = await fetch(`/api/v1/form/${params.id}`, {
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
@@ -168,12 +165,11 @@ const AdminLookupResults = ({ match: { params }}) => {
 
                  {/** Submit */}
                  <Grid item xs={12}>
-                   {submitLoading ? <CircularProgress /> :
-                     <Button
-                       type="submit"
-                       text="Submit Determination"
-                     />
-                   }
+                   <Button
+                     type="submit"
+                     text="Submit Determination"
+                     loading={submitLoading}
+                   />
                  </Grid>
 
                  {/** Submit Success / Error */}

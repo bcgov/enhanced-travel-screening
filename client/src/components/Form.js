@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
-import Routes from '../constants/routes';
+import { Routes } from '../constants';
 
 import Personal from './Personal';
 import AdditionalTravelers from './AdditionalTravelers';
@@ -159,14 +159,14 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
 
   const canSubmitForm = () => formValues.certified;
 
-  // useEffect(() => {
-  //   if (isDisabled) {
-  //     const inputs = document.getElementsByTagName('input');
-  //     for (let input of inputs) {
-  //       input.setAttribute('disabled', true)
-  //     }
-  //   }
-  // }, [isDisabled]);
+  useEffect(() => {
+    if (isDisabled) {
+      const inputs = document.getElementsByTagName('input');
+      for (let input of inputs) {
+        input.setAttribute('disabled', true)
+      }
+    }
+  }, [isDisabled]);
 
   return (
     <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8}>
