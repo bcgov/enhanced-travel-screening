@@ -28,14 +28,14 @@ const AdditionalTravellers = ({ isDisabled }) => {
             disabled={isDisabled}
             row
             options={[
-              { value: 'yes', label: 'Yes' },
-              { value: 'no', label: 'No' },
+              { value: true, label: 'Yes' },
+              { value: false, label: 'No' },
             ]}
           />
         </Grid>
 
         {/** Number of Additional Travellers */}
-        {values.includeAdditionalTravellers === 'yes' && (
+        {values.includeAdditionalTravellers === true && (
           <FieldArray
             name="additionalTravelers"
             render={(arrayHelpers) => (

@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 import { SidebarSchema } from '../validation-schemas';
 
 import { Routes } from '../constants';
-import UserForm from '../components/Form';
+import UserForm from '../components/form';
 import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
 
@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
   formWrapper: {
     height: '100%',
     overflowY: 'auto',
+    padding: theme.spacing(4, 6),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(4),
+    },
   },
   sidebarWrapper: {
     height: '100%',
@@ -96,7 +100,7 @@ const AdminLookupResults = ({ match: { params }}) => {
 
   return submitSuccess ? <Redirect to={Routes.Lookup} /> : (
    <Page>
-     {(lookupLoading || lookupError) ? (
+     {(lookupLoading || !lookupError) ? (
        <div className={classes.statusWrapper}>
          {lookupLoading && <CircularProgress />}
          {lookupError && (

@@ -105,6 +105,11 @@ const theme = createMuiTheme({
         paddingLeft: '4px',
       },
     },
+    // MuiCheckbox: {
+    //   root: {
+    //     marginLeft: '-12px',
+    //   },
+    // },
   },
 });
 

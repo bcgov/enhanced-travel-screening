@@ -15,12 +15,23 @@ const RenderRadioGroup = ({
 }) => {
   const touched = form.errors[field.name];
   const error = form.errors[field.name];
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === 'true' || value === 'false') {
+      field.onChange({ target: { name: field.name, value: value === 'true' } });
+    } else {
+      field.onChange({ target: { name: field.name, value } });
+    }
+  };
+
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       <RadioGroup
         {...field}
         {...props}
+        onChange={handleChange}
       >
         {options.map((option) => (
           <FormControlLabel
