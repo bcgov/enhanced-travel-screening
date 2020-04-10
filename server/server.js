@@ -42,13 +42,10 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const {
       symptoms,
       accomodations,
-      isolationPlan: {
-        ableToIsolate,
-        supplies,
-      },
+      ableToIsolate,
     } = req.body;
     const healthStatus = symptoms;
-    const isolationPlanStatus = accomodations && !ableToIsolate && supplies;
+    const isolationPlanStatus = accomodations && ableToIsolate;
     const item = {
       TableName: formsTable,
       Item: {

@@ -13,11 +13,11 @@ const RenderDateField = ({
   return (
     <Fragment>
       <KeyboardDatePicker
-        format="MM/DD/YYYY"
+        format="YYYY/MM/DD"
         value={field.value}
         onBlur={() => setTouched(true)}
         onClose={() => setTouched(true)}
-        onChange={(value) => setValue((value) ? value.format('MM/DD/YYYY') : '')}
+        onChange={(value) => setValue((value) ? value.format('YYYY/MM/DD') : '')}
         invalidDateMessage={null}
         openTo="date"
         variant="dialog"

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography, Grid, InputLabel, TextField, MenuItem, Select, Radio, RadioGroup, FormControl, FormControlLabel } from '@material-ui/core';
 
-const IsolationPlan = ({ classes, toggleAccomodations, toggleAssistance, saveIsolationPlan, formValues, isDisabled, setTransportation }) => {
-  const { isolationPlan, accomodations, accomodationAssistance, transportation } = formValues;
+const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolationPlan, formValues, isDisabled, setTransportation }) => {
+  const { isolationPlan, accomodations, ableToIsolate, transportation } = formValues;
   const handleChange = (e) => {
     saveIsolationPlan(e.target.name, e.target.value)
   }
@@ -97,26 +97,8 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAssistance, saveIso
                 row
                 aria-label="able to isolate from immuno compromiseed"
                 name="ableToIsolate"
-                value={computeRadioValue(accomodationAssistance)}
-                onChange={(event) => toggleAssistance(event.target.value === "yes")}>
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </FormControl>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <Box>
-            <Typography variant="subtitle1" style={{paddingTop: "0.5rem"}}>
-              * Are you able to make the necessary arrangements for your self-isolation period? (e.g. food, medication, child care, cleaning supplies, pet care).
-            </Typography>
-            <FormControl component="fieldset">
-              <RadioGroup
-                row
-                aria-label="supplies"
-                name="supplies"
-                value={computeRadioValue(isolationPlan.supplies)}
-                onChange={(event) => handleChange({ target: { name: "supplies", value: event.target.value === "yes" }})}>
+                value={computeRadioValue(ableToIsolate)}
+                onChange={(event) => toggleAble(event.target.value === "no")}>
                 <FormControlLabel value="yes" control={<Radio />} label="Yes" />
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>

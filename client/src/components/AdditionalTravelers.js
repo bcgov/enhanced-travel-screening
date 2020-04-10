@@ -23,12 +23,11 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
     firstName: '',
     lastName: '',
     dob: '',
-    essentialWorker: '',
     role: '',
     index
   })
   const handleDateChange = (date, index) => {
-    handleChange({ name: 'dob', value: date.format('MM/DD/YYYY') }, index)
+    handleChange({ name: 'dob', value: date.format('YYYY/MM/DD') }, index)
   }
   const handleChange = ({ name, value }, index) => {
     let thisTraveller = additionalTravellers[index];
@@ -172,48 +171,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
 
                 </Box>
               </Grid>
-
-              {/* ESSENTIAL */}
-              <Grid item xs={12}>
-                <Box marginTop="1.5rem">
-                  <FormControl fullWidth className={classes.inlineFormControl} component="fieldset">
-                    <FormLabel className={classes.formLabel} component="legend">
-                      <b>
-                        Is this traveller an essential worker?
-                      </b>
-                    </FormLabel>
-                    <RadioGroup
-                      row
-                      aria-label="essential worker"
-                      name="essentialWorker"
-                      value={traveller.essentialWorker}
-                      onChange={(e) => handleChange(e.target, traveller.index)}
-                    >
-                      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                      <FormControlLabel value="no" control={<Radio />} label="No" />
-                    </RadioGroup>
-                  </FormControl>
-                </Box>
-                <Box width="100%" paddingTop="1rem" paddingBottom="2rem">
-                  <InputLabel htmlFor="role">
-                    Please describe employment and your role if you selected yes
-                  </InputLabel>
-
-                  <TextField
-                    id="role"
-                    name="role"
-                    className={`${classes.stretch} ${classes.textField}`}
-                    variant="outlined"
-                    rows="2"
-                    value={traveller.role}
-                    onChange={(e) => handleChange(e.target, traveller.index)}
-                    multiline
-                    fullWidth
-                  />
-                </Box>
-              </Grid>
             </Grid>
-
           </CardContent>
         </Card>
       ) : null)}
