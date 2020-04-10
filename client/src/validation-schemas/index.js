@@ -7,13 +7,10 @@ export const LoginSchema = Yup.object().shape({
 });
 
 export const LookupSchema = Yup.object().shape({
-  confirmationNumber: Yup.string()
-    .required('Required'),
+  confirmationNumber: Yup.string().required('Required'),
 });
 
 export const SidebarSchema = Yup.object().shape({
-  determination: Yup.string()
-    .required('Required'),
-  notes: Yup.string()
-    .required('Required'),
+  determination: Yup.string().required('Required'),
+  notes: Yup.string().required('Required'),
 });
