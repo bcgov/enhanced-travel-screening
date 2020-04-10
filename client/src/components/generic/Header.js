@@ -80,7 +80,7 @@ const Header = () => {
               color="inherit"
               onClick={handleSubmissionLookupClick}
             >
-              Submission Lookup
+              <Hidden smDown>Submission</Hidden> Lookup
             </Button>
           )}
           {(isLookupScreen || isLookupResultsScreen) && (
