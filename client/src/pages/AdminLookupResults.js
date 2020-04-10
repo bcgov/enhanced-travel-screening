@@ -132,7 +132,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                  {/** Title */}
                  <Grid item xs={12}>
                    <Typography className={classes.sidebarTitle} variant="h2">
-                     Public Health Official Determination
+                     Provincial Official Determination
                    </Typography>
                    <Divider />
                  </Grid>
@@ -145,7 +145,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                      component={RenderButtonGroup}
                      options={[
                        { value: 'support', label: 'Support Needed', color: 'secondary' },
-                       { value: 'accepted', label: 'Isolation Plan Approved', color: 'primary' },
+                       { value: 'accepted', label: 'No Support Needed', color: 'primary' },
                      ]}
                    />
                  </Grid>
@@ -167,7 +167,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                  <Grid item xs={12}>
                    <Button
                      type="submit"
-                     text="Submit Determination"
+                     text="Submit"
                      loading={submitLoading}
                    />
                  </Grid>

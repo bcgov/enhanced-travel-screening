@@ -41,7 +41,7 @@ const AdminLogin = () => {
     <Page >
       <Grid container alignItems="center" justify="center" >
         <Grid item xs={12} sm={8} md={6} lg={4} xl={3}>
-          <Card title="Public Health Official Login">
+          <Card title="Provincial Official Login">
             <Formik
               initialValues={initialValues}
               validationSchema={LoginSchema}
