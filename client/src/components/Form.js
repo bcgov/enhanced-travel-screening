@@ -121,6 +121,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   const saveArrivalDetails = (name, value) => {
     setFormValues(prevState => ({ ...prevState, arrival: { ...prevState.arrival, [name]: value } }));
   };
+  // const toggleSymptoms = (bool) => setFormValues(prevState => ({ ...prevState, symptoms: bool }))
   const toggleAccomodations = (bool) => setFormValues(prevState => ({ ...prevState, accomodations: bool }))
   const toggleAble = (bool) => setFormValues(prevState => ({ ...prevState, ableToIsolate: bool }))
   const toggleCertified = (bool) => setFormValues(prevState => ({ ...prevState, certified: bool }));
