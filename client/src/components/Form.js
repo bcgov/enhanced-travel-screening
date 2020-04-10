@@ -20,6 +20,9 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+  primaryText: {
+    color: '#002C71'
+  },
   card: {
     margin: theme.spacing(2),
   },
@@ -41,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   },
   select: {
     marginTop: '0.25rem',
+  },
+  mt1: {
+    marginTop: '1rem',
   },
   stretch: {
     width: '100%'
@@ -83,7 +89,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     telephone: '',
     reach: '',
     email: '',
-    essentialWorker: null,
     role: '',
     address: '',
     city: '',
@@ -100,6 +105,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     },
     symptoms: null,
     accomodations: null,
+    ableToIsolate: null,
     accomodationAssistance: null,
     transportation: [],
     isolationPlan: {
@@ -120,7 +126,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   };
   // const toggleSymptoms = (bool) => setFormValues(prevState => ({ ...prevState, symptoms: bool }))
   const toggleAccomodations = (bool) => setFormValues(prevState => ({ ...prevState, accomodations: bool }))
-  const toggleAssistance = (bool) => setFormValues(prevState => ({ ...prevState, accomodationAssistance: bool }))
+  const toggleAble = (bool) => setFormValues(prevState => ({ ...prevState, ableToIsolate: bool }))
   const toggleCertified = (bool) => setFormValues(prevState => ({ ...prevState, certified: bool }));
   const saveIsolationPlan = (name, value) => {
     setFormValues(prevState => ({ ...prevState, isolationPlan: { ...prevState.isolationPlan, [name]: value } }));
@@ -155,9 +161,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     }
   };
 
-  const canSubmitForm = () => {
-    return formValues.certified
-  };
+  const canSubmitForm = () => formValues.certified;
 
   useEffect(() => {
     if (isDisabled) {
@@ -181,11 +185,11 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
           <Typography variant="body1" gutterBottom>
             B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
           </Typography>
-          <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
-            Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services ">Talk to a Service BC agent</a>
+          <Typography variant="body1" gutterBottom className={classes.mt1}>
+            Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a className={classes.isPrimary} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services ">Talk to a Service BC agent</a>
           </Typography>
-          <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
-            Download a <a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/assets/gov/health-safety/support_for_travellers_print.pdf">PDF version of this form</a>
+          <Typography variant="body1" gutterBottom className={classes.mt1}>
+            Download a <a className={classes.isPrimary} href="https://www2.gov.bc.ca/assets/gov/health-safety/support_for_travellers_print.pdf">PDF version of this form</a>
           </Typography>
         </Box>
       )}
@@ -199,7 +203,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
             {/* <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/> */}
-            <IsolationPlan isDisabled={isDisabled} setTransportation={handleChange} classes={classes} toggleAssistance={toggleAssistance} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
+            <IsolationPlan isDisabled={isDisabled} setTransportation={handleChange} classes={classes} toggleAble={toggleAble} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
             {!isDisabled && <Certify toggleCertified={toggleCertified} certified={formValues.certified} />}
 
             {error && (
