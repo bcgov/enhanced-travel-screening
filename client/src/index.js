@@ -1,9 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
+import MomentUtils from '@date-io/moment';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import Routes from './constants/routes';
 
@@ -105,33 +107,40 @@ const theme = createMuiTheme({
       selectMenu: {
         height: '31px',
         paddingTop: '10px',
-        paddingLeft: '4px'
-      }
-    }
+        paddingLeft: '4px',
+      },
+    },
+    MuiFormHelperText: {
+      contained: {
+        marginLeft: 0,
+      },
+    },
   },
 });
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <BrowserRouter>
-      <Suspense fallback={<LinearProgress />}>
-        <Switch>
-          {/* Non-admin routes */}
-          <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
-          <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
-          <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Suspense fallback={<LinearProgress />}>
+          <Switch>
+            {/* Non-admin routes */}
+            <PublicRoute exact path={Routes.Base} component={SubmissionForm} />
+            <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
+            <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
 
-          {/* Admin routes */}
-          <PublicRoute exact path={Routes.Login} component={AdminLogin} />
-          <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
-          <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
+            {/* Admin routes */}
+            <PublicRoute exact path={Routes.Login} component={AdminLogin} />
+            <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
+            <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
 
-          {/* Invalid route - default to user form */}
-          <Route component={SubmissionForm} />
-        </Switch>
-      </Suspense>
-    </BrowserRouter>
+            {/* Invalid route - default to user form */}
+            <Route component={SubmissionForm} />
+          </Switch>
+        </Suspense>
+      </BrowserRouter>
+    </MuiPickersUtilsProvider>
   </ThemeProvider>
 );
 
