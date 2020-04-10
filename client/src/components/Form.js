@@ -74,7 +74,8 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
 
   const [loading, toggleLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [certified, toggleCertified] = useState(false);
+
+  const today = new Date().toLocaleDateString('fr-CA').replace('-', '/').replace('-', '/');
 
   const [formValues, setFormValues] = useState(initialValues ? initialValues : {
     firstName: '',
@@ -88,25 +89,26 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     city: '',
     province: '',
     postalCode: '',
-    dob: '',
+    dob: '1990/01/01',
     includeAdditionalTravellers: null,
     additionalTravelers: [],
     arrival: {
-      date: '',
+      date: today,
       by: '',
       from: '',
       flight: ''
     },
     symptoms: null,
     accomodations: null,
+    accomodationAssistance: null,
+    transportation: [],
     isolationPlan: {
       city: '',
       address: '',
       type: '',
-      ableToIsolate: null,
-      supplies: null,
-      transportation: []
-    }
+      supplies: null
+    },
+    certified: false
   });
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -117,8 +119,10 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   const saveArrivalDetails = (name, value) => {
     setFormValues(prevState => ({ ...prevState, arrival: { ...prevState.arrival, [name]: value } }));
   };
-  const toggleSymptoms = (bool) => setFormValues(prevState => ({ ...prevState, symptoms: bool }))
+  // const toggleSymptoms = (bool) => setFormValues(prevState => ({ ...prevState, symptoms: bool }))
   const toggleAccomodations = (bool) => setFormValues(prevState => ({ ...prevState, accomodations: bool }))
+  const toggleAssistance = (bool) => setFormValues(prevState => ({ ...prevState, accomodationAssistance: bool }))
+  const toggleCertified = (bool) => setFormValues(prevState => ({ ...prevState, certified: bool }));
   const saveIsolationPlan = (name, value) => {
     setFormValues(prevState => ({ ...prevState, isolationPlan: { ...prevState.isolationPlan, [name]: value } }));
   };
@@ -153,7 +157,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   };
 
   const canSubmitForm = () => {
-    return certified
+    return formValues.certified
   };
 
   useEffect(() => {
@@ -178,11 +182,9 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
           <Typography variant="body1" gutterBottom>
             B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
           </Typography>
-
           <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
             Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services ">Talk to a Service BC agent</a>
           </Typography>
-
           <Typography variant="body1" gutterBottom style={{marginTop: "1rem"}}>
             Download a <a style={{color: '#002C71'}} href="https://www2.gov.bc.ca/assets/gov/health-safety/support_for_travellers_print.pdf">PDF version of this form</a>
           </Typography>
@@ -198,8 +200,8 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
             {/* <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/> */}
-            <IsolationPlan isDisabled={isDisabled} classes={classes} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} accomodations={formValues.accomodations}/>
-            {!isDisabled && <Certify firstName={formValues.firstName} lastName={formValues.lastName} toggleCertified={toggleCertified} certified={certified} />}
+            <IsolationPlan isDisabled={isDisabled} setTransportation={handleChange} classes={classes} toggleAssistance={toggleAssistance} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
+            {!isDisabled && <Certify toggleCertified={toggleCertified} certified={formValues.certified} />}
 
             {error && (
               <Grid alignContent="center" justify="center" alignItems="center" item xs={12} container>

@@ -179,7 +179,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                      fontSize: '1rem'
                    }}
                  >
-                   Isolation Plan Approved
+                   No Support Needed
                  </Button>
                  {/* <Button
                    onClick={(e) => handleChange({ name: 'determination', value: 'rejected' })}
@@ -213,7 +213,7 @@ const AdminLookupResults = ({ match: { params }}) => {
                      fullWidth
                      disabled={!sidebarFormValues.determination || !sidebarFormValues.notes}
                    >
-                     Submit Determination
+                     Submit
                    </Button>
                  )
                }
