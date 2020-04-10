@@ -37,7 +37,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
-    const isolationPlanStatus = scrubbed.accommodations && !scrubbed.accommodationAssistance;
+    const isolationPlanStatus = scrubbed.accommodations && !scrubbed.accommodationAssistance && scrubbed.supplies;
     const item = {
       TableName: formsTable,
       Item: {
