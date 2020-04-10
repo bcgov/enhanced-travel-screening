@@ -183,7 +183,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
           </Typography>
           <Typography variant="body1" gutterBottom className={classes.mt1}>
-            Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a className={classes.isPrimary} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services ">Talk to a Service BC agent</a>
+            Need help with your self isolation plan? {window.innerWidth < 600 && <br />}<a className={classes.isPrimary} href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services">Talk to a Service BC agent</a>
           </Typography>
           <Typography variant="body1" gutterBottom className={classes.mt1}>
             Download a <a className={classes.isPrimary} href="https://www2.gov.bc.ca/assets/gov/health-safety/support_for_travellers_print.pdf">PDF version of this form</a>
