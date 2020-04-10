@@ -5,8 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(5, 4),
+    // margin: theme.spacing(2),
+    padding: theme.spacing(4),
     borderRadius: '8px',
     backgroundColor: '#FFFFFF',
     boxShadow: '0 0 5px 0 #E5E9F2',
@@ -25,9 +25,11 @@ const Card = ({ children, title, ...props }) => {
   const classes = useStyles();
   return (
     <MuiCard className={classes.root} {...props}>
-      <Typography className={classes.title}>
-        {title}
-      </Typography>
+      {title && (
+        <Typography className={classes.title}>
+          {title}
+        </Typography>
+      )}
       {children}
     </MuiCard>
   )

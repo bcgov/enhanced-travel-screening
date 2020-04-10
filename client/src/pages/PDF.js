@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Form from '../components/Form';
+import Form from '../components/form/Form';
 
 const PDF = ({ match: { params }}) => {
   const [initialValues, setInitialValues] = useState(null);

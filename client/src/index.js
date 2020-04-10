@@ -12,8 +12,7 @@ import LatoRegularFont from './assets/fonts/Lato-Regular.ttf';
 import LatoBoldFont from './assets/fonts/Lato-Bold.ttf';
 import { Routes } from './constants';
 
-import PrivateRoute from './components/PrivateRoute';
-import PublicRoute from './components/PublicRoute';
+import { PrivateRoute, PublicRoute } from './components/generic';
 
 const SubmissionForm = lazy(() => import('./pages/SubmissionForm'));
 const Confirmation = lazy(() => import('./pages/Confirmation'));

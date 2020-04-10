@@ -27,6 +27,7 @@ const RenderDateField = ({
         openTo="date"
         variant="dialog"
         inputVariant="filled"
+        fullWidth
         {...props}
       />
       {(touched && error) && <InputFieldError error={error} />}
