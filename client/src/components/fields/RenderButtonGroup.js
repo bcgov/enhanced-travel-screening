@@ -2,17 +2,23 @@ import React, { Fragment } from 'react';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
+import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 
 const useStyles = makeStyles((theme) => ({
-  buttonGroup: {
-    '& > button': {
-      padding: theme.spacing(2),
-      fontWeight: 'bold',
-      fontSize: '13px',
-      lineHeight: '18px',
-      letterSpacing: '0.81px',
+  button: {
+    padding: theme.spacing(2),
+    boxShadow: 'none',
+    fontWeight: 'bold',
+    fontSize: '16px',
+    lineHeight: '18px',
+    letterSpacing: '0.81px',
+  },
+  buttonError: {
+    borderColor: theme.palette.error.main,
+    '&:hover': {
+      borderColor: theme.palette.error.main,
     },
   },
 }));
@@ -29,7 +35,6 @@ const RenderButtonGroup = ({
   return (
     <Fragment>
       <ButtonGroup
-        className={classes.buttonGroup}
         orientation="vertical"
         color="primary"
         fullWidth
@@ -37,6 +42,7 @@ const RenderButtonGroup = ({
       >
         {options.map((option) => (
           <Button
+            className={classnames(classes.button, { [classes.buttonError]: !!errors[field.name] })}
             key={option.value}
             onClick={(e) => setValue(option.value)}
             variant={(option.value === field.value) ? 'contained' : 'outlined'}
