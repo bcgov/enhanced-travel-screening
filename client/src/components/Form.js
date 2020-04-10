@@ -105,6 +105,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     },
     symptoms: null,
     accomodations: null,
+    supplies: null,
     ableToIsolate: null,
     accomodationAssistance: null,
     transportation: [],
@@ -194,8 +195,6 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
         </Box>
       )}
 
-      {/* <GetHelp />
-      */}
       <Card variant="outlined" className={classes.card}>
         <CardContent>
           <Grid container>
@@ -203,7 +202,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
             <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
             {/* <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/> */}
-            <IsolationPlan isDisabled={isDisabled} setTransportation={handleChange} classes={classes} toggleAble={toggleAble} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
+            <IsolationPlan isDisabled={isDisabled} handleChange={handleChange} classes={classes} toggleAble={toggleAble} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
             {!isDisabled && <Certify toggleCertified={toggleCertified} certified={formValues.certified} />}
 
             {error && (

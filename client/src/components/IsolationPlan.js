@@ -1,12 +1,33 @@
 import React from 'react';
-import { Box, Typography, Grid, InputLabel, TextField, MenuItem, Select, Radio, RadioGroup, FormControl, FormControlLabel } from '@material-ui/core';
+import {
+  Box,
+  Typography,
+  Grid,
+  InputLabel,
+  TextField,
+  MenuItem,
+  Select,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  FormGroup,
+  Checkbox
+} from '@material-ui/core';
 
-const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolationPlan, formValues, isDisabled, setTransportation }) => {
-  const { isolationPlan, accomodations, ableToIsolate, transportation } = formValues;
-  const handleChange = (e) => {
+const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolationPlan, formValues, isDisabled, handleChange }) => {
+  const { isolationPlan, accomodations, ableToIsolate, supplies, transportation } = formValues;
+  const updateIsolationPlan = (e) => {
     saveIsolationPlan(e.target.name, e.target.value)
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
+  const updateTransportation = ({ target: { name, checked }}) => {
+    console.log(`${name} ${checked}`);
+    const updatedTransportationArray = transportation.indexOf(name) === -1 ? [...transportation, name] : transportation.filter(t => t !== name);
+    console.dir(updatedTransportationArray)
+    handleChange({ target: { name: "transportation", value: updatedTransportationArray }});
+  }
   return (
     <Grid style={{padding: "1rem"}} container>
       <Grid item xs={12}>
@@ -41,7 +62,7 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
               name="type"
               value={isolationPlan.type || ""}
               variant="filled"
-              onChange={handleChange}
+              onChange={updateIsolationPlan}
               fullWidth
               displayEmpty
               inputProps={{disabled: isDisabled}}
@@ -62,7 +83,7 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
                 name="city"
                 value={isolationPlan.city}
                 variant="filled"
-                onChange={handleChange}
+                onChange={updateIsolationPlan}
                 fullWidth
                 required
               />
@@ -78,7 +99,7 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
                 name="address"
                 value={isolationPlan.address}
                 variant="filled"
-                onChange={handleChange}
+                onChange={updateIsolationPlan}
                 fullWidth
               />
             </Box>
@@ -92,7 +113,6 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
               * Do you need accomodation assistance to self-isolate from anyone who is over 60 years old or who has heart disease, high blood pressure, asthma or other lung disease, diabetes, cancer, immune suppression or is taking prednisone medication?
             </Typography>
             <FormControl component="fieldset">
-              {/* TODO handle this logic change / name change */}
               <RadioGroup
                 row
                 aria-label="able to isolate from immuno compromiseed"
@@ -106,30 +126,43 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
           </Box>
         </Grid>
       </Grid>
-
+      <Grid item xs={12}>
+        <Box>
+          <Typography variant="subtitle1" style={{paddingTop: "0.5rem"}}>
+            * Are you able to make the necessary arrangements for your self-isolation period? (e.g. food, medication, child care, cleaning supplies, pet care).
+          </Typography>
+          <FormControl component="fieldset">
+            <RadioGroup
+              row
+              aria-label="supplies"
+              name="supplies"
+              value={computeRadioValue(supplies)}
+              onChange={(event) => handleChange({ target: { name: "supplies", value: event.target.value === "yes" }})}>
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+          </FormControl>
+        </Box>
+      </Grid>
       <Grid item xs={12}>
         <Box marginTop="0.75rem">
-          <InputLabel htmlFor="transportation">
-            What form of transportation will you take to your self-isolation location?*
-          </InputLabel>
-          {/* TODO change to checkboxes */}
-          <Select
-            id="transportation"
-            className={classes.select}
-            name="transportation"
-            value={transportation}
-            variant="filled"
-            onChange={setTransportation}
-            fullWidth
-            displayEmpty
-            inputProps={{disabled: isDisabled}}
-            multiple
-          >
-            <MenuItem value="personal">Personal Vehicle</MenuItem>
-            <MenuItem value="public">Public Transportation</MenuItem>
-            <MenuItem value="taxi">Taxi or Ride Share</MenuItem>
-
-          </Select>
+          <FormControl component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">*  What form of transportation will you take to your self-isolation location?</FormLabel>
+            <FormGroup row>
+              <FormControlLabel
+                control={<Checkbox checked={transportation.includes('personal')} onChange={updateTransportation} name="personal" />}
+                label="Personal vehicle"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={transportation.includes('public')} onChange={updateTransportation} name="public" />}
+                label="Public transportation"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={transportation.includes('taxi')} onChange={updateTransportation} name="taxi" />}
+                label="Taxi or ride share"
+              />
+            </FormGroup>
+          </FormControl>
         </Box>
       </Grid>
       {!isDisabled && <div style={{

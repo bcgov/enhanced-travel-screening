@@ -115,6 +115,14 @@ const theme = createMuiTheme({
         marginLeft: 0,
       },
     },
+    MuiFormLabel: {
+      root: {
+        color: 'inherit',
+        '&.Mui-focused': {
+          color: 'inherit'
+        }
+      }
+    },
   },
 });
 
