@@ -5,18 +5,11 @@ const { randomBytes } = require('crypto');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 const createPdf = require('./pdf.js');
+const requireHTTPS = require('./require-https.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
 const app = express();
-
-var requireHTTPS = function(req, res, next) {
-  // The 'x-forwarded-proto' check
-  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
-    return res.redirect('https://' + req.get('host') + req.url);
-  }
-  next();
-}
 
 app.use(requireHTTPS);
 app.use(bodyParser.json());
