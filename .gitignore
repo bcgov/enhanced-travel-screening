@@ -21,8 +21,6 @@ docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store
-.ebextensions/*
-!.ebextensions/.keep
 .env
 test-results
 bcfs-web-*

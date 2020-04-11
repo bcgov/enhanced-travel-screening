@@ -82,7 +82,7 @@ pipeline-deploy-prep:
 
 pipeline-deploy-version:
 	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
-	@zip -r $(call deployTag).zip  Dockerrun.aws.json
+	@zip -r $(call deployTag).zip  .ebextensions Dockerrun.aws.json
 	@aws --profile $(PROFILE) configure set region $(REGION)
 	@aws --profile $(PROFILE) s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
 	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
@@ -108,7 +108,7 @@ gh-pipeline-deploy-prep:
 
 gh-pipeline-deploy-version:
 	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
-	@zip -r $(call deployTag).zip  Dockerrun.aws.json
+	@zip -r $(call deployTag).zip .ebextensions  Dockerrun.aws.json
 	@aws configure set region $(REGION)
 	@aws s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
 	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
