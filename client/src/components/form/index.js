@@ -86,21 +86,21 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
   };
 
   return (
-    <Grid item xs={12} sm={12} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8}>
+    <Grid item xs={12} sm={isDisabled ? 12 : 11} md={isDisabled ? 12 : 10} lg={isDisabled ? 12 : 8} xl={isDisabled ? 12 : 6}>
 
       {isDisabled && (
-        <Box pl={2.5} pr={2.5} pb={3}>
+        <Box pl={2} pr={2} pb={3}>
           <SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />
         </Box>
       )}
 
       {!isDisabled && (
-        <Box pt={4} pb={4} pl={2.5} pr={2.5}>
+        <Box pt={4} pb={4} pl={2} pr={2}>
           <Summary />
         </Box>
       )}
 
-      <Box pl={2.5} pr={2.5}>
+      <Box pl={2} pr={2}>
         <Card>
           {/*TODO: Add validation Schema once complete */}
           <Formik
@@ -121,7 +121,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
       </Box>
 
       {(!isPdf && !isDisabled) && (
-        <Box pt={4} pb={4} pl={2.5} pr={2.5}>
+        <Box pt={4} pb={4} pl={2} pr={2}>
           <Contact />
         </Box>
       )}

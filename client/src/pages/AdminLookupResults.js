@@ -27,7 +27,10 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     padding: theme.spacing(4, 6),
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(4),
+      padding: theme.spacing(4, 0),
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2, 0),
     },
   },
   sidebarWrapper: {
@@ -107,7 +110,7 @@ const AdminLookupResults = ({ match: { params }}) => {
              <Typography paragraph>{lookupError.message || lookupError}</Typography>
              <Button
                text="Back to Lookup"
-               onClick={() => history.push('/lookup')}
+               onClick={() => history.push(Routes.Lookup)}
                fullWidth={false}
              />
            </Container>
@@ -117,7 +120,7 @@ const AdminLookupResults = ({ match: { params }}) => {
        <Fragment>
 
          {/** Form */}
-         <Grid className={classes.formWrapper} item xs={12} md={8}>
+         <Grid className={classes.formWrapper} item xs={12} sm={11} md={8}>
            <UserForm
              initialValues={initialUserFormValues}
              isDisabled

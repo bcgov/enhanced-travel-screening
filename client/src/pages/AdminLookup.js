@@ -43,7 +43,7 @@ const AdminLookup = () => {
     <Page>
       <Grid container alignItems="center" justify="center">
         <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
-          <Box m={2.5}>
+          <Box m={2}>
             <Card title="Submission Lookup">
               <Formik
                 initialValues={initialValues}
