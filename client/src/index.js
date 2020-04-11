@@ -113,6 +113,11 @@ const theme = createMuiTheme({
         padding: '8px',
       },
     },
+    MuiDrawer: {
+      paper: {
+        width: '80vw',
+      },
+    }
   },
 });
 

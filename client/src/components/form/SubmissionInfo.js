@@ -31,7 +31,7 @@ const SubmissionInfo = ({ id, isolationPlanStatus, isPdf = false }) => {
       <Grid xs={12} md={6} item>
         <Card style={{height: '150px'}}>
           <Typography align="center" variant="subtitle1">Confirmation Number</Typography>
-          <Typography align="center" variant="h2" color="primary">
+          <Typography style={{ fontSize: '2.75rem' }} align="center" variant="h3" color="primary">
             {id}
           </Typography>
         </Card>
@@ -39,7 +39,7 @@ const SubmissionInfo = ({ id, isolationPlanStatus, isPdf = false }) => {
       {!isPdf && (
         <Grid xs={12} md={6} item>
           <Card style={{height: '150px', padding: '1rem', alignItems: 'center', display: 'flex'}}>
-            <Grid container alignItems="center" justify="center">
+            <Grid container alignItems="center" justify="center" spacing={1}>
               <Grid item>
                 <img style={{height: '60px', marginRight: '10px'}} src={isolationPlanStatus ? PlanPass : PlanFail} alt="Isolation plan accepted or failed" />
               </Grid>

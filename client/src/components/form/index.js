@@ -45,13 +45,13 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
     },
 
     // Self isolation plan
-    accommodations: null,
+    accomodations: null,
     isolationPlan: {
       type: '',
       city: '',
       address: '',
     },
-    accommodationAssistance: null,
+    ableToIsolate: null,
     supplies: null,
     transportation: [],
     certified: false,

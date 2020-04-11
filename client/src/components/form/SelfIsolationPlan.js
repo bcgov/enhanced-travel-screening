@@ -21,7 +21,7 @@ const SelfIsolationPlan = ({ isDisabled }) => {
         {/** Accommodation */}
         <Grid item xs={12}>
           <Field
-            name="accommodations"
+            name="accomodations"
             component={RenderRadioGroup}
             label="* Do you have accommodations arranged for your self-isolation period?"
             disabled={isDisabled}
@@ -32,7 +32,7 @@ const SelfIsolationPlan = ({ isDisabled }) => {
             ]}
           />
         </Grid>
-        {values.accommodations === true && (
+        {values.accomodations === true && (
           <Fragment>
             <Grid item xs={12} md={6}>
               <Field
@@ -69,7 +69,7 @@ const SelfIsolationPlan = ({ isDisabled }) => {
         {/** Accommodation Assistance */}
         <Grid item xs={12}>
           <Field
-            name="accommodationAssistance"
+            name="ableToIsolate"
             component={RenderRadioGroup}
             label="* Do you need accommodation assistance to self-isolate from anyone who is over 60 years old or who has heart disease, high blood pressure, asthma or other lung disease, diabetes, cancer, immune suppression or is taking prednisone medication?"
             disabled={isDisabled}
