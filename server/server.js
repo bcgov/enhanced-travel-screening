@@ -7,6 +7,7 @@ const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
+const { validate, FormSchema } = require('./validation.js');
 
 
 const apiBaseUrl = '/api/v1';
@@ -42,16 +43,13 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
-    if (scrubbed.certified !== true) return res.status(422).json({ error: 'Must certify to be accurate' });
-    // determine if isolation plan can default to accepted
-    const {
-      symptoms,
-      accomodations,
-      ableToIsolate,
-      supplies,
-    } = req.body;
-    const healthStatus = symptoms;
-    const isolationPlanStatus = supplies && accomodations && ableToIsolate;
+    try {
+      await validate(FormSchema, scrubbed);
+    } catch (error) {
+      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
+    }
+    const isolationPlanStatus = scrubbed.accommodations
+      && !scrubbed.accommodationAssistance && scrubbed.supplies;
     const item = {
       ...scrubbed,
       created_at: new Date().toISOString(),
@@ -94,12 +92,11 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
 
     return res.json({
       id,
-      healthStatus,
       isolationPlanStatus,
       accessToken: generateJwt(id, 'pdf'),
     });
   } catch (error) {
-    return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
+    return res.status(500).json({ error: `Failed to create submission: ${error.message}` });
   }
 });
 

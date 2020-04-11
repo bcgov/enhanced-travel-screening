@@ -79,12 +79,11 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
   const today = new Date().toLocaleDateString('fr-CA').replace('-', '/').replace('-', '/');
 
   const [formValues, setFormValues] = useState(initialValues ? initialValues : {
+    // Primary contact
     firstName: '',
     lastName: '',
     telephone: '',
-    reach: '',
     email: '',
-    role: '',
     address: '',
     city: '',
     province: '',
@@ -98,18 +97,20 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
       from: '',
       flight: ''
     },
-    symptoms: null,
+
+    // Isolation plan
     accomodations: null,
-    supplies: null,
-    ableToIsolate: null,
-    accomodationAssistance: null,
-    transportation: [],
     isolationPlan: {
       city: '',
       address: '',
       type: '',
     },
-    certified: false
+    supplies: null,
+    ableToIsolate: null,
+    transportation: [],
+
+    // Certify
+    certified: null,
   });
 
   const handleChange = (event) => {
