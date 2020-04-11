@@ -45,7 +45,10 @@ const theme = createMuiTheme({
     },
     warning: {
       main: '#F5A623',
-    }
+    },
+    background: {
+      default: '#F5F6FA',
+    },
   },
 
   // Typography
@@ -105,11 +108,11 @@ const theme = createMuiTheme({
         paddingLeft: '4px',
       },
     },
-    // MuiCheckbox: {
-    //   root: {
-    //     marginLeft: '-12px',
-    //   },
-    // },
+    MuiIconButton: {
+      root: {
+        padding: '8px',
+      },
+    },
   },
 });
 

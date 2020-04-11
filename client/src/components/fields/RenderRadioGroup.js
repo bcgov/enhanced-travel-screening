@@ -13,7 +13,7 @@ const RenderRadioGroup = ({
   disabled,
   ...props
 }) => {
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
 
   const handleChange = (e) => {

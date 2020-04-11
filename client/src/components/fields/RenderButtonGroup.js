@@ -33,7 +33,7 @@ const RenderButtonGroup = ({
   const classes = useStyles();
   const [_, __, helpers] = useField(field.name);
   const { setValue } = helpers;
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>

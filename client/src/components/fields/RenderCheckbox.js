@@ -10,7 +10,7 @@ const RenderCheckbox = ({
   label,
   ...props
 }) => {
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>
@@ -20,10 +20,10 @@ const RenderCheckbox = ({
           <Checkbox
             color="primary"
             checked={field.value === true}
-            {...field}
-            {...props}
           />
         }
+        {...field}
+        {...props}
       />
       {(touched && error) && <InputFieldError error={error} />}
     </Fragment>

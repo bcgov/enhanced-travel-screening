@@ -6,7 +6,7 @@ import { Field } from 'formik';
 import { Divider } from '../generic';
 import { RenderDateField, RenderSelectField, RenderTextField } from '../fields';
 
-const Personal = ({ isDisabled }) => {
+const PrimaryContactInformation = ({ isDisabled }) => {
   return (
     <Grid item xs={12}>
       <Grid container spacing={2}>
@@ -98,19 +98,19 @@ const Personal = ({ isDisabled }) => {
             label="* Province / Territory"
             disabled={isDisabled}
             options={[
-              { value: 'alberta', label: 'Alberta' },
-              { value: 'british-columbia', label: 'British Columbia' },
-              { value: 'manitoba', label: 'Manitoba' },
-              { value: 'new-brunswick', label: 'New Brunswick' },
-              { value: 'newfoundland-and-labrador', label: 'Newfoundland and Labrador' },
-              { value: 'northwest-territories', label: 'Northwest Territories' },
-              { value: 'nova-scotia', label: 'Nova Scotia' },
-              { value: 'nunavut', label: 'Nunavut' },
-              { value: 'ontario', label: 'Ontario' },
-              { value: 'prince-edward-island', label: 'Prince Edward Island' },
-              { value: 'quebec', label: 'Québec' },
-              { value: 'saskatchewan', label: 'Saskatchewan' },
-              { value: 'yukon', label: 'Yukon' },
+              { value: 'Alberta', label: 'Alberta' },
+              { value: 'British Columbia', label: 'British Columbia' },
+              { value: 'Manitoba', label: 'Manitoba' },
+              { value: 'New Brunswick', label: 'New Brunswick' },
+              { value: 'Newfoundland and Labrador', label: 'Newfoundland and Labrador' },
+              { value: 'Northwest Territories', label: 'Northwest Territories' },
+              { value: 'Nova Scotia', label: 'Nova Scotia' },
+              { value: 'Nunavut', label: 'Nunavut' },
+              { value: 'Ontario', label: 'Ontario' },
+              { value: 'Prince Edward Island', label: 'Prince Edward Island' },
+              { value: 'Québec', label: 'Québec' },
+              { value: 'Saskatchewan', label: 'Saskatchewan' },
+              { value: 'Yukon', label: 'Yukon' },
             ]}
           />
         </Grid>
@@ -130,4 +130,4 @@ const Personal = ({ isDisabled }) => {
   );
 };
 
-export { Personal };
+export { PrimaryContactInformation };

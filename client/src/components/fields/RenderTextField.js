@@ -10,7 +10,7 @@ const RenderTextField = ({
   options,
   ...props
 }) => {
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>

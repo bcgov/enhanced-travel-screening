@@ -1,19 +1,19 @@
-import Box from '@material-ui/core/Box';
 import React, { useState } from 'react';
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import moment from 'moment';
 import { Formik, Form } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../../constants';
-import { today } from '../../utils';
+import { dateToString } from '../../utils';
 
 import { Card } from '../generic';
 import { SubmissionInfo } from './SubmissionInfo';
 import { Summary } from './Summary';
-import { Personal } from './Personal';
-import { AdditionalTravellers } from './AdditionalTravellers';
-import { Arrival } from './Arrival';
-import { IsolationPlan } from './IsolationPlan';
+import { PrimaryContactInformation } from './PrimaryContactInformation';
+import { TravelInformation } from './TravelInformation';
+import { SelfIsolationPlan } from './SelfIsolationPlan';
 import { Certify } from './Certify';
 import { Contact } from './Contact';
 
@@ -22,25 +22,35 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   const formValues = initialValues ? initialValues : {
+
+    // Primary contact information
     firstName: '',
     lastName: '',
-    dob: '1990/01/01',
+    dob: '',
     telephone: '',
     email: '',
     address: '',
     city: '',
     province: '',
     postalCode: '',
+
+    // Travel information
     includeAdditionalTravellers: null,
-    additionalTravelers: [],
+    additionalTravellers: [],
     arrival: {
-      date: today,
+      date: dateToString(moment.now()),
       by: '',
       from: '',
       flight: '',
     },
+
+    // Self isolation plan
     accommodations: null,
-    isolationPlan: null,
+    isolationPlan: {
+      type: '',
+      city: '',
+      address: '',
+    },
     accommodationAssistance: null,
     supplies: null,
     transportation: [],
@@ -49,10 +59,17 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
+
+    // Sanitize fields...
+    const valuesCopy = { ...values };
+    if (!valuesCopy.isolationPlan.type && !valuesCopy.isolationPlan.city && !valuesCopy.isolationPlan.address) {
+      valuesCopy.isolationPlan = null;
+    }
+
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify({ ...values }),
+      body: JSON.stringify({ ...valuesCopy }),
     });
     if (response.ok) {
       const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
@@ -60,6 +77,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
         setSubmitError(error.message || 'Failed to submit this form');
       } else {
         history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
+        return;
       }
     } else {
       setSubmitError(response.error || response.statusText || 'Server error');
@@ -72,7 +90,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
 
       {isDisabled && (
         <Box pl={2.5} pr={2.5} pb={3}>
-          <SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />)
+          <SubmissionInfo isolationPlanStatus={formValues.isolationPlanStatus} id={confirmationNumber} isPdf={isPdf} />
         </Box>
       )}
 
@@ -87,15 +105,14 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
           {/*TODO: Add validation Schema once complete */}
           <Formik
             initialValues={formValues}
-            // validationSchema={SubmissionFormSchema}
+            // validationSchema={FormSchema}
             onSubmit={handleSubmit}
           >
             <Form>
               <Grid container spacing={2}>
-                <Personal isDisabled={isDisabled} />
-                <AdditionalTravellers isDisabled={isDisabled} />
-                <Arrival isDisabled={isDisabled} />
-                <IsolationPlan isDisabled={isDisabled} />
+                <PrimaryContactInformation isDisabled={isDisabled} />
+                <TravelInformation isDisabled={isDisabled} />
+                <SelfIsolationPlan isDisabled={isDisabled} />
                 {!isDisabled && <Certify submitLoading={submitLoading} submitError={submitError} />}
               </Grid>
             </Form>
@@ -103,7 +120,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
         </Card>
       </Box>
 
-      {!isDisabled && (
+      {(!isPdf && !isDisabled) && (
         <Box pt={4} pb={4} pl={2.5} pr={2.5}>
           <Contact />
         </Box>

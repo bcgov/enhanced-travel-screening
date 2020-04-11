@@ -6,7 +6,7 @@ import { Field, useFormikContext } from 'formik';
 import { Divider } from '../generic';
 import { RenderCheckboxGroup, RenderRadioGroup, RenderSelectField, RenderTextField } from '../fields';
 
-const IsolationPlan = ({ isDisabled }) => {
+const SelfIsolationPlan = ({ isDisabled }) => {
   const { values } = useFormikContext();
   return (
     <Grid item xs={12}>
@@ -36,7 +36,7 @@ const IsolationPlan = ({ isDisabled }) => {
           <Fragment>
             <Grid item xs={12} md={6}>
               <Field
-                name="isolationPlan.city"
+                name="isolationPlan.type"
                 component={RenderSelectField}
                 label="* Isolation Type"
                 disabled={isDisabled}
@@ -49,7 +49,7 @@ const IsolationPlan = ({ isDisabled }) => {
             </Grid>
             <Grid item xs={12} md={6}>
               <Field
-                name="isolationPlan.address"
+                name="isolationPlan.city"
                 component={RenderTextField}
                 label="* Which city will you be isolating in?"
                 disabled={isDisabled}
@@ -57,7 +57,7 @@ const IsolationPlan = ({ isDisabled }) => {
             </Grid>
             <Grid item xs={12} md={6}>
               <Field
-                name="isolationPlan.type"
+                name="isolationPlan.address"
                 component={RenderTextField}
                 label="* What is the address where you'll be staying?"
                 disabled={isDisabled}
@@ -115,4 +115,4 @@ const IsolationPlan = ({ isDisabled }) => {
   );
 };
 
-export { IsolationPlan };
+export { SelfIsolationPlan };

@@ -32,6 +32,7 @@ const AdminLogin = () => {
       const { token } = await response.json();
       window.localStorage.setItem('jwt', token);
       history.push(Routes.Lookup);
+      return;
     } else {
       setSubmitError(response.error || response.statusText || response);
     }

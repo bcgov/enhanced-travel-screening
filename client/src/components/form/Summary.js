@@ -19,7 +19,8 @@ const Summary = () => {
         Self-Isolation Plan
       </Typography>
       <Typography variant="body1" gutterBottom>
-        B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to declare your journey details and how you plan to self isolate. Please complete the form below.
+        B.C. has declared a state of emergency. To ensure the safety of all British Columbians you are being asked to
+        declare your journey details and how you plan to self isolate. Please complete the form below.
       </Typography>
       <Typography variant="body1" gutterBottom className={classes.mt1}>
         Need help with your self isolation plan? {window.innerWidth < 600 && <br />}

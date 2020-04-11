@@ -7,7 +7,6 @@ import { Header } from './Header';
 const useStyles = makeStyles(() => ({
   root: {
     height: 'calc(100vh - 82px)',
-    backgroundColor: '#F5F6FA',
   },
 }));
 

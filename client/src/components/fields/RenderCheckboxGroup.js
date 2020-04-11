@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { InputFieldLabel, InputFieldError } from '../generic';
-import { RenderCheckbox } from './RenderCheckbox';
 
 const RenderCheckboxGroup = ({
   field,
@@ -10,18 +11,23 @@ const RenderCheckboxGroup = ({
   options,
   ...props
 }) => {
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       {options.map((option) => (
-        <RenderCheckbox
+        <FormControlLabel
           key={option.value}
-          form={form}
-          field={{ ...field, value: option.value }}
-          label={option.label}
-          checked={field.value.includes(option.value)}
+          label={<InputFieldLabel label={option.label} />}
+          control={
+            <Checkbox
+              color="primary"
+              value={option.value}
+              checked={field.value.includes(option.value)}
+            />
+          }
+          {...field}
           {...props}
         />
       ))}
