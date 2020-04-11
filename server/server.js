@@ -5,10 +5,13 @@ const { randomBytes } = require('crypto');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 const createPdf = require('./pdf.js');
+const requireHttps = require('./require-https.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
 const app = express();
+
+app.use(requireHttps);
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
