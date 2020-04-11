@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import DesktopLogo from '../../assets/images/desktop-logo.svg';
-import MobileLogo from '../../assets/images/mobile-logo.svg';
+import MobileLogo from '../../assets/images/traveller-support-mobile-outlined-v2.svg';
 import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -80,7 +80,7 @@ const Header = () => {
               color="inherit"
               onClick={handleSubmissionLookupClick}
             >
-              Submission Lookup
+              <Hidden smDown>Submission</Hidden> Lookup
             </Button>
           )}
           {(isLookupScreen || isLookupResultsScreen) && (

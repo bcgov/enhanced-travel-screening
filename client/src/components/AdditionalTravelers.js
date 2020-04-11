@@ -15,9 +15,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalTravellers, isDisabled }) => {
-  const [additionalTravellers, setAdditionalTravellers] = useState([]);
-  const [numberAdditionalTravellers, setNumberAdditionalTravellers] = useState(0);
+const AdditionalTravellers = ({ classes, saveAdditionalTravellers, formValues, toggleAdditionalTravellers, isDisabled }) => {
+  const [additionalTravellers, setAdditionalTravellers] = useState(isDisabled ? formValues.additionalTravellers : []);
+  const [numberAdditionalTravellers, setNumberAdditionalTravellers] = useState(isDisabled ? formValues.additionalTravellers.length : 0);
   const blankTraveller = (index) => ({
     firstName: '',
     lastName: '',
@@ -34,7 +34,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
     let updatedList = [...additionalTravellers]
     updatedList[index] = thisTraveller
     setAdditionalTravellers([...updatedList])
-    saveInfo([...updatedList])
+    saveAdditionalTravellers([...updatedList])
   }
   const changeNumberOfTravellers = (number) => {
     setNumberAdditionalTravellers(number)
@@ -43,7 +43,7 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
       additional.push(blankTraveller(i))
     }
     setAdditionalTravellers(additional)
-    saveInfo(additional)
+    saveAdditionalTravellers(additional)
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
   return (
@@ -167,7 +167,6 @@ const AdditionalTravellers = ({ classes, saveInfo, formValues, toggleAdditionalT
                       KeyboardButtonProps={{ 'aria-label': 'change date' }}
                     />
                   </MuiPickersUtilsProvider>
-
                 </Box>
               </Grid>
             </Grid>

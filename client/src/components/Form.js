@@ -91,7 +91,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     postalCode: '',
     dob: '1990/01/01',
     includeAdditionalTravellers: null,
-    additionalTravelers: [],
+    additionalTravellers: [],
     arrival: {
       date: today,
       by: '',
@@ -195,7 +195,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
         <CardContent>
           <Grid container>
             <Personal isDisabled={isDisabled} classes={classes} saveInfo={handleChange} formValues={formValues} />
-            <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveInfo={saveAdditionalTravellers} formValues={formValues} />
+            <AdditionalTravelers isDisabled={isDisabled} toggleAdditionalTravellers={toggleAdditionalTravellers} classes={classes} saveAdditionalTravellers={saveAdditionalTravellers} formValues={formValues} />
             <Arrival isDisabled={isDisabled} classes={classes} saveInfo={saveArrivalDetails} formValues={formValues} />
             {/* <Symptoms isDisabled={isDisabled} classes={classes} toggleSymptoms={toggleSymptoms} symptoms={formValues.symptoms}/> */}
             <IsolationPlan isDisabled={isDisabled} handleChange={handleChange} classes={classes} toggleAble={toggleAble} formValues={formValues} saveIsolationPlan={saveIsolationPlan} toggleAccomodations={toggleAccomodations} />
@@ -235,11 +235,9 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
           </Grid>
         </CardContent>
       </Card>
-
-
-      <Box padding="1rem">
+      {(!isPdf && !isDisabled) && <Box padding="1rem">
         <Contact classes={classes} />
-      </Box>
+      </Box>}
     </Grid>
   );
 };

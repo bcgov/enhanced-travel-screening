@@ -23,9 +23,7 @@ const IsolationPlan = ({ classes, toggleAccomodations, toggleAble, saveIsolation
   }
   const computeRadioValue = (val) => val === null ? null : val ? "yes" : "no"
   const updateTransportation = ({ target: { name, checked }}) => {
-    console.log(`${name} ${checked}`);
     const updatedTransportationArray = transportation.indexOf(name) === -1 ? [...transportation, name] : transportation.filter(t => t !== name);
-    console.dir(updatedTransportationArray)
     handleChange({ target: { name: "transportation", value: updatedTransportationArray }});
   }
   return (
