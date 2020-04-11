@@ -71,8 +71,8 @@ pipeline-build:
 
 pipeline-push:
 	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	@$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
-	#@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
+	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
