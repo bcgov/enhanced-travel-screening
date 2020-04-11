@@ -89,7 +89,7 @@ const Form = ({ initialValues, isDisabled, confirmationNumber = null, isPdf = fa
     city: '',
     province: '',
     postalCode: '',
-    dob: '1990/01/01',
+    dob: '',
     includeAdditionalTravellers: null,
     additionalTravellers: [],
     arrival: {

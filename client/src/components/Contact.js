@@ -23,7 +23,7 @@ const Contact = function({ classes }) {
           </p>
           <p><b>Within Canada</b></p>
           <p>
-            <Button className={classes.contactButton} color="primary" variant="outlined">Text&nbsp;<a className={classes.isPrimary} href="tel:+16046300300">1-604-630-0300</a></Button>
+            <Button className={classes.contactButton} color="primary" variant="outlined">Text&nbsp;<a className={classes.isPrimary} href="sms:+16046300300">1-604-630-0300</a></Button>
           </p>
           <p>
             <Button className={classes.contactButton} color="primary" variant="outlined">Call&nbsp;<a className={classes.isPrimary} href="tel:+1888COVID19">1-888-COVID19</a></Button>
@@ -33,7 +33,9 @@ const Contact = function({ classes }) {
           <hr />
           <p><b>Telephone for the Deaf</b></p>
           <p>
-            <Button className={classes.contactButton} color="primary" variant="outlined">Across B.C. Dial 711</Button>
+            <Button className={classes.contactButton} color="primary" variant="outlined">
+              <a className={classes.isPrimary} href="tel:+711">Across B.C. Dial 711</a>
+            </Button>
           </p>
           <hr />
           <p><b>Translation Services</b></p>
