@@ -203,7 +203,7 @@ const AdminLookupResults = ({ match: { params }}) => {
              isPdf={false}
            />
            <Hidden mdUp>
-             <Box p={2}>
+             <Box p={4}>
                <Button
                  text="Submit Determination"
                  onClick={() => setMobileDrawerOpen(true)}
