@@ -136,24 +136,6 @@ function Confirmation ({ location: { state } }) {
                 </Grid>
               </CardContent>
             </Card>
-            {accessToken &&
-              <Card variant="outlined" style={{ marginTop: "1.5rem" }}>
-                <CardContent>
-                  <Grid item xs={12} md={6} style={{ margin: "auto" }}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      color="primary"
-                      style={{ marginTop: "1rem" }}
-                      onClick={genPDF}
-                      fullWidth
-                    >
-                      Download Submission PDF
-                    </Button>
-                  </Grid>
-                </CardContent>
-              </Card>
-            }
           </Grid>
         }
       </Grid>
