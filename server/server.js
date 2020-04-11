@@ -46,8 +46,8 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     } catch (error) {
       return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
     }
-    const isolationPlanStatus = scrubbed.accommodations
-      && !scrubbed.accommodationAssistance && scrubbed.supplies;
+    const isolationPlanStatus = scrubbed.accomodations
+      && scrubbed.ableToIsolate && scrubbed.supplies;
     const item = {
       TableName: formsTable,
       Item: {
