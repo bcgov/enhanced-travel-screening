@@ -1,16 +1,15 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import { Formik, Form, Field } from 'formik';
+import { Redirect, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
 
 import { SidebarSchema } from '../validation-schemas';
-
 import { Routes } from '../constants';
+
 import UserForm from '../components/form';
 import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
