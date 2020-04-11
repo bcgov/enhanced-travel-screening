@@ -92,6 +92,7 @@ const FormSchema = yup.object().noUnknown().shape({
   certified: yup.boolean().required().test('is-true', '${path} is not true', (v) => v === true),
 });
 
+
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
