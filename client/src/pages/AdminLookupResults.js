@@ -100,7 +100,7 @@ const AdminLookupResults = ({ match: { params }}) => {
 
   return submitSuccess ? <Redirect to={Routes.Lookup} /> : (
    <Page>
-     {(lookupLoading || !lookupError) ? (
+     {(lookupLoading || lookupError) ? (
        <div className={classes.statusWrapper}>
          {lookupLoading && <CircularProgress />}
          {lookupError && (

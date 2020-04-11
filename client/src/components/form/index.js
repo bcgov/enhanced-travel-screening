@@ -43,7 +43,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
     isolationPlan: null,
     accommodationAssistance: null,
     supplies: null,
-    transportation: ['public'],
+    transportation: [],
     certified: false,
   };
 
