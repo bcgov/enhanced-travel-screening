@@ -23,7 +23,7 @@ const scrubObject = (obj) => {
     if (typeof scrubbed[key] === 'object' && scrubbed[key] !== null) {
       scrubbed[key] = scrubObject(scrubbed[key]); // Nested object
     } else if (scrubbed[key] === '') {
-      delete scrubbed[key]; // Delete empty string
+      scrubbed[key] = null; // Null instead of empty for DynamoDB
     }
   });
   return scrubbed;
