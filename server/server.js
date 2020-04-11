@@ -35,7 +35,6 @@ app.post(`${apiBaseUrl}/login`,
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
-    console.dir(req.body)
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
     // determine if isolation plan can default to accepted
@@ -51,6 +50,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       TableName: formsTable,
       Item: {
         ...scrubbed,
+        created_at: new Date().toISOString(),
         id,
         healthStatus,
         isolationPlanStatus,
@@ -80,10 +80,11 @@ app.patch(`${apiBaseUrl}/form/:id`,
     const params = {
       TableName: formsTable,
       Key: { id },
-      UpdateExpression: 'set notes = :n, determination = :d',
+      UpdateExpression: 'set notes = :n, determination = :d, updated_at = :t',
       ExpressionAttributeValues: {
         ':n': req.body.notes,
         ':d': req.body.determination,
+        ':t': new Date().toISOString(),
       },
       ConditionExpression: 'attribute_exists(id)',
       ReturnValues: 'UPDATED_NEW',
