@@ -68,7 +68,7 @@ const AdminLookupResults = ({ match: { params }}) => {
       if (response.ok) {
         const { determination, notes, ...rest } = await response.json();
         setInitialUserFormValues(rest);
-        setInitialSidebarValues({ determination, notes });
+        setInitialSidebarValues({ determination: determination || '', notes: notes || '' });
       } else {
         setLookupError(`Failed to find submission with ID ${params.id}`);
       }
