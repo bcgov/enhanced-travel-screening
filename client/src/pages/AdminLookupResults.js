@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -9,6 +10,7 @@ import { useHistory } from 'react-router-dom';
 
 import { SidebarSchema } from '../validation-schemas';
 
+import { Routes } from '../constants';
 import UserForm from '../components/Form';
 import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
@@ -86,11 +88,13 @@ const AdminLookupResults = ({ match: { params }}) => {
     });
 
     if (response.ok) setSubmitSuccess(true);
-    else setSubmitError(response.error || 'Failed to update this submission.');
-    setSubmitLoading(false);
+    else {
+       setSubmitError(response.error || 'Failed to update this submission.');
+       setSubmitLoading(false);
+     }
   };
 
-  return (
+  return submitSuccess ? <Redirect to={Routes.Lookup} /> : (
    <Page>
      {(lookupLoading || lookupError) ? (
        <div className={classes.statusWrapper}>
