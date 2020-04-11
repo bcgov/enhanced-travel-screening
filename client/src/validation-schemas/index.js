@@ -48,7 +48,7 @@ const FormSchema = yup.object().noUnknown().shape({
   city: yup.string().required(),
   province: yup.string().required().oneOf(provinces),
   // postalCode: yup.string().required().matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
-  postalCode: yup.string().defined().test('is-nullable-string', '${path} is empty', (v) => v == null || v.length > 0),
+  postalCode: yup.string().defined(),
   dob: yup.string().required().test('is-date', '${path} is not a valid date', validateDateString),
 
   // Travel information
@@ -68,7 +68,7 @@ const FormSchema = yup.object().noUnknown().shape({
     date: yup.string().required().test('is-date', '${path} is not a valid date', validateDateString),
     by: yup.string().required().oneOf(['air', 'sea', 'land']),
     from: yup.string().required(),
-    flight: yup.string().defined().test('is-nullable-string', '${path} is empty', (v) => v == null || v.length > 0),
+    flight: yup.string().defined(),
   }),
 
   // Isolation plan
