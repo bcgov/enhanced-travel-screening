@@ -113,3 +113,29 @@ gh-pipeline-deploy-version:
 	@aws s3 cp $(call deployTag).zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag).zip
 	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
 	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
+
+##########################################
+# IMG Promotion commands #
+##########################################
+pipeline-promote-prep:
+	@echo "--------------------------------------------------------------------------------";
+	@echo "NOTE: This requires the PROMOTE_FROM_TAG and PROMOTE_TO_TAG be set in .build/image_promote.sh"
+	@echo "--------------------------------------------------------------------------------";
+	@echo "\nPromoting to Image Registry...\n"
+	@.build/promote_img.sh
+
+pipeline-promote-staging:
+	@echo "+\n++ Promoting to Elasticbeanstalk [PRE-PROD/STAGING]...\n+"
+	@zip -r $(call deployTag)_staging.zip  Dockerrun.aws.json
+	@aws --profile $(PROFILE) configure set region $(REGION)
+	@aws --profile $(PROFILE) s3 cp $(call deployTag)_staging.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_staging.zip
+	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_staging.zip"
+	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name enhanced-travel-screening-test2 --version-label $(call deployTag)
+
+pipeline-promote-prod:
+	@echo "+\n++ Promoting to Elasticbeanstalk [PRODUCTION]...\n+"
+	@zip -r $(call deployTag)_prod.zip  Dockerrun.aws.json
+	@aws --profile $(PROFILE) configure set region $(REGION)
+	@aws --profile $(PROFILE) s3 cp $(call deployTag)_prod.zip s3://$(S3_BUCKET)/$(PROJECT)/$(call deployTag)_prod.zip
+	@aws --profile $(PROFILE) elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag)_prod.zip"
+	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name enhanced-travel-screening-prod --version-label $(call deployTag)
