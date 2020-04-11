@@ -1,3 +1,4 @@
+import 'react-app-polyfill/ie11';
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import MomentUtils from '@date-io/moment';
