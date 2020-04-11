@@ -49,7 +49,9 @@ const TravelInformation = ({ isDisabled }) => {
                       value={values.additionalTravellers.length || ''}
                       onChange={(e) => {
                         const value = e.target.value;
-                        for (let i = 0; i < value; i++) arrayHelpers.push({ firstName: '', lastName: '', dob: '' });
+                        let travellers = [];
+                        for (let i = 0; i < value; i++) travellers.push({ firstName: '', lastName: '', dob: '' });
+                        arrayHelpers.form.setFieldValue('additionalTravellers', travellers);
                       }}
                       options={[
                         { value: 1, label: '1' },

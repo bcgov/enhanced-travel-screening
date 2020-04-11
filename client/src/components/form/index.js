@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../../constants';
 import { dateToString } from '../../utils';
+import { FormSchema } from '../../validation-schemas';
 
 import { Card } from '../generic';
 import { SubmissionInfo } from './SubmissionInfo';
@@ -102,10 +103,9 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
 
       <Box pl={2} pr={2}>
         <Card>
-          {/*TODO: Add validation Schema once complete */}
           <Formik
             initialValues={formValues}
-            // validationSchema={FormSchema}
+            validationSchema={FormSchema}
             onSubmit={handleSubmit}
           >
             <Form>
