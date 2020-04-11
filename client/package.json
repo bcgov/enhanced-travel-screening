@@ -16,6 +16,7 @@
     "formik": "^2.1.4",
     "moment": "^2.24.0",
     "react": "^16.13.1",
+    "react-app-polyfill": "^1.0.6",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "yup": "^0.28.3"
