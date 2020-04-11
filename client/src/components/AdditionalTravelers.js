@@ -154,7 +154,7 @@ const AdditionalTravellers = ({ classes, saveAdditionalTravellers, formValues, t
                   <MuiPickersUtilsProvider utils={MomentUtils}>
                     <InputLabel htmlFor="dob">* Date of birth (yyyy/mm/dd)</InputLabel>
                     <KeyboardDatePicker
-                      style={{marginTop: '4px'}}
+                      style={{ marginTop: '4px' }}
                       format="YYYY/MM/DD"
                       id="dob"
                       disableFuture
@@ -163,7 +163,7 @@ const AdditionalTravellers = ({ classes, saveAdditionalTravellers, formValues, t
                       onChange={(date) => handleDateChange(date, traveller.index)}
                       inputVariant="filled"
                       openTo="year"
-                      value={traveller.dob || '1990/01/01'}
+                      value={traveller.dob}
                       KeyboardButtonProps={{ 'aria-label': 'change date' }}
                     />
                   </MuiPickersUtilsProvider>
