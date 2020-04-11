@@ -37,6 +37,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
+    if (scrubbed.certified !== true) return res.status(422).json({ error: 'Must certify to be accurate' });
     // determine if isolation plan can default to accepted
     const {
       symptoms,
@@ -60,14 +61,14 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ConditionExpression: 'attribute_not_exists(id)',
     };
     await db.put(item).promise();
-    res.json({
+    return res.json({
       id,
       healthStatus,
       isolationPlanStatus,
       accessToken: generateJwt(id, 'pdf'),
     });
   } catch (error) {
-    res.status(500).json({ error: `Failed to create submission. ${error.message}` });
+    return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
 });
 
