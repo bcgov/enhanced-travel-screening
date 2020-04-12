@@ -18,6 +18,22 @@ import { SelfIsolationPlan } from './SelfIsolationPlan';
 import { Certify } from './Certify';
 import { Contact } from './Contact';
 
+const handleSubmission = (submission) => {
+  const modified = { ...submission };
+
+  if (!modified.isolationPlan.type && !modified.isolationPlan.city && !modified.isolationPlan.address) {
+    modified.isolationPlan = null;
+  }
+
+  if (!modified.includeAdditionalTravellers) {
+    modified.additionalTravellers = [];
+  }
+
+  delete modified.numberOfAdditionalTravellers;
+
+  return modified;
+};
+
 export default ({ initialValues = null, isDisabled, confirmationNumber = null, isPdf = false }) => {
   const history = useHistory();
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -62,20 +78,11 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
 
-    // Sanitize fields...
-    const valuesCopy = { ...values };
-    if (!valuesCopy.isolationPlan.type && !valuesCopy.isolationPlan.city && !valuesCopy.isolationPlan.address) {
-      valuesCopy.isolationPlan = null;
-    }
-    if (!valuesCopy.includeAdditionalTravellers) {
-      valuesCopy.numberOfAdditionalTravellers = 0;
-      valuesCopy.additionalTravellers = [];
-    }
-
+    const modifiedValues = handleSubmission(values);
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify({ ...valuesCopy }),
+      body: JSON.stringify({ ...modifiedValues }),
     });
     if (response.ok) {
       const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
