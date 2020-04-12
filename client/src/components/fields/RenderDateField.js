@@ -12,7 +12,7 @@ const RenderDateField = ({
   label,
   ...props
 }) => {
-  const [_, __, helpers] = useField(field.name);
+  const [, , helpers] = useField(field.name);
   const { setValue, setTouched } = helpers;
   return (
     <Fragment>
