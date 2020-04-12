@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import TextField from '@material-ui/core/TextField';
+import { ErrorMessage } from 'formik';
 
 import { InputFieldLabel, InputFieldError } from '../generic';
 
@@ -10,7 +11,7 @@ const RenderTextField = ({
   options,
   ...props
 }) => {
-  const touched = form.errors[field.name];
+  const touched = form.touched[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>
@@ -22,7 +23,7 @@ const RenderTextField = ({
         {...field}
         {...props}
       />
-      {(touched && error) && <InputFieldError error={error} />}
+      <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>
   );
 };

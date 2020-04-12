@@ -1,17 +1,19 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import Box from '@material-ui/core/Box';
 import { Formik, Form, Field } from 'formik';
+import { Redirect, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
 
 import { SidebarSchema } from '../validation-schemas';
-
 import { Routes } from '../constants';
-import UserForm from '../components/Form';
+
+import UserForm from '../components/form';
 import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
 
@@ -26,6 +28,16 @@ const useStyles = makeStyles((theme) => ({
   formWrapper: {
     height: '100%',
     overflowY: 'auto',
+    padding: theme.spacing(4, 6),
+    [theme.breakpoints.down('md')]: {
+      padding: theme.spacing(4, 2),
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(4, 0),
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2, 0),
+    },
   },
   sidebarWrapper: {
     height: '100%',
@@ -40,9 +52,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Intended to adapt old, invalid versions of the form to display (mostly) correctly
+// Could remap field names, handle unexpected data types, etc. if migrations have not yet been run against DB
+const adaptSubmission = (submission) => {
+  const modified = { ...submission };
+  if (submission.includeAdditionalTravellers === true 
+    && typeof submission.numberOfAdditionalTravellers === 'undefined'
+    && Array.isArray(submission.additionalTravellers)) {
+    modified.numberOfAdditionalTravellers = submission.additionalTravellers.length;
+  }
+  return modified;
+};
+
 const AdminLookupResults = ({ match: { params }}) => {
   const classes = useStyles();
   const history = useHistory();
+  const [isMobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [lookupError, setLookupError] = useState(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -69,7 +94,8 @@ const AdminLookupResults = ({ match: { params }}) => {
 
       if (response.ok) {
         const { determination, notes, ...rest } = await response.json();
-        setInitialUserFormValues(rest);
+        const submission = adaptSubmission(rest);
+        setInitialUserFormValues(submission);
         setInitialSidebarValues({ determination: determination || '', notes: notes || '' });
       } else {
         setLookupError(`Failed to find submission with ID ${params.id}`);
@@ -94,97 +120,126 @@ const AdminLookupResults = ({ match: { params }}) => {
      }
   };
 
+  const renderSidebar = () => (
+    <Grid className={classes.sidebarWrapper} item xs={12} md={4}>
+      <Formik
+        initialValues={initialSidebarValues}
+        validationSchema={SidebarSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form>
+          <Grid container spacing={3}>
+
+            {/** Title */}
+            <Grid item xs={12}>
+              <Typography className={classes.sidebarTitle} variant="h2">
+                Provincial Official Determination
+              </Typography>
+              <Divider />
+            </Grid>
+
+            {/** Determination */}
+            <Grid item xs={12}>
+              <Typography paragraph variant="body1"><b>Determination*</b></Typography>
+              <Field
+                name="determination"
+                component={RenderButtonGroup}
+                options={[
+                  { value: 'support', label: 'Support Needed', color: 'secondary' },
+                  { value: 'accepted', label: 'No Support Needed', color: 'primary' },
+                ]}
+              />
+            </Grid>
+
+            {/** Notes */}
+            <Grid item xs={12}>
+              <Typography paragraph variant="body1"><b>Notes*</b></Typography>
+              <Field
+                name="notes"
+                component={RenderTextField}
+                placeholder="Add notes to support your decision..."
+                variant="outlined"
+                multiline
+                rows={10}
+              />
+            </Grid>
+
+            {/** Submit */}
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                text="Submit"
+                loading={submitLoading}
+              />
+            </Grid>
+
+            {/** Submit Success / Error */}
+            <Grid item xs={12}>
+              {submitError && <Typography color="error">{submitError}</Typography>}
+              {submitSuccess && <Typography color="primary">Submission Updated</Typography>}
+            </Grid>
+          </Grid>
+        </Form>
+      </Formik>
+    </Grid>
+  );
+
+  const renderLoading = () => <CircularProgress />;
+
+  const renderSubmitError = () => (
+    <Container maxWidth="sm" align="center">
+      <Typography paragraph>{lookupError.message || lookupError}</Typography>
+      <Button
+        text="Back to Lookup"
+        onClick={() => history.push(Routes.Lookup)}
+        fullWidth={false}
+      />
+    </Container>
+  );
+
   return submitSuccess ? <Redirect to={Routes.Lookup} /> : (
    <Page>
      {(lookupLoading || lookupError) ? (
        <div className={classes.statusWrapper}>
-         {lookupLoading && <CircularProgress />}
-         {lookupError && (
-           <Container maxWidth="sm" align="center">
-             <Typography paragraph>{lookupError.message || lookupError}</Typography>
-             <Button
-               text="Back to Lookup"
-               onClick={() => history.push('/lookup')}
-               fullWidth={false}
-             />
-           </Container>
-         )}
+         {lookupLoading && renderLoading()}
+         {lookupError && renderSubmitError()}
        </div>
      ) : (
        <Fragment>
 
          {/** Form */}
-         <Grid className={classes.formWrapper} item xs={12} md={8}>
+         <Grid className={classes.formWrapper} item xs={12} sm={11} md={8}>
            <UserForm
              initialValues={initialUserFormValues}
              isDisabled
              confirmationNumber={params.id}
              isPdf={false}
            />
+           <Hidden mdUp>
+             <Box p={4}>
+               <Button
+                 text="Submit Determination"
+                 onClick={() => setMobileDrawerOpen(true)}
+               />
+             </Box>
+           </Hidden>
          </Grid>
 
-         {/** Sidebar */}
-         <Grid className={classes.sidebarWrapper} item xs={12} md={4}>
-           <Formik
-             initialValues={initialSidebarValues}
-             validationSchema={SidebarSchema}
-             onSubmit={handleSubmit}
+         {/** Sidebar - Mobile */}
+         <Hidden mdUp>
+           <Drawer
+             anchor="right"
+             open={isMobileDrawerOpen}
+             onClose={() => setMobileDrawerOpen(false)}
            >
-             <Form>
-               <Grid container spacing={3}>
+             {renderSidebar()}
+           </Drawer>
+         </Hidden>
 
-                 {/** Title */}
-                 <Grid item xs={12}>
-                   <Typography className={classes.sidebarTitle} variant="h2">
-                     Provincial Official Determination
-                   </Typography>
-                   <Divider />
-                 </Grid>
-
-                 {/** Determination */}
-                 <Grid item xs={12}>
-                   <Typography paragraph variant="body1"><b>Determination*</b></Typography>
-                   <Field
-                     name="determination"
-                     component={RenderButtonGroup}
-                     options={[
-                       { value: 'support', label: 'Support Needed', color: 'secondary' },
-                       { value: 'accepted', label: 'No Support Needed', color: 'primary' },
-                     ]}
-                   />
-                 </Grid>
-
-                 {/** Notes */}
-                 <Grid item xs={12}>
-                   <Typography paragraph variant="body1"><b>Notes*</b></Typography>
-                   <Field
-                     name="notes"
-                     component={RenderTextField}
-                     placeholder="Add notes to support your decision..."
-                     variant="outlined"
-                     multiline
-                     rows={10}
-                   />
-                 </Grid>
-
-                 {/** Submit */}
-                 <Grid item xs={12}>
-                   <Button
-                     type="submit"
-                     text="Submit"
-                     loading={submitLoading}
-                   />
-                 </Grid>
-
-                 {/** Submit Success / Error */}
-                 <Grid item xs={12}>
-                   {submitError && <Typography color="error">{submitError}</Typography>}
-                   {submitSuccess && <Typography color="primary">Submission Updated</Typography>}
-                 </Grid>
-               </Grid>
-             </Form>
-           </Formik>
-         </Grid>
+         {/** Sidebar - Desktop */}
+         <Hidden smDown>
+           {renderSidebar()}
+         </Hidden>
        </Fragment>
      )}
    </Page>

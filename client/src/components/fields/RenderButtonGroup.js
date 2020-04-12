@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
-import { useField } from 'formik';
+import { ErrorMessage, useField } from 'formik';
 
 import { InputFieldError } from '../generic';
 
@@ -33,7 +33,6 @@ const RenderButtonGroup = ({
   const classes = useStyles();
   const [_, __, helpers] = useField(field.name);
   const { setValue } = helpers;
-  const touched = form.errors[field.name];
   const error = form.errors[field.name];
   return (
     <Fragment>
@@ -45,7 +44,7 @@ const RenderButtonGroup = ({
       >
         {options.map((option) => (
           <Button
-            className={classnames(classes.button, { [classes.buttonError]: !!error })}
+            className={classNames(classes.button, { [classes.buttonError]: !!error })}
             key={option.value}
             onClick={(e) => setValue(option.value)}
             variant={(option.value === field.value) ? 'contained' : 'outlined'}
@@ -55,7 +54,7 @@ const RenderButtonGroup = ({
           </Button>
         ))}
       </ButtonGroup>
-      {(touched && error) && <InputFieldError error={error} />}
+      <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>
   );
 };
