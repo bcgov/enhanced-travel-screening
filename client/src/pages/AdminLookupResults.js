@@ -10,8 +10,9 @@ import { Formik, Form, Field } from 'formik';
 import { Redirect, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { SidebarSchema } from '../validation-schemas';
+import { DeterminationSchema } from '../validation-schemas';
 import { Routes } from '../constants';
+import { adaptSubmission } from '../utils';
 
 import UserForm from '../components/form';
 import { Page, Button, Divider } from '../components/generic';
@@ -51,18 +52,6 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '24px',
   },
 }));
-
-// Intended to adapt old, invalid versions of the form to display (mostly) correctly
-// Could remap field names, handle unexpected data types, etc. if migrations have not yet been run against DB
-const adaptSubmission = (submission) => {
-  const modified = { ...submission };
-  if (submission.includeAdditionalTravellers === true 
-    && typeof submission.numberOfAdditionalTravellers === 'undefined'
-    && Array.isArray(submission.additionalTravellers)) {
-    modified.numberOfAdditionalTravellers = submission.additionalTravellers.length;
-  }
-  return modified;
-};
 
 const AdminLookupResults = ({ match: { params }}) => {
   const classes = useStyles();
@@ -124,7 +113,7 @@ const AdminLookupResults = ({ match: { params }}) => {
     <Grid className={classes.sidebarWrapper} item xs={12} md={4}>
       <Formik
         initialValues={initialSidebarValues}
-        validationSchema={SidebarSchema}
+        validationSchema={DeterminationSchema}
         onSubmit={handleSubmit}
       >
         <Form>

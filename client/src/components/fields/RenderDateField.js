@@ -22,7 +22,6 @@ const RenderDateField = ({
         value={!field.value ? null : stringToDate(field.value)}
         onChange={(value) => setValue(dateToString(value))}
         onBlur={() => setTouched(true)}
-        onClose={() => setTouched(true)}
         invalidDateMessage={null}
         minDateMessage={null}
         maxDateMessage={null}
