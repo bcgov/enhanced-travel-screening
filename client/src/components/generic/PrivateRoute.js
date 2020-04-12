@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { Route, Redirect } from 'react-router-dom';
 
-import { Routes } from '../constants';
-import { verifyJWT } from '../utils';
+import { Routes } from '../../constants';
+import { verifyJWT } from '../../utils';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [isValid, setValidity] = useState(null);
@@ -26,4 +26,4 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-export default PrivateRoute;
+export { PrivateRoute };

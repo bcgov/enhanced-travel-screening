@@ -7,7 +7,7 @@ const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
-const { validate, FormSchema } = require('./validation.js');
+const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 
 
 const apiBaseUrl = '/api/v1';
@@ -106,6 +106,11 @@ app.patch(`${apiBaseUrl}/form/:id`,
   async (req, res) => {
     const { id } = req.params;
     if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
+    try {
+      await validate(DeterminationSchema, req.body);
+    } catch (error) {
+      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
+    }
     const params = {
       TableName: formsTable,
       Key: { id },

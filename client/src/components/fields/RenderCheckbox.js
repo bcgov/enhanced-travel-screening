@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { ErrorMessage } from 'formik';
 
 import { InputFieldLabel, InputFieldError } from '../generic';
 
@@ -10,25 +11,20 @@ const RenderCheckbox = ({
   label,
   ...props
 }) => {
-  const touched = form.errors[field.name];
-  const error = form.errors[field.name];
   return (
     <Fragment>
-      <Grid container alignItems="center" spacing={1}>
-        <Grid item>
+      <FormControlLabel
+        label={<InputFieldLabel label={label} />}
+        control={
           <Checkbox
             color="primary"
-            {...field}
-            {...props}
+            checked={field.value === true}
           />
-        </Grid>
-        {label && (
-          <Grid item>
-            <InputFieldLabel label={label} />
-          </Grid>
-        )}
-      </Grid>
-      {(touched && error) && <InputFieldError error={error} />}
+        }
+        {...field}
+        {...props}
+      />
+      <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>
   );
 };

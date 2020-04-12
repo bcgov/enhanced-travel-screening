@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import { useField } from 'formik';
+import { ErrorMessage, useField } from 'formik';
+
+import { dateToString, stringToDate } from '../../utils';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
@@ -12,24 +14,25 @@ const RenderDateField = ({
 }) => {
   const [_, __, helpers] = useField(field.name);
   const { setValue, setTouched } = helpers;
-  const touched = form.errors[field.name];
-  const error = form.errors[field.name];
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       <KeyboardDatePicker
         format="YYYY/MM/DD"
-        value={field.value}
+        value={!field.value ? null : stringToDate(field.value)}
+        onChange={(value) => setValue(dateToString(value))}
         onBlur={() => setTouched(true)}
         onClose={() => setTouched(true)}
-        onChange={(value) => setValue((value) ? value.format('YYYY/MM/DD') : '')}
         invalidDateMessage={null}
+        minDateMessage={null}
+        maxDateMessage={null}
         openTo="date"
         variant="dialog"
         inputVariant="filled"
+        fullWidth
         {...props}
       />
-      {(touched && error) && <InputFieldError error={error} />}
+      <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>
   );
 };
