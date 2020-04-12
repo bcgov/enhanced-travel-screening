@@ -1,5 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-const yup = require('yup');
+import * as yup from 'yup';
 
 const provinces = [
   'Alberta',
@@ -27,21 +27,21 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-const LoginSchema = yup.object().shape({
+export const LoginSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
 
-const LookupSchema = yup.object().shape({
+export const LookupSchema = yup.object().shape({
   confirmationNumber: yup.string().required('Confirmation number is required'),
 });
 
-const DeterminationSchema = yup.object().shape({
+export const DeterminationSchema = yup.object().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
 });
 
-const FormSchema = yup.object().noUnknown().shape({
+export const FormSchema = yup.object().noUnknown().shape({
   // Primary contact
   firstName: yup.string().required(),
   lastName: yup.string().required(),
@@ -100,9 +100,3 @@ const FormSchema = yup.object().noUnknown().shape({
   // Certify
   certified: yup.boolean().required().test('is-true', '${path} is not true', (v) => v === true),
 });
-
-const validate = async (schema, data) => schema.validate(data, { strict: true });
-
-module.exports = {
-  LoginSchema, LookupSchema, DeterminationSchema, FormSchema, validate,
-};
