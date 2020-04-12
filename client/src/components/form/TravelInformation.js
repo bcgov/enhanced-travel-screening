@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Field, FieldArray, useFormikContext } from 'formik';
@@ -7,7 +7,16 @@ import { Divider, Card } from '../generic';
 import { RenderDateField, RenderRadioGroup, RenderSelectField, RenderTextField } from '../fields';
 
 const TravelInformation = ({ isDisabled }) => {
-  const { values } = useFormikContext();
+  const { values, setFieldValue, setFieldTouched } = useFormikContext();
+
+  useEffect(() => {
+    if (!values.includeAdditionalTravellers) {
+      setFieldValue('additionalTravellers', []);
+      setFieldValue('numberOfAdditionalTravellers', 0);
+      setFieldTouched('numberOfAdditionalTravellers', false);
+    }
+  }, [setFieldValue, setFieldTouched, values.includeAdditionalTravellers]);
+
   return (
     <Fragment>
       <Grid item xs={12}>

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { Field, useFormikContext } from 'formik';
@@ -7,7 +7,16 @@ import { Divider } from '../generic';
 import { RenderCheckboxGroup, RenderRadioGroup, RenderSelectField, RenderTextField } from '../fields';
 
 const SelfIsolationPlan = ({ isDisabled }) => {
-  const { values } = useFormikContext();
+  const { values, setFieldValue } = useFormikContext();
+
+  useEffect(() => {
+    if (values.accomodations) {
+      setFieldValue('isolationPlan', { type: '', city: '', address: '', });
+    } else {
+      setFieldValue('isolationPlan', null);
+    }
+  }, [setFieldValue, values.accomodations]);
+
   return (
     <Grid item xs={12}>
       <Grid container spacing={3}>

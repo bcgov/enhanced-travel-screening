@@ -6,8 +6,8 @@ import { Formik, Form } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../../constants';
-import { dateToString } from '../../utils';
 import { FormSchema } from '../../validation-schemas';
+import { dateToString, handleSubmission } from '../../utils';
 
 import { Card } from '../generic';
 import { SubmissionInfo } from './SubmissionInfo';
@@ -17,22 +17,6 @@ import { TravelInformation } from './TravelInformation';
 import { SelfIsolationPlan } from './SelfIsolationPlan';
 import { Certify } from './Certify';
 import { Contact } from './Contact';
-
-const handleSubmission = (submission) => {
-  const modified = { ...submission };
-
-  if (!modified.isolationPlan.type && !modified.isolationPlan.city && !modified.isolationPlan.address) {
-    modified.isolationPlan = null;
-  }
-
-  if (!modified.includeAdditionalTravellers) {
-    modified.additionalTravellers = [];
-  }
-
-  delete modified.numberOfAdditionalTravellers;
-
-  return modified;
-};
 
 export default ({ initialValues = null, isDisabled, confirmationNumber = null, isPdf = false }) => {
   const history = useHistory();
@@ -79,6 +63,8 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
     setSubmitLoading(true);
 
     const modifiedValues = handleSubmission(values);
+    console.log(modifiedValues)
+
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
