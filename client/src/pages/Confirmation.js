@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -22,6 +22,17 @@ function Confirmation ({ location: { state } }) {
 
   const classes = useStyles();
   const { id, accessToken, isolationPlanStatus } = state || { id: null, accessToken: null };
+
+  useEffect(() => {
+    window.snowplow('trackSelfDescribingEvent', {
+      schema: 'iglu:ca.bc.gov.enhanced_travel/results/jsonschema/1-0-0',
+        data: {
+          status: isolationPlanStatus? 'success': 'fail',
+          confirmation_code: id
+        }
+      }
+    );
+  });
 
   const genPDF = async () => {
     const response = await fetch(`/api/v1/pdf`, {
