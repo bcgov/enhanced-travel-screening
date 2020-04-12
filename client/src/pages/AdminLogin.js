@@ -6,10 +6,11 @@ import { Formik, Form, Field } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../constants';
-import { LoginSchema } from '../validation-schemas';
 
 import { Page, Button, Card } from '../components/generic';
 import { RenderTextField } from '../components/fields';
+
+const { LoginSchema } = require('../validation-schemas');
 
 const AdminLogin = () => {
   const history = useHistory();

@@ -6,10 +6,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../constants';
-import { LookupSchema } from '../validation-schemas';
 
 import { Page, Card, Button } from '../components/generic';
 import { RenderTextField } from '../components/fields';
+
+const { LookupSchema } = require('../validation-schemas');
 
 const useStyles = makeStyles((theme) => ({
   confirmationNumber: {

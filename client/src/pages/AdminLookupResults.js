@@ -10,13 +10,14 @@ import { Formik, Form, Field } from 'formik';
 import { Redirect, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { DeterminationSchema } from '../validation-schemas';
 import { Routes } from '../constants';
 import { adaptSubmission } from '../utils';
 
 import UserForm from '../components/form';
 import { Page, Button, Divider } from '../components/generic';
 import { RenderButtonGroup, RenderTextField } from '../components/fields';
+
+const { DeterminationSchema } = require('../validation-schemas');
 
 const useStyles = makeStyles((theme) => ({
   statusWrapper: {

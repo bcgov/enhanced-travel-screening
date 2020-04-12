@@ -6,7 +6,6 @@ import { Formik, Form } from 'formik';
 import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../../constants';
-import { FormSchema } from '../../validation-schemas';
 import { dateToString } from '../../utils';
 
 import { Card } from '../generic';
@@ -17,6 +16,8 @@ import { TravelInformation } from './TravelInformation';
 import { SelfIsolationPlan } from './SelfIsolationPlan';
 import { Certify } from './Certify';
 import { Contact } from './Contact';
+
+const { FormSchema } = require('../../validation-schemas');
 
 export default ({ initialValues = null, isDisabled, confirmationNumber = null, isPdf = false }) => {
   const history = useHistory();
