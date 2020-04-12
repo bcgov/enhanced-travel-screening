@@ -163,7 +163,7 @@ const AdditionalTravellers = ({ classes, saveAdditionalTravellers, formValues, t
                       onChange={(date) => handleDateChange(date, traveller.index)}
                       inputVariant="filled"
                       openTo="year"
-                      value={traveller.dob}
+                      value={traveller.dob || '1990/01/01'}
                       KeyboardButtonProps={{ 'aria-label': 'change date' }}
                     />
                   </MuiPickersUtilsProvider>

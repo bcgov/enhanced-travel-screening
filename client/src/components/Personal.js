@@ -17,7 +17,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
   const handleDateChange = (date) => {
     saveInfo({ target: {
       name: 'dob',
-      value: date ? date.format('YYYY/MM/DD') : ''
+      value: date.format('YYYY/MM/DD')
     }})
   }
   return (
@@ -81,7 +81,7 @@ const Personal = ({ classes, saveInfo, formValues, isDisabled }) => {
                 inputVariant="filled"
                 disabled={isDisabled}
                 required
-                value={formValues.dob || ''}
+                value={formValues.dob || '01/01/1990'}
                 KeyboardButtonProps={{ 'aria-label': 'change date' }}
               />
             </MuiPickersUtilsProvider>
