@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
 import { verifyJWT } from '../utils';
 
-const PublicRoute = ({ component: Component, ...rest }) => {
+const PublicRoute = ({ adminRedirect, component: Component, ...rest }) => {
   const [isValid, setValidity] = useState(null);
 
   useEffect(() => {
@@ -16,7 +16,12 @@ const PublicRoute = ({ component: Component, ...rest }) => {
   }, []);
 
   return isValid === null ? <LinearProgress /> : (
-    <Route {...rest} render={(props) => <Component {...props} />}/>
+    <Route {...rest} render={(props) => (
+      (isValid && adminRedirect)
+        ? <Redirect to={adminRedirect} />
+        : <Component {...props} />
+      )}
+    />
   );
 };
 

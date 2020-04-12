@@ -122,7 +122,7 @@ const App = () => (
             <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
 
             {/* Admin routes */}
-            <PublicRoute exact path={Routes.Login} component={AdminLogin} />
+            <PublicRoute exact path={Routes.Login} component={AdminLogin} adminRedirect={Routes.Lookup} />
             <PrivateRoute exact path={Routes.Lookup} component={AdminLookup} />
             <PrivateRoute exact path={Routes.LookupResults.staticRoute} component={AdminLookupResults} />
 
