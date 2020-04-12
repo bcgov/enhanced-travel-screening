@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { Route, Redirect } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
-import { Routes } from '../constants';
 import { verifyJWT } from '../utils';
 
 const PublicRoute = ({ component: Component, ...rest }) => {
@@ -17,12 +16,7 @@ const PublicRoute = ({ component: Component, ...rest }) => {
   }, []);
 
   return isValid === null ? <LinearProgress /> : (
-    <Route {...rest} render={(props) => (
-      !isValid
-        ? <Component {...props} />
-        : <Redirect to={Routes.Lookup} />
-      )}
-    />
+    <Route {...rest} render={(props) => <Component {...props} />}/>
   );
 };
 
