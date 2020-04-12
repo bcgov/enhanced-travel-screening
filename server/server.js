@@ -6,6 +6,7 @@ const { passport, generateJwt, restrictToken } = require('./auth.js');
 const { db, formsTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
+const bcServiceExport = require('./bc-services.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
@@ -63,7 +64,9 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
-    await db.put(item).promise();
+    let val = await db.put(item).promise();
+    console.log(val);
+
     return res.json({
       id,
       healthStatus,
@@ -73,6 +76,8 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
+  
+
 });
 
 // Edit existing form

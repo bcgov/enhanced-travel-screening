@@ -1,7 +1,5 @@
 const axios = require('axios');
 const qs = require('querystring');
-const express = require('express');
-const app = express();
 
 const url = 'https://sso.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token';
 const submitURL = 'https://test-serviceflow.pathfinder.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start';
@@ -65,14 +63,15 @@ const postData = (db_data, token) => {
     },
   })
     .then((response) => {
-      console.log(response.data.id);
+      return { id: response.data.id };
     })
     .catch((error) => {
-      console.log(error.toJSON());
+      return { error: error.toJSON() };
     });
 };
 
-(async () => {
+const bcServiceExport = async (dbData) => {
+
   axios.post(url, qs.stringify(data), {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -80,10 +79,6 @@ const postData = (db_data, token) => {
     },
   })
     .then((response) => {
-      if (response.data.access_token) {
-        app.set('service_token', response.data.access_token);
-        app.set('expires_in', Date.now() + response.data.expires_in);
-      }
       postData({
         variables: {
           rawvariables: {
@@ -95,7 +90,8 @@ const postData = (db_data, token) => {
       response.data.access_token);
     })
     .catch((error) => {
-      console.log(error);
+      return { error: error.toJSON() };
     });
-  
-})();
+};
+
+module.exports = bcServiceExport;
