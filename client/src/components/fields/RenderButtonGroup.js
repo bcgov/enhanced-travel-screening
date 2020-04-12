@@ -31,7 +31,7 @@ const RenderButtonGroup = ({
   ...props
 }) => {
   const classes = useStyles();
-  const [_, __, helpers] = useField(field.name);
+  const [, , helpers] = useField(field.name);
   const { setValue } = helpers;
   const error = form.errors[field.name];
   return (
