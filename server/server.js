@@ -2,14 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
+const NodeCache = require('node-cache');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
-const { db, formsTable } = require('./database.js');
+const { db, formsTable, bcServicesTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
+const { getToken, postItem } = require('./utils/bcServices.js');
+
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
 const app = express();
+const appCache = new NodeCache();
 
 app.use(requireHttps);
 app.use(bodyParser.json());
@@ -51,19 +55,54 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const healthStatus = symptoms;
     const isolationPlanStatus = supplies && accomodations && ableToIsolate;
     const item = {
-      TableName: formsTable,
-      Item: {
-        ...scrubbed,
-        created_at: new Date().toISOString(),
-        id,
-        healthStatus,
-        isolationPlanStatus,
-        determination: null,
-        notes: null,
-      },
-      ConditionExpression: 'attribute_not_exists(id)',
+      ...scrubbed,
+      created_at: new Date().toISOString(),
+      id,
+      healthStatus,
+      isolationPlanStatus,
+      determination: null,
+      notes: null,
     };
-    await db.put(item).promise();
+
+    if (!appCache.get('BCServiceToken')) {
+      const data = await getToken();
+
+      appCache.set('BCServiceToken', {
+        service_token: data.access_token,
+      }, data.expires_in - 10);
+    }
+
+    const response = postItem(item, appCache.get('BCServiceToken').service_token);
+
+    const params = {
+      RequestItems: {
+        [formsTable]: [
+          {
+            PutRequest: {
+              Item: item,
+              ConditionExpression: 'attribute_not_exists(id)',
+            },
+          },
+        ],
+        [bcServicesTable]: [
+          {
+            PutRequest: {
+              Item: {
+                id: randomBytes(10).toString('hex').toUpperCase(),
+                confirmationId: item.id,
+                status: 'success',
+                bcServicesId: response.id,
+                createdAt: new Date().toISOString(),
+              },
+              ConditionExpression: 'attribute_not_exists(id)',
+            },
+          },
+        ],
+      },
+    };
+
+    await db.batchWrite(params).promise();
+
     return res.json({
       id,
       healthStatus,
