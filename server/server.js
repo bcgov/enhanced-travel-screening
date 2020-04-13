@@ -3,10 +3,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
-const { db, formsTable } = require('./database.js');
+const { db, formsTable, bcServicesTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
-const bcServiceExport = require('./bc-services.js');
+const { getToken, postItem } = require('./utils/bcServices.js');
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
@@ -64,8 +64,24 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
-    let val = await db.put(item).promise();
-    console.log(val);
+    const token = await getToken();
+    const response = postItem(item.Item, token);
+
+    const errorData = {
+      TableName: bcServicesTable,
+      Item: {
+        id: randomBytes(10).toString('hex').toUpperCase(),
+        confirmationId: item.id,
+        status: 'success',
+        bcServicesId: response.id,
+        createdAt: new Date().toISOString(),
+      },
+      ConditionExpression: 'attribute_not_exists(id)',
+    };
+    await db.put(errorData).promise();
+
+
+    await db.put(item).promise();
 
     return res.json({
       id,
@@ -76,7 +92,6 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
-  
 
 });
 

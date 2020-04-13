@@ -25,4 +25,17 @@ module.exports = [
       WriteCapacityUnits: 1,
     },
   },
+  {
+    TableName: 'ets-bcservices-development',
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+    ProvisionedThroughput: {
+      ReadCapacityUnits: 1,
+      WriteCapacityUnits: 1,
+    },
+  },
 ];
