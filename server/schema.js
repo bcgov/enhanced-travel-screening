@@ -26,7 +26,7 @@ module.exports = [
     },
   },
   {
-    TableName: 'ets-bcservices-development',
+    TableName: 'ets-servicebc-development',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],

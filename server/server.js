@@ -4,10 +4,10 @@ const path = require('path');
 const { randomBytes } = require('crypto');
 const NodeCache = require('node-cache');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
-const { db, formsTable, bcServicesTable } = require('./database.js');
+const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
-const { getToken, postItem } = require('./utils/bcServices.js');
+const { getToken, postItem } = require('./utils/ServiceBC.js');
 
 
 const apiBaseUrl = '/api/v1';
@@ -64,15 +64,15 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       notes: null,
     };
 
-    if (!appCache.get('BCServiceToken')) {
+    if (!appCache.get('ServiceBCToken')) {
       const data = await getToken();
 
-      appCache.set('BCServiceToken', {
+      appCache.set('ServiceBCToken', {
         service_token: data.access_token,
       }, data.expires_in - 10);
     }
 
-    const response = postItem(item, appCache.get('BCServiceToken').service_token);
+    const response = await postItem(item, appCache.get('ServiceBCToken').service_token);
 
     const params = {
       RequestItems: {
@@ -84,14 +84,14 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
             },
           },
         ],
-        [bcServicesTable]: [
+        [serviceBCTable]: [
           {
             PutRequest: {
               Item: {
                 id: randomBytes(10).toString('hex').toUpperCase(),
                 confirmationId: item.id,
                 status: 'success',
-                bcServicesId: response.id,
+                serviceBCId: response.id,
                 createdAt: new Date().toISOString(),
               },
               ConditionExpression: 'attribute_not_exists(id)',
