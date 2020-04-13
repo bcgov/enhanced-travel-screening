@@ -55,17 +55,13 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const healthStatus = symptoms;
     const isolationPlanStatus = supplies && accomodations && ableToIsolate;
     const item = {
-      TableName: formsTable,
-      Item: {
-        ...scrubbed,
-        created_at: new Date().toISOString(),
-        id,
-        healthStatus,
-        isolationPlanStatus,
-        determination: null,
-        notes: null,
-      },
-      ConditionExpression: 'attribute_not_exists(id)',
+      ...scrubbed,
+      created_at: new Date().toISOString(),
+      id,
+      healthStatus,
+      isolationPlanStatus,
+      determination: null,
+      notes: null,
     };
 
     if (!appCache.get('BCServiceToken')) {
@@ -76,23 +72,36 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       }, data.expires_in - 10);
     }
 
-    const response = postItem(item.Item, appCache.get('BCServiceToken').service_token);
+    const response = postItem(item, appCache.get('BCServiceToken').service_token);
 
-    const successData = {
-      TableName: bcServicesTable,
-      Item: {
-        id: randomBytes(10).toString('hex').toUpperCase(),
-        confirmationId: item.id,
-        status: 'success',
-        bcServicesId: response.id,
-        createdAt: new Date().toISOString(),
+    const params = {
+      RequestItems: {
+        [formsTable]: [
+          {
+            PutRequest: {
+              Item: item,
+              ConditionExpression: 'attribute_not_exists(id)',
+            },
+          },
+        ],
+        [bcServicesTable]: [
+          {
+            PutRequest: {
+              Item: {
+                id: randomBytes(10).toString('hex').toUpperCase(),
+                confirmationId: item.id,
+                status: 'success',
+                bcServicesId: response.id,
+                createdAt: new Date().toISOString(),
+              },
+              ConditionExpression: 'attribute_not_exists(id)',
+            },
+          },
+        ],
       },
-      ConditionExpression: 'attribute_not_exists(id)',
     };
 
-    await db.put(successData).promise();
-
-    await db.put(item).promise();
+    await db.batchWrite(params).promise();
 
     return res.json({
       id,

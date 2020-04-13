@@ -11,11 +11,11 @@ if (process.env.DB_SUFFIX === 'production') { submitURL = 'https://serviceflow.p
 
 // TODO Move to env vars
 const auth = {
-  username: process.env.BCS_USER,
-  password: process.env.BCS_PW,
+  username: 'phoct',
+  password: 'yIL5432*971K',
   grant_type: 'password',
   client_id: 'camunda-identity-service',
-  client_secret: process.env.BCS_CLI_SECRET,
+  client_secret: '831d77fa-64dc-4f80-8eb8-960a2220aa59',
 };
 
 const getToken = async () => {
@@ -53,7 +53,7 @@ const postItem = async (item, token) => {
         id,
         confirmationId: item.id,
         status: 'fail',
-        errorMessage: error.toJSON(),
+        errorDetails: error.toJSON(),
         createdAt: new Date().toISOString(),
       },
       ConditionExpression: 'attribute_not_exists(id)',
