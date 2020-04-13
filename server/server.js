@@ -7,10 +7,13 @@ const { db, formsTable, bcServicesTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const { getToken, postItem } = require('./utils/bcServices.js');
+const NodeCache = require( 'node-cache' );
+
 
 const apiBaseUrl = '/api/v1';
 const port = 80;
 const app = express();
+const appCache = new NodeCache();
 
 app.use(requireHttps);
 app.use(bodyParser.json());
@@ -64,8 +67,16 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
-    const token = await getToken();
-    const response = postItem(item.Item, token);
+
+    if (!appCache.get('BCServiceToken')) {
+      const data = await getToken();
+
+      appCache.set('BCServiceToken', {
+        service_token: data.access_token,
+      }, data.expires_in - 10);
+    }
+
+    const response = postItem(item.Item, appCache.get('BCServiceToken').service_token);
 
     const successData = {
       TableName: bcServicesTable,
@@ -78,8 +89,8 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
-    await db.put(successData).promise();
 
+    await db.put(successData).promise();
 
     await db.put(item).promise();
 

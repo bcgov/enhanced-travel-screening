@@ -1,17 +1,23 @@
 const axios = require('axios');
 const qs = require('querystring');
 const { db, bcServicesTable } = require('../database.js');
+const { randomBytes } = require('crypto');
 
 const url = 'https://sso.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token';
-const submitURL = 'https://test-serviceflow.pathfinder.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start';
+
+let submitURL = 'https://test-serviceflow.pathfinder.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start';
+
+if (process.env.DB_SUFFIX === 'production') { submitURL = 'https://serviceflow.pathfinder.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start'; }
+
 // TODO Move to env vars
 const auth = {
-  username: 'phoct',
-  password: 'yIL5432*971K',
+  username: process.env.BCS_USER,
+  password: process.env.BCS_PW,
   grant_type: 'password',
   client_id: 'camunda-identity-service',
-  client_secret: '831d77fa-64dc-4f80-8eb8-960a2220aa59',
+  client_secret: process.env.BCS_CLI_SECRET,
 };
+
 const getToken = async () => {
   const { data } = await axios.post(url, qs.stringify(auth), {
     headers: {
@@ -19,7 +25,7 @@ const getToken = async () => {
       'Accept-Encoding': 'application/json',
     },
   });
-  return data.access_token;
+  return data;
 };
 
 const postItem = async (item, token) => {
@@ -47,12 +53,13 @@ const postItem = async (item, token) => {
         id,
         confirmationId: item.id,
         status: 'fail',
-        error: error.toJSON(),
+        errorMessage: error.toJSON(),
         createdAt: new Date().toISOString(),
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
     await db.put(errorData).promise();
+    return false;
   }
 };
 
