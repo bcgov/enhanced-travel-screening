@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
+const NodeCache = require('node-cache');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
 const { db, formsTable, bcServicesTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const { getToken, postItem } = require('./utils/bcServices.js');
-const NodeCache = require( 'node-cache' );
 
 
 const apiBaseUrl = '/api/v1';
