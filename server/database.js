@@ -56,5 +56,5 @@ module.exports = {
   db: dbClient,
   usersTable: `ets-users-${databaseSuffix}`,
   formsTable: `ets-forms-${databaseSuffix}`,
-  bcServicesTable: `ets-bcservices-${databaseSuffix}`,
+  serviceBCTable: `ets-servicebc-${databaseSuffix}`,
 };

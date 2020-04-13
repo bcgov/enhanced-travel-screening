@@ -1,7 +1,7 @@
 const axios = require('axios');
 const qs = require('querystring');
 const { randomBytes } = require('crypto');
-const { db, bcServicesTable } = require('../database.js');
+const { db, serviceBCTable } = require('../database.js');
 
 
 const url = 'https://sso.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token';
@@ -49,7 +49,7 @@ const postItem = async (item, token) => {
   } catch (error) {
     const id = randomBytes(10).toString('hex').toUpperCase();
     const errorData = {
-      TableName: bcServicesTable,
+      TableName: serviceBCTable,
       Item: {
         id,
         confirmationId: item.id,
