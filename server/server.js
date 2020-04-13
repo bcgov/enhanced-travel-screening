@@ -112,7 +112,6 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
   }
-
 });
 
 // Edit existing form
