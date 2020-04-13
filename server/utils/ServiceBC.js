@@ -45,7 +45,7 @@ const postItem = async (item, token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     const id = randomBytes(10).toString('hex').toUpperCase();
     const errorData = {
