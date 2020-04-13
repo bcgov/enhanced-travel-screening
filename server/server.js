@@ -67,7 +67,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
     const token = await getToken();
     const response = postItem(item.Item, token);
 
-    const errorData = {
+    const successData = {
       TableName: bcServicesTable,
       Item: {
         id: randomBytes(10).toString('hex').toUpperCase(),
@@ -78,7 +78,7 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       },
       ConditionExpression: 'attribute_not_exists(id)',
     };
-    await db.put(errorData).promise();
+    await db.put(successData).promise();
 
 
     await db.put(item).promise();
