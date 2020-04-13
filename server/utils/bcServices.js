@@ -1,7 +1,8 @@
 const axios = require('axios');
 const qs = require('querystring');
-const { db, bcServicesTable } = require('../database.js');
 const { randomBytes } = require('crypto');
+const { db, bcServicesTable } = require('../database.js');
+
 
 const url = 'https://sso.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token';
 
