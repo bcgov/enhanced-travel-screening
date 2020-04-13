@@ -11,11 +11,11 @@ if (process.env.DB_SUFFIX === 'production') { submitURL = 'https://serviceflow.p
 
 // TODO Move to env vars
 const auth = {
-  username: 'phoct',
-  password: 'yIL5432*971K',
+  username: process.env.BCS_USER,
+  password: process.env.BCS_PW,
   grant_type: 'password',
   client_id: 'camunda-identity-service',
-  client_secret: '831d77fa-64dc-4f80-8eb8-960a2220aa59',
+  client_secret: process.env.BCS_CLI_SECRET,
 };
 
 const getToken = async () => {
