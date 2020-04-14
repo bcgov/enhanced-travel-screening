@@ -9,7 +9,6 @@ const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const { getToken, postItem } = require('./utils/ServiceBC.js');
 
-
 const apiBaseUrl = '/api/v1';
 const port = 80;
 const app = express();
@@ -189,6 +188,9 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`); // eslint-disable-line no-console
 });
+
+
+module.exports = { app, server };
