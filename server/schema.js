@@ -1,6 +1,6 @@
 module.exports = [
   {
-    TableName: 'ets-users-development',
+    TableName: 'ets-users',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
@@ -13,7 +13,7 @@ module.exports = [
     },
   },
   {
-    TableName: 'ets-forms-development',
+    TableName: 'ets-forms',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],
@@ -26,7 +26,7 @@ module.exports = [
     },
   },
   {
-    TableName: 'ets-servicebc-development',
+    TableName: 'ets-servicebc',
     KeySchema: [
       { AttributeName: 'id', KeyType: 'HASH' },
     ],

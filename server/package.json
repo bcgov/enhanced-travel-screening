@@ -8,7 +8,9 @@
     "db:start": "docker run -p 8000:8000 amazon/dynamodb-local",
     "db:seed": "node database.js",
     "watch": "NODE_ENV=development nodemon server.js",
-    "start": "NODE_ENV=production node server.js"
+    "start": "NODE_ENV=production node server.js",
+    "pretest": "docker run --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test npm run db:seed",
+    "test": "NODE_ENV=test jest && docker stop test && docker rm test"
   },
   "dependencies": {
     "aws-sdk": "^2.654.0",
@@ -28,6 +30,14 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
-    "nodemon": "^2.0.2"
+    "jest": "^25.3.0",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
