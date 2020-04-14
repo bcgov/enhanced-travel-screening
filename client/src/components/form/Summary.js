@@ -26,7 +26,7 @@ const Summary = () => {
         Need help with your self isolation plan? {window.innerWidth < 600 && <br />}
         <a
           className={classes.primaryText}
-          href="https://www2.gov.bc.ca/gov/content/home/get-help-with-government-services"
+          href="https://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/covid-19-provincial-support"
           target="__blank"
           rel="noreferrer noopener"
         >

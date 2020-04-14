@@ -54,14 +54,12 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ...scrubbed,
       created_at: new Date().toISOString(),
       id,
-      healthStatus,
       isolationPlanStatus,
       determination: null,
       notes: null,
     };
 
     const serviceResponse = await postServiceItem(item);
-
     const params = {
       RequestItems: {
         [formsTable]: [
