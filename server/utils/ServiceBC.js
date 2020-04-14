@@ -16,7 +16,6 @@ const auth = {
 };
 
 const getToken = async () => {
-
   if (appCache.get('ServiceBCToken') !== undefined) return appCache.get('ServiceBCToken');
 
   const { data } = await axios.post(tokenUrl, qs.stringify(auth), {
@@ -25,6 +24,7 @@ const getToken = async () => {
       'Accept-Encoding': 'application/json',
     },
   });
+
   appCache.set('ServiceBCToken', data.access_token, data.expires_in - 10);
   return data.access_token;
 };
