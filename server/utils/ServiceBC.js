@@ -2,11 +2,11 @@ const axios = require('axios');
 const qs = require('querystring');
 const NodeCache = require('node-cache');
 
-const tokenUrl = 'https://sso.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token';
+const tokenUrl = `https://${process.env.DB_SUFFIX === 'production' ? 'sso' : 'sso-test'}.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token`;
 const submitURL = `https://${process.env.DB_SUFFIX === 'production' ? '' : 'test-'}serviceflow.pathfinder.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start`;
 const appCache = new NodeCache();
 
-// TODO Move to env vars
+
 const auth = {
   username: process.env.BCS_USER,
   password: process.env.BCS_PW,
@@ -16,7 +16,9 @@ const auth = {
 };
 
 const getToken = async () => {
-  if (appCache.get('ServiceBCToken')) return appCache.get('ServiceBCToken');
+
+  if (appCache.get('ServiceBCToken') !== undefined) return appCache.get('ServiceBCToken');
+
   const { data } = await axios.post(tokenUrl, qs.stringify(auth), {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
