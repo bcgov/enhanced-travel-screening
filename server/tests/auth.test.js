@@ -1,7 +1,12 @@
 const request = require('supertest')
-const { app, server } = require('../server')
+const app = require('../server')
 
 describe('Server V1 Auth Endpoints', () => {
+  let server;
+
+  beforeAll(() => {
+    server = app.listen();
+  });
 
   const loginEndpoint = '/api/v1/login';
   const validateEndpoint = '/api/v1/validate';

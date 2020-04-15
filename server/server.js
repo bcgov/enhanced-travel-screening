@@ -10,7 +10,6 @@ const postServiceItem = require('./utils/ServiceBC.js');
 const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 
 const apiBaseUrl = '/api/v1';
-const port = 80;
 const app = express();
 
 app.use(requireHttps);
@@ -177,9 +176,4 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const server = app.listen(port, () => {
-  console.log(`Listening on port ${port}`); // eslint-disable-line no-console
-});
-
-
-module.exports = { app, server };
+module.exports = app;

@@ -7,8 +7,8 @@
   "scripts": {
     "db:start": "docker run -p 8000:8000 amazon/dynamodb-local",
     "db:seed": "node database.js",
-    "watch": "NODE_ENV=development nodemon server.js",
-    "start": "NODE_ENV=production node server.js",
+    "watch": "NODE_ENV=development nodemon main.js",
+    "start": "NODE_ENV=production node main.js",
     "pretest": "docker run --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test npm run db:seed",
     "test": "NODE_ENV=test jest && docker stop test && docker rm test"
   },
