@@ -10,7 +10,7 @@ describe('Server V1 Form Endpoints', () => {
 
   const formEndpoint = '/api/v1/form';
 
-  it('Create new form, recieve 200', async () => {
+  it('Create new form, recieve isolationPlanStatus == true', async () => {
     const res = await request.agent(app)
       .post(formEndpoint)
       .send({
@@ -53,6 +53,7 @@ describe('Server V1 Form Endpoints', () => {
         certified: true
       });
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('isolationPlanStatus', true);
   });
 
   afterAll(() => {
