@@ -64,6 +64,21 @@ describe('Server V1 Form Endpoints', () => {
     expect(res.body).toHaveProperty('isolationPlanStatus', true);
   });
 
+  it('Create new form, receive isolationPlanStatus == false', async () => {
+    const res = await request.agent(app)
+      .post(formEndpoint)
+      .send(Object.assign({}, form, { accomodations: false, isolationPlan: null }));
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('isolationPlanStatus', false);
+  });
+
+  it('Create new form using an invalid field, receive 400', async () => {
+    const res = await request.agent(app)
+      .post(formEndpoint)
+      .send(Object.assign({}, form, { email: 'email@test.' }));
+    expect(res.statusCode).toEqual(400);
+  });
+
   it('Edit form, receive 200', async () => {
     let formId;
 
