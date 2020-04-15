@@ -11,6 +11,11 @@ describe('Server V1 Form Endpoints', () => {
   const loginEndpoint = '/api/v1/login';
   const formEndpoint = '/api/v1/form';
 
+  const user = {
+    username: 'username',
+    password: 'password',
+  }
+
   const form = {
     firstName: "John",
     lastName: "Cena",
@@ -51,7 +56,7 @@ describe('Server V1 Form Endpoints', () => {
     certified: true
   }
 
-  it('Create new form, recieve isolationPlanStatus == true', async () => {
+  it('Create new form, receive isolationPlanStatus == true', async () => {
     const res = await request.agent(app)
       .post(formEndpoint)
       .send(form);
@@ -59,7 +64,7 @@ describe('Server V1 Form Endpoints', () => {
     expect(res.body).toHaveProperty('isolationPlanStatus', true);
   });
 
-  it('Edit form, recieve 200', async () => {
+  it('Edit form, receive 200', async () => {
     let formId;
 
     const resForm = await request.agent(app)
@@ -70,21 +75,41 @@ describe('Server V1 Form Endpoints', () => {
 
     const resLogin = await request.agent(app)
       .post(loginEndpoint)
-      .send({
-        username: 'username',
-        password: 'password',
-      });
+      .send(user);
 
     const res = await request.agent(app)
       .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
       .patch(`${formEndpoint}/${formId}`)
       .send({
-        province: 'Ontario', 
+        province: 'Ontario',
         determination: 'accepted',
         notes: 'test',
       });
 
     expect(res.statusCode).toEqual(200);
+  });
+
+  it('Edit form missing mandatory attributes, receive 400', async () => {
+    let formId;
+
+    const resForm = await request.agent(app)
+      .post(formEndpoint)
+      .send(form);
+
+    formId = resForm.body.id;
+
+    const resLogin = await request.agent(app)
+      .post(loginEndpoint)
+      .send(user);
+
+    const res = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .patch(`${formEndpoint}/${formId}`)
+      .send({
+        province: 'Ontario'
+      });
+
+    expect(res.statusCode).toEqual(400);
   });
 
   afterAll(() => {
