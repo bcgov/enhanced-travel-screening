@@ -1,4 +1,4 @@
-import * as yup from 'yup';
+const yup = require('yup');
 
 const provinces = [
   'Alberta',
@@ -27,21 +27,21 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-export const LoginSchema = yup.object().shape({
+const LoginSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
 
-export const LookupSchema = yup.object().shape({
+const LookupSchema = yup.object().shape({
   confirmationNumber: yup.string().required('Confirmation number is required'),
 });
 
-export const DeterminationSchema = yup.object().shape({
+const DeterminationSchema = yup.object().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
 });
 
-export const FormSchema = yup.object().noUnknown().shape({
+const FormSchema = yup.object().noUnknown().shape({
   // Primary contact
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
@@ -95,3 +95,9 @@ export const FormSchema = yup.object().noUnknown().shape({
   // Certify
   certified: yup.boolean().typeError('Must certify submitted information').required('Must certify submitted information').test('is-true', 'Certify must be true', (v) => v === true),
 });
+
+const validate = async (schema, data) => schema.validate(data, { strict: true });
+
+module.exports = {
+  LoginSchema, LookupSchema, DeterminationSchema, FormSchema, validate,
+};

@@ -7,6 +7,7 @@ const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
+const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 
 
 const apiBaseUrl = '/api/v1';
@@ -24,7 +25,7 @@ const scrubObject = (obj) => {
     if (typeof scrubbed[key] === 'object' && scrubbed[key] !== null) {
       scrubbed[key] = scrubObject(scrubbed[key]); // Nested object
     } else if (scrubbed[key] === '') {
-      delete scrubbed[key]; // Delete empty string
+      scrubbed[key] = null; // Null instead of empty for DynamoDB
     }
   });
   return scrubbed;
@@ -42,28 +43,23 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
     const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
     const scrubbed = scrubObject(req.body);
-    if (scrubbed.certified !== true) return res.status(422).json({ error: 'Must certify to be accurate' });
-    // determine if isolation plan can default to accepted
-    const {
-      symptoms,
-      accomodations,
-      ableToIsolate,
-      supplies,
-    } = req.body;
-    const healthStatus = symptoms;
-    const isolationPlanStatus = supplies && accomodations && ableToIsolate;
+    try {
+      await validate(FormSchema, scrubbed);
+    } catch (error) {
+      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
+    }
+    const isolationPlanStatus = scrubbed.accomodations
+      && scrubbed.ableToIsolate && scrubbed.supplies;
     const item = {
       ...scrubbed,
       created_at: new Date().toISOString(),
       id,
-      healthStatus,
       isolationPlanStatus,
       determination: null,
       notes: null,
     };
 
     const serviceResponse = await postServiceItem(item);
-
     const params = {
       RequestItems: {
         [formsTable]: [
@@ -94,12 +90,11 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
 
     return res.json({
       id,
-      healthStatus,
       isolationPlanStatus,
       accessToken: generateJwt(id, 'pdf'),
     });
   } catch (error) {
-    return res.status(500).json({ error: `Failed to create submission. ${error.message}` });
+    return res.status(500).json({ error: `Failed to create submission: ${error.message}` });
   }
 });
 
@@ -109,6 +104,11 @@ app.patch(`${apiBaseUrl}/form/:id`,
   async (req, res) => {
     const { id } = req.params;
     if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
+    try {
+      await validate(DeterminationSchema, req.body);
+    } catch (error) {
+      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
+    }
     const params = {
       TableName: formsTable,
       Key: { id },

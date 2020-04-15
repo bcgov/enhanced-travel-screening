@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
@@ -13,14 +14,22 @@ const RenderRadioGroup = ({
   disabled,
   ...props
 }) => {
-  const touched = form.errors[field.name];
-  const error = form.errors[field.name];
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === 'true' || value === 'false') {
+      field.onChange({ target: { name: field.name, value: value === 'true' } });
+    } else {
+      field.onChange({ target: { name: field.name, value } });
+    }
+  };
+
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
       <RadioGroup
         {...field}
         {...props}
+        onChange={handleChange}
       >
         {options.map((option) => (
           <FormControlLabel
@@ -34,7 +43,7 @@ const RenderRadioGroup = ({
           />
         ))}
       </RadioGroup>
-      {(touched && error) && <InputFieldError error={error} />}
+      <InputFieldError error={<ErrorMessage name={field.name} />} />
     </Fragment>
   );
 };

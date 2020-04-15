@@ -4,7 +4,6 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -34,35 +33,35 @@ function Confirmation ({ location: { state } }) {
     );
   });
 
-  const genPDF = async () => {
-    const response = await fetch(`/api/v1/pdf`, {
-      headers: {
-        'Accept': 'application/pdf',
-        'Content-type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ id, accessToken })
-    });
-    if (response.ok) {
-      const blob = await response.blob()
-      const pdfBlob = new Blob([blob], {type: "application/pdf"})
-      if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-        window.navigator.msSaveOrOpenBlob(pdfBlob);
-        return;
-      }
-      // For other browsers:
-      // Create a link pointing to the ObjectURL containing the blob.
-      const data = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = data;
-      link.download = `screeningReport-${id}.pdf`;
-      link.click();
-      setTimeout(function(){
-        // For Firefox it is necessary to delay revoking the ObjectURL
-        window.URL.revokeObjectURL(data);
-      }, 100);
-    }
-  }
+  // const genPDF = async () => {
+  //   const response = await fetch(`/api/v1/pdf`, {
+  //     headers: {
+  //       'Accept': 'application/pdf',
+  //       'Content-type': 'application/json',
+  //     },
+  //     method: 'POST',
+  //     body: JSON.stringify({ id, accessToken })
+  //   });
+  //   if (response.ok) {
+  //     const blob = await response.blob()
+  //     const pdfBlob = new Blob([blob], {type: "application/pdf"})
+  //     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+  //       window.navigator.msSaveOrOpenBlob(pdfBlob);
+  //       return;
+  //     }
+  //     // For other browsers:
+  //     // Create a link pointing to the ObjectURL containing the blob.
+  //     const data = window.URL.createObjectURL(pdfBlob);
+  //     const link = document.createElement('a');
+  //     link.href = data;
+  //     link.download = `screeningReport-${id}.pdf`;
+  //     link.click();
+  //     setTimeout(function(){
+  //       // For Firefox it is necessary to delay revoking the ObjectURL
+  //       window.URL.revokeObjectURL(data);
+  //     }, 100);
+  //   }
+  // }
 
   return (
     <Page>

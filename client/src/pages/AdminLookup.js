@@ -1,5 +1,6 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import { Formik, Form, Field } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
@@ -42,38 +43,40 @@ const AdminLookup = () => {
     <Page>
       <Grid container alignItems="center" justify="center">
         <Grid item xs={12} sm={10} md={8} lg={6} xl={4}>
-          <Card title="Submission Lookup">
-            <Formik
-              initialValues={initialValues}
-              validationSchema={LookupSchema}
-              onSubmit={handleSubmit}
-            >
-              <Form>
-                <Grid container>
+          <Box m={2}>
+            <Card title="Submission Lookup">
+              <Formik
+                initialValues={initialValues}
+                validationSchema={LookupSchema}
+                onSubmit={handleSubmit}
+              >
+                <Form>
+                  <Grid container>
 
-                  {/** Confirmation Number */}
-                  <Grid item xs={12} sm={7} md={8}>
-                    <Field
-                      className={classes.confirmationNumber}
-                      name="confirmationNumber"
-                      component={RenderTextField}
-                      variant="outlined"
-                      placeholder="Enter Confirmation Number eg: BC12345"
-                    />
-                  </Grid>
+                    {/** Confirmation Number */}
+                    <Grid item xs={12} sm={7} md={8}>
+                      <Field
+                        className={classes.confirmationNumber}
+                        name="confirmationNumber"
+                        component={RenderTextField}
+                        variant="outlined"
+                        placeholder="Enter Confirmation Number eg: BC12345"
+                      />
+                    </Grid>
 
-                  {/** Submit */}
-                  <Grid item xs={12} sm={5} md={4}>
-                    <Button
-                      className={classes.viewSubmission}
-                      type="submit"
-                      text="View Submission"
-                    />
+                    {/** Submit */}
+                    <Grid item xs={12} sm={5} md={4}>
+                      <Button
+                        className={classes.viewSubmission}
+                        type="submit"
+                        text="View Submission"
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Form>
-            </Formik>
-          </Card>
+                </Form>
+              </Formik>
+            </Card>
+          </Box>
         </Grid>
       </Grid>
     </Page>
