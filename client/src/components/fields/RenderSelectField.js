@@ -1,18 +1,19 @@
 import React, { Fragment } from 'react';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import { ErrorMessage } from 'formik';
 
 import { InputFieldError, InputFieldLabel } from '../generic';
 
 const RenderSelectField = ({
-  field,
+  field: { value, ...fieldRest },
   form,
   label,
   options,
   ...props
 }) => {
-  const touched = form.errors[field.name];
-  const error = form.errors[field.name];
+  const touched = form.touched[fieldRest.name];
+  const error = form.errors[fieldRest.name];
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
@@ -22,7 +23,8 @@ const RenderSelectField = ({
         variant="filled"
         error={touched && !!error}
         inputProps={{ displayEmpty: true }}
-        {...field}
+        value={value || ''}
+        {...fieldRest}
         {...props}
       >
         <MenuItem value="" disabled>Please Select</MenuItem>
@@ -30,7 +32,7 @@ const RenderSelectField = ({
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}
       </TextField>
-      {(touched && error) && <InputFieldError error={error} />}
+      <InputFieldError error={<ErrorMessage name={fieldRest.name} />} />
     </Fragment>
   );
 };

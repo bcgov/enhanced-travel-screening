@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { Route, Redirect } from 'react-router-dom';
 
-import { Routes } from '../constants';
-import { verifyJWT } from '../utils';
+import { verifyJWT } from '../../utils';
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PublicRoute = ({ adminRedirect, component: Component, ...rest }) => {
   const [isValid, setValidity] = useState(null);
 
   useEffect(() => {
@@ -18,12 +17,12 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
   return isValid === null ? <LinearProgress /> : (
     <Route {...rest} render={(props) => (
-      isValid
-        ? <Component {...props} />
-        : <Redirect to={Routes.Login} />
+      (isValid && adminRedirect)
+        ? <Redirect to={adminRedirect} />
+        : <Component {...props} />
       )}
     />
   );
 };
 
-export default PrivateRoute;
+export { PublicRoute };
