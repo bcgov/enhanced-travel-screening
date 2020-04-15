@@ -4,6 +4,7 @@ const { hashPassword } = require('./auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
+const databaseSuffix = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB_SUFFIX || 'development';
 const nodeEnv = process.env.NODE_ENV || 'development';
 AWS.config.update({
   region: 'ca-central-1',
@@ -28,21 +29,22 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
         return;
       }
       schema.forEach(async (s) => {
-        console.log(`Creating table ${s.TableName}`);
-        await db.createTable(s).promise();
+        console.log(`Creating table ${s.TableName}-${databaseSuffix}`);
+        const table = Object.assign({}, s, { TableName: `${s.TableName}-${databaseSuffix}` })
+        await db.createTable(table).promise();
       });
       console.log('Waiting 10s for tables to be created');
       await (async (ms = 10000) => new Promise((resolve) => setTimeout(resolve, ms)))();
       const salt = randomBytes(16).toString('hex');
       const item = {
-        TableName: 'ets-users',
+        TableName: `ets-users-${databaseSuffix}`,
         Item: {
           id: 'username',
           password: hashPassword('password', salt),
           salt,
         },
       };
-      console.log(`Creating user with ID ${item.Item.id} in table ${item.TableName}`);
+      console.log(`Creating user with ID ${item.Item.id} in table ${item.TableName}-${databaseSuffix}`);
       await dbClient.put(item).promise();
     } catch (error) {
       console.error(`Failed to create tables and/or user ${error}`);
@@ -53,7 +55,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports = {
   db: dbClient,
-  usersTable: 'ets-users',
-  formsTable: 'ets-forms',
-  serviceBCTable: 'ets-servicebc',
+  usersTable: `ets-users-${databaseSuffix}`,
+  formsTable: `ets-forms-${databaseSuffix}`,
+  serviceBCTable: `ets-servicebc-${databaseSuffix}`,
 };
