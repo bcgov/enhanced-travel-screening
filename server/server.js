@@ -30,7 +30,7 @@ const scrubObject = (obj) => {
   return scrubbed;
 };
 
-// Login using username and password, recieve JWT
+// Login using username and password, receive JWT
 app.post(`${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
   (req, res) => {
