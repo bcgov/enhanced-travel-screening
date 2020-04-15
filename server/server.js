@@ -7,6 +7,7 @@ const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
+const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
