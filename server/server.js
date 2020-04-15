@@ -10,7 +10,6 @@ const requireHttps = require('./require-https.js');
 const { getToken, postItem } = require('./utils/ServiceBC.js');
 
 const apiBaseUrl = '/api/v1';
-const port = 80;
 const app = express();
 const appCache = new NodeCache();
 
@@ -188,9 +187,4 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const server = app.listen(port, () => {
-  console.log(`Listening on port ${port}`); // eslint-disable-line no-console
-});
-
-
-module.exports = { app, server };
+module.exports = app;
