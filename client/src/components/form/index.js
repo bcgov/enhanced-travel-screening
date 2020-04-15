@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Routes } from '../../constants';
 import { FormSchema } from '../../validation-schemas';
-import { dateToString } from '../../utils';
+import { dateToString, handleSubmission } from '../../utils';
 
 import { Card } from '../generic';
 import { SubmissionInfo } from './SubmissionInfo';
@@ -37,7 +37,7 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
 
     // Travel information
     includeAdditionalTravellers: null,
-    numberOfAdditionalTravellers: 0,
+    numberOfAdditionalTravellers: 1,
     additionalTravellers: [],
     arrival: {
       date: dateToString(moment.now()),
@@ -61,11 +61,11 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
-
+    const modifiedValues = handleSubmission(values);
     const response = await fetch('/api/v1/form', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json' },
-      body: JSON.stringify({ ...values }),
+      body: JSON.stringify({ ...modifiedValues }),
     });
     if (response.ok) {
       const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();

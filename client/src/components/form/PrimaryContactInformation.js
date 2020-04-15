@@ -111,6 +111,7 @@ const PrimaryContactInformation = ({ isDisabled }) => {
               { value: 'Québec', label: 'Québec' },
               { value: 'Saskatchewan', label: 'Saskatchewan' },
               { value: 'Yukon', label: 'Yukon' },
+              { value: 'Other', label: 'Other' },
             ]}
           />
         </Grid>
@@ -120,7 +121,7 @@ const PrimaryContactInformation = ({ isDisabled }) => {
           <Field
             name="postalCode"
             component={RenderTextField}
-            label="* Postal Code"
+            label="Postal Code (optional)"
             maxLength={6}
             disabled={isDisabled}
           />

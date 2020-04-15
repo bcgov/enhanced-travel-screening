@@ -5,14 +5,14 @@ import { ErrorMessage } from 'formik';
 import { InputFieldLabel, InputFieldError } from '../generic';
 
 const RenderTextField = ({
-  field,
+  field: { value, ...fieldRest },
   form,
   label,
   options,
   ...props
 }) => {
-  const touched = form.touched[field.name];
-  const error = form.errors[field.name];
+  const touched = form.touched[fieldRest.name];
+  const error = form.errors[fieldRest.name];
   return (
     <Fragment>
       {label && <InputFieldLabel label={label} />}
@@ -20,10 +20,11 @@ const RenderTextField = ({
         variant="filled"
         fullWidth
         error={touched && !!error}
-        {...field}
+        value={value || ''}
+        {...fieldRest}
         {...props}
       />
-      <InputFieldError error={<ErrorMessage name={field.name} />} />
+      <InputFieldError error={<ErrorMessage name={fieldRest.name} />} />
     </Fragment>
   );
 };

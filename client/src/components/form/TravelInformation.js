@@ -7,15 +7,20 @@ import { Divider, Card } from '../generic';
 import { RenderDateField, RenderRadioGroup, RenderSelectField, RenderTextField } from '../fields';
 
 const TravelInformation = ({ isDisabled }) => {
-  const { values, setFieldValue, setFieldTouched } = useFormikContext();
+  const { values, setFieldValue } = useFormikContext();
+  const { includeAdditionalTravellers, additionalTravellers, numberOfAdditionalTravellers } = values;
 
   useEffect(() => {
-    if (!values.includeAdditionalTravellers) {
-      setFieldValue('additionalTravellers', []);
-      setFieldValue('numberOfAdditionalTravellers', 0);
-      setFieldTouched('numberOfAdditionalTravellers', false);
+    if (includeAdditionalTravellers === true && numberOfAdditionalTravellers !== additionalTravellers.length) {
+      let travellers = [];
+      for (let i = 0; i < numberOfAdditionalTravellers; i++) travellers.push({ firstName: '', lastName: '', dob: '' });
+      setFieldValue('additionalTravellers', travellers);
     }
-  }, [setFieldValue, setFieldTouched, values.includeAdditionalTravellers]);
+    if (includeAdditionalTravellers === false && additionalTravellers.length > 0) {
+      setFieldValue('additionalTravellers', []);
+      setFieldValue('numberOfAdditionalTravellers', 1);
+    }
+  }, [setFieldValue, includeAdditionalTravellers, additionalTravellers, numberOfAdditionalTravellers]);
 
   return (
     <Fragment>
@@ -44,10 +49,10 @@ const TravelInformation = ({ isDisabled }) => {
           </Grid>
 
           {/** Number of Additional Travellers */}
-          {values.includeAdditionalTravellers === true && (
+          {includeAdditionalTravellers === true && (
             <FieldArray
               name="additionalTravellers"
-              render={(arrayHelpers) => (
+              render={() => (
                 <Fragment>
                   <Grid item xs={12} md={6}>
                     <Field
@@ -55,15 +60,7 @@ const TravelInformation = ({ isDisabled }) => {
                       component={RenderSelectField}
                       label="* Number of additional travellers in your group?"
                       disabled={isDisabled}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        let travellers = [];
-                        for (let i = 0; i < value; i++) travellers.push({ firstName: '', lastName: '', dob: '' });
-                        arrayHelpers.form.setFieldValue('additionalTravellers', travellers);
-                        arrayHelpers.form.setFieldValue('numberOfAdditionalTravellers', value);
-                      }}
                       options={[
-                        { value: 0, label: '0' },
                         { value: 1, label: '1' },
                         { value: 2, label: '2' },
                         { value: 3, label: '3' },
@@ -77,7 +74,7 @@ const TravelInformation = ({ isDisabled }) => {
                       ]}
                     />
                   </Grid>
-                  {values.additionalTravellers.map((traveller, index) => (
+                  {additionalTravellers.map((traveller, index) => (
                     <Grid key={index} item xs={12}>
                       <Card>
                         <Grid container spacing={2}>

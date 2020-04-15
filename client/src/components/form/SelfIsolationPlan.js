@@ -10,12 +10,12 @@ const SelfIsolationPlan = ({ isDisabled }) => {
   const { values, setFieldValue } = useFormikContext();
 
   useEffect(() => {
-    if (values.accomodations) {
-      setFieldValue('isolationPlan', { type: '', city: '', address: '', });
+    if (values.accomodations === true) {
+      if (values.isolationPlan === null) setFieldValue('isolationPlan', { type: '', city: '', address: '' });
     } else {
       setFieldValue('isolationPlan', null);
     }
-  }, [setFieldValue, values.accomodations]);
+  }, [setFieldValue, values.accomodations, values.isolationPlan]);
 
   return (
     <Grid item xs={12}>
@@ -41,6 +41,8 @@ const SelfIsolationPlan = ({ isDisabled }) => {
             ]}
           />
         </Grid>
+
+        {/** Isolation Plan */}
         {values.accomodations === true && (
           <Fragment>
             <Grid item xs={12} md={6}>
@@ -84,8 +86,8 @@ const SelfIsolationPlan = ({ isDisabled }) => {
             disabled={isDisabled}
             row
             options={[
-              { value: true, label: 'Yes' },
-              { value: false, label: 'No' },
+              { value: false, label: 'Yes' },
+              { value: true, label: 'No' },
             ]}
           />
         </Grid>
@@ -110,7 +112,7 @@ const SelfIsolationPlan = ({ isDisabled }) => {
           <Field
             name="transportation"
             component={RenderCheckboxGroup}
-            label="* What form of transportation will you take to your self-isolation location?"
+            label="What form of transportation will you take to your self-isolation location? (optional)"
             disabled={isDisabled}
             options={[
               { value: 'personal', label: 'Personal vehicle' },

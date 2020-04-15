@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import * as yup from 'yup';
 
 const provinces = [
@@ -15,6 +14,7 @@ const provinces = [
   'Nunavut',
   'Northwest Territories',
   'Yukon',
+  'Other',
 ];
 
 const validateDateString = (s) => {
@@ -43,60 +43,55 @@ export const DeterminationSchema = yup.object().shape({
 
 export const FormSchema = yup.object().noUnknown().shape({
   // Primary contact
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
+  firstName: yup.string().required('First name is required'),
+  lastName: yup.string().required('Last name is required'),
   // telephone: yup.string().required().matches(/^\d{10}$/),
-  telephone: yup.string().required(),
-  email: yup.string().nullable().matches(/^(.+@.+\..+)?$/),
-  address: yup.string().required(),
-  city: yup.string().required(),
-  province: yup.string().required().oneOf(provinces),
+  telephone: yup.string().required('Telephone number is required'),
+  email: yup.string().nullable().matches(/^(.+@.+\..+)?$/, 'Invalid email address'),
+  address: yup.string().required('Address is required'),
+  city: yup.string().required('City is required'),
+  province: yup.string().required('Province is required').oneOf(provinces, 'Invalid province'),
   // postalCode: yup.string().required().matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
   postalCode: yup.string().nullable(),
-  dob: yup.string().required().test('is-date', '${path} is not a valid date', validateDateString),
+  dob: yup.string().required('Date of birth is required').test('is-date', 'Not a valid date', validateDateString),
 
   // Travel information
-  includeAdditionalTravellers: yup.boolean().required(),
-  numberOfAdditionalTravellers: yup.number().when('includeAdditionalTravellers', {
-    is: true,
-    then: yup.number().required().min(1).max(10),
-    otherwise: yup.number().required().test('is-zero', '${path} must be zero', (v) => v === 0),
-  }),
+  includeAdditionalTravellers: yup.boolean().typeError('Must specify additional travellers').required('Must specify additional travellers'),
   additionalTravellers: yup.array().when('includeAdditionalTravellers', {
     is: true,
-    then: yup.array().required().of(
-      yup.object().noUnknown().shape({
-        firstName: yup.string().required(),
-        lastName: yup.string().required(),
-        dob: yup.string().required().test('is-date', '${path} is not a valid date', validateDateString),
+    then: yup.array().required('Traveller information is required').of(
+      yup.object().noUnknown('Unknown key for additional traveller information').shape({
+        firstName: yup.string().required('First name is required'),
+        lastName: yup.string().required('Last name is required'),
+        dob: yup.string().required('Date of birth is required').test('is-date', ' Not a valid date', validateDateString),
       }),
-    ).test('is-length', '${path} has incorrect length', function _(v) { return v.length === this.parent.numberOfAdditionalTravellers; }),
-    otherwise: yup.array().test('is-empty', '${path} is not empty array', (v) => v && v.length === 0),
+    ).test('is-length', 'Number of additional travellers must be between 1 and 10', (v) => v.length >= 1 && v.length <= 10),
+    otherwise: yup.array().test('is-empty', 'Additional travellers must be empty', (v) => v && v.length === 0),
   }),
-  arrival: yup.object().noUnknown().shape({
-    date: yup.string().required().test('is-date', '${path} is not a valid date', validateDateString),
-    by: yup.string().required().oneOf(['air', 'sea', 'land']),
-    from: yup.string().required(),
+  arrival: yup.object().noUnknown('Unknown key for arrival information').shape({
+    date: yup.string().required('Arrival date is required').test('is-date', 'Not a valid date', validateDateString),
+    by: yup.string().required('Arrival method is required').oneOf(['air', 'sea', 'land'], 'Invalid arrival method'),
+    from: yup.string().required('Arrival city and country are required'),
     flight: yup.string().nullable(),
   }),
 
   // Isolation plan
-  accomodations: yup.boolean().required(),
+  accomodations: yup.boolean().typeError('Must specify if accommodations are available').required('Must specify if accommodations are available'),
   isolationPlan: yup.object().when('accomodations', {
     is: true,
-    then: yup.object().noUnknown().shape({
-      city: yup.string().required(),
-      address: yup.string().required(),
-      type: yup.string().required().oneOf(['private', 'family', 'commercial']),
+    then: yup.object().noUnknown('Unknown key in isolation plan').shape({
+      city: yup.string().required('Isolation city is required'),
+      address: yup.string().required('Isolation address is required'),
+      type: yup.string().required('Isolation type is required').oneOf(['private', 'family', 'commercial'], 'Invalid isolation type'),
     }),
-    otherwise: yup.object().nullable().test('is-null', '${path} is not null', (v) => v == null),
+    otherwise: yup.object().nullable().test('is-null', 'Isolation plan must be null', (v) => v == null),
   }),
-  supplies: yup.boolean().required(),
-  ableToIsolate: yup.boolean().required(),
+  supplies: yup.boolean().typeError('Must specify if able to make isolation arrangements').required('Must specify if able to make isolation arrangements'),
+  ableToIsolate: yup.boolean().typeError('Must specify whether accommodation assistance is required').required('Must specify whether accommodation assistance is required'),
   transportation: yup.array().of(
-    yup.string().required().oneOf(['taxi', 'personal', 'public']),
-  ).test('is-unique-array', '${path} must be a unique array', validateUniqueArray),
+    yup.string().required('Transportation type is required').oneOf(['taxi', 'personal', 'public'], 'Invalid transportation type'),
+  ).test('is-unique-array', 'Transportation types must be unique', validateUniqueArray),
 
   // Certify
-  certified: yup.boolean().required().test('is-true', '${path} is not true', (v) => v === true),
+  certified: yup.boolean().typeError('Must certify submitted information').required('Must certify submitted information').test('is-true', 'Certify must be true', (v) => v === true),
 });
