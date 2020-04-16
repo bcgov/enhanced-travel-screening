@@ -79,6 +79,54 @@ describe('Server V1 Form Endpoints', () => {
     expect(res.statusCode).toEqual(400);
   });
 
+  it('Get existing form, receive 200', async () => {
+    let formId;
+
+    const resForm = await request.agent(app)
+      .post(formEndpoint)
+      .send(form);
+
+    formId = resForm.body.id;
+
+    const resLogin = await request.agent(app)
+      .post(loginEndpoint)
+      .send(user);
+
+    const res = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${formEndpoint}/${formId}`);
+
+    expect(res.statusCode).toEqual(200);
+  });
+
+  it('Get nonexistent form, receive 404', async () => {
+    const resLogin = await request.agent(app)
+      .post(loginEndpoint)
+      .send(user);
+
+    const res = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${formEndpoint}/1`);
+
+    expect(res.statusCode).toEqual(404);
+  });
+
+  it('Try to get a form without authorization, receive 401 (Unauthorized)', async () => {
+    let formId;
+
+    const resForm = await request.agent(app)
+      .post(formEndpoint)
+      .send(form);
+
+    formId = resForm.body.id;
+
+    const res = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer 1` })
+      .get(`${formEndpoint}/${formId}`);
+
+    expect(res.statusCode).toEqual(401);
+  });
+
   it('Edit form, receive 200', async () => {
     let formId;
 
