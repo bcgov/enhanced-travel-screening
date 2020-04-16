@@ -29,8 +29,8 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
         return;
       }
       schema.forEach(async (s) => {
-        console.log(`Creating table ${s.TableName}-${databaseSuffix}`);
-        const table = Object.assign({}, s, { TableName: `${s.TableName}-${databaseSuffix}` })
+        console.log(`Creating table ${s.TableName}`);
+        const table = Object.assign({}, s, { TableName: s.TableName })
         await db.createTable(table).promise();
       });
       console.log('Waiting 10s for tables to be created');
@@ -44,7 +44,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
           salt,
         },
       };
-      console.log(`Creating user with ID ${item.Item.id} in table ${item.TableName}-${databaseSuffix}`);
+      console.log(`Creating user with ID ${item.Item.id} in table ${item.TableName}`);
       await dbClient.put(item).promise();
     } catch (error) {
       console.error(`Failed to create tables and/or user ${error}`);
