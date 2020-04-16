@@ -12,11 +12,13 @@ import { Routes } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    borderBottom: `2px solid ${theme.palette.secondary.main}`,
     '& > header': {
       height: '80px',
       boxShadow: 'none',
     },
+  },
+  appBar: {
+    backgroundColor: theme.palette.primary.light,
   },
   toolbar: {
     height: '100%',
@@ -41,10 +43,10 @@ const Header = () => {
   const params = useParams();
   const classes = useStyles();
 
-  const isLookupScreen = location.pathname === Routes.Lookup;
-  const isLookupResultsScreen = location.pathname === Routes.LookupResults.dynamicRoute(params.id);
+  const isLookupScreen = location.pathname.includes(Routes.Lookup);
+  const isLookupResultsScreen = location.pathname === Routes.LookupConfirmationNumber.dynamicRoute(params.confirmationNumber);
 
-  const handleLogoClick = () => history.push(Routes.Base);
+  const handleLogoClick = () => history.push(Routes.Form);
   const handleSubmissionLookupClick = () => history.push(Routes.Lookup);
   const handleLogoutClick = () => {
     localStorage.removeItem('jwt');
@@ -53,7 +55,7 @@ const Header = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolbar}>
           <div className={classes.logoWrapper}>
             <Hidden smDown>

@@ -1,22 +1,11 @@
 import React from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    color: '#333333',
-    fontSize: '14px',
-    letterSpacing: '-0.25px',
-    lineHeight: '18px',
-  },
-}));
+import Typography from '@material-ui/core/Typography';
 
 const InputFieldLabel = ({ label, ...props }) => {
-  const classes = useStyles();
   return (
-    <InputLabel className={classes.root} {...props}>
+    <Typography variant="body1" {...props}>
       {label}
-    </InputLabel>
+    </Typography>
   );
 };
 

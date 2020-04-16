@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment';
 
 export const dateToString = (dateObj) => moment(dateObj).format('YYYY/MM/DD');
 

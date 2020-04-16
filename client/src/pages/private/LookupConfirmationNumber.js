@@ -6,17 +6,16 @@ import Container from '@material-ui/core/Container';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import Box from '@material-ui/core/Box';
-import { Formik, Form, Field } from 'formik';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Formik, Form as FormikForm, Field } from 'formik';
+import { Redirect, useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { DeterminationSchema } from '../validation-schemas';
-import { Routes } from '../constants';
-import { adaptSubmission } from '../utils';
+import { Routes, DeterminationSchema } from '../../constants';
+import { adaptSubmission } from '../../utils';
 
-import UserForm from '../components/form';
-import { Page, Button, Divider } from '../components/generic';
-import { RenderButtonGroup, RenderTextField } from '../components/fields';
+import { Form } from '../../components/form';
+import { Page, Button, Divider } from '../../components/generic';
+import { RenderButtonGroup, RenderTextField } from '../../components/fields';
 
 const useStyles = makeStyles((theme) => ({
   statusWrapper: {
@@ -46,16 +45,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#FFFFFF',
     padding: theme.spacing(4),
   },
-  sidebarTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    lineHeight: '24px',
-  },
 }));
 
-const AdminLookupResults = ({ match: { params }}) => {
+export default () => {
   const classes = useStyles();
   const history = useHistory();
+  const params = useParams();
   const [isMobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [lookupError, setLookupError] = useState(null);
   const [lookupLoading, setLookupLoading] = useState(false);
@@ -76,7 +71,7 @@ const AdminLookupResults = ({ match: { params }}) => {
     (async () => {
       setLookupLoading(true);
       const jwt = window.localStorage.getItem('jwt');
-      const response = await fetch(`/api/v1/form/${params.id}`, {
+      const response = await fetch(`/api/v1/form/${params.confirmationNumber}`, {
         headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
         method: 'GET',
       });
@@ -87,23 +82,24 @@ const AdminLookupResults = ({ match: { params }}) => {
         setInitialUserFormValues(submission);
         setInitialSidebarValues({ determination: determination || '', notes: notes || '' });
       } else {
-        setLookupError(`Failed to find submission with ID ${params.id}`);
+        setLookupError(`Failed to find submission with ID ${params.confirmationNumber}`);
       }
       setLookupLoading(false);
     })();
-  }, [params.id]);
+  }, [params.confirmationNumber]);
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     const jwt = window.localStorage.getItem('jwt');
-    const response = await fetch(`/api/v1/form/${params.id}`, {
+    const response = await fetch(`/api/v1/form/${params.confirmationNumber}`, {
       headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
       method: 'PATCH',
       body: JSON.stringify({ ...values })
     });
 
-    if (response.ok) setSubmitSuccess(true);
-    else {
+    if (response.ok) {
+      setSubmitSuccess(true);
+    } else {
        setSubmitError(response.error || 'Failed to update this submission.');
        setSubmitLoading(false);
      }
@@ -116,20 +112,18 @@ const AdminLookupResults = ({ match: { params }}) => {
         validationSchema={DeterminationSchema}
         onSubmit={handleSubmit}
       >
-        <Form>
+        <FormikForm>
           <Grid container spacing={3}>
 
             {/** Title */}
             <Grid item xs={12}>
-              <Typography className={classes.sidebarTitle} variant="h2">
-                Provincial Official Determination
-              </Typography>
+              <Typography variant="subtitle1">Provincial Official Determination</Typography>
               <Divider />
             </Grid>
 
             {/** Determination */}
             <Grid item xs={12}>
-              <Typography paragraph variant="body1"><b>Determination*</b></Typography>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom>Determination*</Typography>
               <Field
                 name="determination"
                 component={RenderButtonGroup}
@@ -142,7 +136,7 @@ const AdminLookupResults = ({ match: { params }}) => {
 
             {/** Notes */}
             <Grid item xs={12}>
-              <Typography paragraph variant="body1"><b>Notes*</b></Typography>
+              <Typography color="textSecondary" variant="subtitle2" gutterBottom>Notes*</Typography>
               <Field
                 name="notes"
                 component={RenderTextField}
@@ -158,17 +152,19 @@ const AdminLookupResults = ({ match: { params }}) => {
               <Button
                 type="submit"
                 text="Submit"
+                size="large"
                 loading={submitLoading}
               />
             </Grid>
 
-            {/** Submit Success / Error */}
-            <Grid item xs={12}>
-              {submitError && <Typography color="error">{submitError}</Typography>}
-              {submitSuccess && <Typography color="primary">Submission Updated</Typography>}
-            </Grid>
+            {/** Submit Error */}
+            {submitError && (
+              <Grid item xs={12}>
+                <Typography variant="body1" color="error">{submitError}</Typography>
+              </Grid>
+            )}
           </Grid>
-        </Form>
+        </FormikForm>
       </Formik>
     </Grid>
   );
@@ -177,10 +173,10 @@ const AdminLookupResults = ({ match: { params }}) => {
 
   const renderSubmitError = () => (
     <Container maxWidth="sm" align="center">
-      <Typography paragraph>{lookupError.message || lookupError}</Typography>
+      <Typography variant="body1" paragraph>{lookupError.message || lookupError}</Typography>
       <Button
-        text="Back to Lookup"
-        onClick={() => history.push(Routes.Lookup)}
+        text="Go Back"
+        onClick={() => history.goBack()}
         fullWidth={false}
       />
     </Container>
@@ -198,16 +194,17 @@ const AdminLookupResults = ({ match: { params }}) => {
 
          {/** Form */}
          <Grid className={classes.formWrapper} item xs={12} sm={11} md={8}>
-           <UserForm
+           <Form
              initialValues={initialUserFormValues}
              isDisabled
-             confirmationNumber={params.id}
+             confirmationNumber={params.confirmationNumber}
              isPdf={false}
            />
            <Hidden mdUp>
              <Box p={4}>
                <Button
                  text="Submit Determination"
+                 size="large"
                  onClick={() => setMobileDrawerOpen(true)}
                />
              </Box>
@@ -234,5 +231,3 @@ const AdminLookupResults = ({ match: { params }}) => {
    </Page>
   );
 };
-
-export default AdminLookupResults;

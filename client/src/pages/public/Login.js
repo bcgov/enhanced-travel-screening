@@ -5,13 +5,12 @@ import Typography from '@material-ui/core/Typography';
 import { Formik, Form, Field } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { Routes } from '../constants';
-import { LoginSchema } from '../validation-schemas';
+import { Routes, LoginSchema } from '../../constants';
 
-import { Page, Button, Card } from '../components/generic';
-import { RenderTextField } from '../components/fields';
+import { Page, Button, Card } from '../../components/generic';
+import { RenderTextField } from '../../components/fields';
 
-const AdminLogin = () => {
+export default () => {
   const history = useHistory();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -77,6 +76,7 @@ const AdminLogin = () => {
                       <Button
                         type="submit"
                         text="Login"
+                        size="large"
                         loading={submitLoading}
                       />
                     </Grid>
@@ -99,5 +99,3 @@ const AdminLogin = () => {
     </Page>
   );
 };
-
-export default AdminLogin;

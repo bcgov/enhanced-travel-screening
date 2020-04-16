@@ -8,7 +8,6 @@ const RenderTextField = ({
   field: { value, ...fieldRest },
   form,
   label,
-  options,
   ...props
 }) => {
   const touched = form.touched[fieldRest.name];
