@@ -11,7 +11,6 @@ const { validate, FormSchema, DeterminationSchema } = require('./validation.js')
 
 
 const apiBaseUrl = '/api/v1';
-const port = 80;
 const app = express();
 
 app.use(requireHttps);
@@ -31,7 +30,7 @@ const scrubObject = (obj) => {
   return scrubbed;
 };
 
-// Login using username and password, recieve JWT
+// Login using username and password, receive JWT
 app.post(`${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
   (req, res) => {
@@ -178,6 +177,4 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`); // eslint-disable-line no-console
-});
+module.exports = app;

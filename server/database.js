@@ -4,11 +4,11 @@ const { hashPassword } = require('./auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
-const databaseSuffix = process.env.DB_SUFFIX || 'development';
+const databaseSuffix = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB_SUFFIX || 'development';
 const nodeEnv = process.env.NODE_ENV || 'development';
 AWS.config.update({
   region: 'ca-central-1',
-  ...(nodeEnv === 'development' && { endpoint: 'http://localhost:8000' }),
+  ...((nodeEnv === 'development' || nodeEnv === 'test') && { endpoint: 'http://localhost:8000' }),
 });
 const db = new AWS.DynamoDB();
 const dbClient = new AWS.DynamoDB.DocumentClient();
@@ -20,8 +20,8 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
     try {
       console.log('Checking for DB tables');
       const tables = await db.listTables().promise();
-      if (nodeEnv !== 'development') {
-        console.error('Environment variable NODE_ENV must be set to development');
+      if (nodeEnv !== 'development' && nodeEnv !== 'test') {
+        console.error('Environment variable NODE_ENV must be set to either development or test');
         return;
       }
       if (Array.isArray(tables.TableNames) && tables.TableNames.length > 0) {
@@ -36,7 +36,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
       await (async (ms = 10000) => new Promise((resolve) => setTimeout(resolve, ms)))();
       const salt = randomBytes(16).toString('hex');
       const item = {
-        TableName: 'ets-users-development',
+        TableName: `ets-users-${databaseSuffix}`,
         Item: {
           id: 'username',
           password: hashPassword('password', salt),
