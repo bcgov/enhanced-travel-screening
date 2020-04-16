@@ -13,26 +13,10 @@ import { RenderSearchField } from '../../components/fields';
 export default () => {
   const history = useHistory();
   const params = useParams();
+  const [lookupError, setLookupError] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [rows, setRows] = useState([
-    {
-      date: '2020/01/01',
-      lastName: 'Wilson',
-      firstName: 'Ricky',
-      cityCountry: 'Shellbrook, CA',
-      confirmationNumber: '234FSGA',
-      viewMore: <Button size="small" text="View" />,
-    },
-    {
-      date: '2020/01/01',
-      lastName: 'Wilson',
-      firstName: 'Ricky',
-      cityCountry: 'Shellbrook, CA',
-      confirmationNumber: '234FSGA',
-      viewMore: <Button size="small" text="View" />,
-    },
-  ]);
-  const columns = ['Date', 'Last Name', 'First Name', 'Arrival City, Country', 'Confirmation Number'];
+  const [rows, setRows] = useState([]);
+  const columns = ['Arrival Date', 'Last Name', 'First Name', 'Arrival City, Country', 'Confirmation Number'];
   const initialValuesQuery = { query: params.lastName };
 
   /**
@@ -40,72 +24,98 @@ export default () => {
    * query on the `lastName`.
    */
   useEffect(() => {
-    setLoading(true);
+    (async () => {
+      setLoading(true);
+      const jwt = window.localStorage.getItem('jwt');
+      const response = await fetch(`/api/v1/last-name/${params.lastName}`, {
+        headers: { 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${jwt}` },
+        method: 'GET',
+      });
 
-    // TODO: Call API...
-    setTimeout(() => {
+      if (response.ok) {
+        const { travellers } = await response.json();
+        console.log(travellers)
+        const rows = travellers.map((traveller) =>
+          ({
+            date: traveller.arrival.date,
+            lastName: traveller.lastName,
+            firstName: traveller.firstName,
+            cityCountry: traveller.arrival.from,
+            confirmationNumber: traveller.id,
+            viewMore: <Button onClick={() => history.push(Routes.LookupConfirmationNumber.dynamicRoute(traveller.id))}
+              size="small" text="View" />,
+          })
+        );
+        setRows(rows)
+        setLookupError(null)
+      } else {
+        console.log(response)
+        setLookupError(response.error || `No traveller found with last name: "${params.lastName}"`);
+      }
+
       setLoading(false);
-    }, 3000)
+    })();
   }, [params.lastName]);
 
   const handleSearch = (values) => {
     history.push(Routes.LookupLastName.dynamicRoute(values.query));
   };
 
+
   return (
-   <Page>
-     <Grid container justify="center">
-       <Grid item xs={12} sm={12} md={10} lg={8} xl={6}>
-         <Box m={4}>
-           <Grid container spacing={3}>
+    <Page>
+      <Grid container justify="center">
+        <Grid item xs={12} sm={12} md={10} lg={8} xl={6}>
+          <Box m={4}>
+            <Grid container spacing={3}>
 
-             {/** Title */}
-             <Grid item xs={12}>
-               <Typography color="primary" variant="h2" gutterBottom noWrap>
-                 Submission Lookup
+              {/** Title */}
+              <Grid item xs={12}>
+                <Typography color="primary" variant="h2" gutterBottom noWrap>
+                  Submission Lookup
                </Typography>
-             </Grid>
+              </Grid>
 
-             <Grid item xs={12}>
-               <Grid container alignItems="center" justify="space-between">
+              <Grid item xs={12}>
+                <Grid container alignItems="center" justify="space-between">
 
-                 {/** Results Text */}
-                 <Grid item>
-                   <Typography variant="subtitle2" gutterBottom noWrap>
-                     {rows.length} Records found for "{params.lastName}"
-                   </Typography>
-                 </Grid>
+                  {/** Results Text */}
+                  <Grid item>
+                    <Typography variant="subtitle2" gutterBottom noWrap>
+                      {lookupError ? lookupError.message || lookupError : `${rows.length} Records found for ${params.lastName}`}
+                    </Typography>
+                  </Grid>
 
-                 {/** Search Bar */}
-                 <Grid item xs={12} sm={6}>
-                   <Formik
-                     initialValues={initialValuesQuery}
-                     onSubmit={handleSearch}
-                   >
-                     <Form>
-                       <Field
-                         name="query"
-                         component={RenderSearchField}
-                         placeholder="Search last name..."
-                       />
-                     </Form>
-                   </Formik>
-                 </Grid>
-               </Grid>
-             </Grid>
+                  {/** Search Bar */}
+                  <Grid item xs={12} sm={6}>
+                    <Formik
+                      initialValues={initialValuesQuery}
+                      onSubmit={handleSearch}
+                    >
+                      <Form>
+                        <Field
+                          name="query"
+                          component={RenderSearchField}
+                          placeholder="Search last name..."
+                        />
+                      </Form>
+                    </Formik>
+                  </Grid>
+                </Grid>
+              </Grid>
 
-             {/** Table */}
-             <Grid item xs={12}>
-               <Table
-                 columns={columns}
-                 rows={rows}
-                 isLoading={isLoading}
-               />
-             </Grid>
-           </Grid>
-         </Box>
-       </Grid>
-     </Grid>
-   </Page>
+              {/** Table */}
+              <Grid item xs={12}>
+                {!lookupError && <Table
+                  columns={columns}
+                  rows={rows}
+                  isLoading={isLoading}
+                />}
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+      </Grid>
+    </Page>
   );
 };
