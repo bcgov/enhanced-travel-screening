@@ -41,6 +41,8 @@ export default () => {
    */
   useEffect(() => {
     setLoading(true);
+
+    // TODO: Call API...
     setTimeout(() => {
       setLoading(false);
     }, 3000)
