@@ -26,6 +26,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: NPM Audit
+        run: |
+          cd "$GITHUB_WORKSPACE/client" && npm audit
+          cd "$GITHUB_WORKSPACE/server" && npm audit
+          cd "$GITHUB_WORKSPACE"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
