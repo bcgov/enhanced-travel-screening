@@ -30,8 +30,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
       }
       schema.forEach(async (s) => {
         console.log(`Creating table ${s.TableName}`);
-        const table = Object.assign({}, s, { TableName: s.TableName })
-        await db.createTable(table).promise();
+        await db.createTable(s).promise();
       });
       console.log('Waiting 10s for tables to be created');
       await (async (ms = 10000) => new Promise((resolve) => setTimeout(resolve, ms)))();
