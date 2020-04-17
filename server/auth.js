@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { Strategy: LocalStrategy } = require('passport-local');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { scryptSync } = require('crypto');
-const { db, usersTable } = require('./database.js');
+const { dbClient, collections } = require('./db');
 
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
@@ -23,13 +23,9 @@ const generateJwt = (id, type = 'user') => jwt.sign({
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
 // Could be refactored into database.js
-const getUser = async (id) => {
-  const params = {
-    TableName: usersTable,
-    Key: { id },
-  };
-  const item = await db.get(params).promise();
-  return item.Item;
+const getUser = async (username) => {
+  const usersCollection = dbClient.db.collection(collections.USERS);
+  return usersCollection.findOne({ username: { $in: [username] } });
 };
 
 // Login method with username and password in POST request
@@ -38,7 +34,7 @@ passport.use('login', new LocalStrategy(
   async (username, password, done) => {
     try {
       const user = await getUser(username);
-      if (user.salt && user.password !== hashPassword(password, user.salt)) {
+      if (user && user.salt && user.password !== hashPassword(password, user.salt)) {
         return done(null, false); // Incorrect password
       }
       user.token = generateJwt(username);

@@ -2,9 +2,9 @@
   "name": "enhanced-travel-fe",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:80",
+  "proxy": "http://server:80",
   "scripts": {
-    "start": "PORT=4000 react-scripts start",
+    "start": "CI=true PORT=4000 react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },

@@ -1,5 +1,5 @@
-const request = require('supertest')
-const app = require('../server')
+const request = require('supertest');
+const app = require('../server');
 
 describe('Server V1 Form Endpoints', () => {
   let server;
@@ -15,47 +15,47 @@ describe('Server V1 Form Endpoints', () => {
   const user = {
     username: 'username',
     password: 'password',
-  }
+  };
 
   const form = {
-    firstName: "John",
-    lastName: "Cena",
-    telephone: "1234567890",
+    firstName: 'John',
+    lastName: 'Cena',
+    telephone: '1234567890',
     email: null,
-    address: "1234 Fake St.",
-    city: "Victoria",
-    province: "Yukon",
-    postalCode: "A1A1A1",
-    dob: "1999/03/27",
+    address: '1234 Fake St.',
+    city: 'Victoria',
+    province: 'Yukon',
+    postalCode: 'A1A1A1',
+    dob: '1999/03/27',
     includeAdditionalTravellers: true,
     additionalTravellers: [
       {
-        firstName: "Johnny",
-        lastName: "Cena",
-        dob: "1999/03/27"
-      }
+        firstName: 'Johnny',
+        lastName: 'Cena',
+        dob: '1999/03/27',
+      },
     ],
     arrival: {
-      date: "2020/04/13",
-      by: "air",
-      from: "Wuhan, China",
-      flight: null
+      date: '2020/04/13',
+      by: 'air',
+      from: 'Wuhan, China',
+      flight: null,
     },
     accomodations: true,
     isolationPlan: {
-      city: "Vctoria",
-      address: "1234 Fake St.",
-      type: "family"
+      city: 'Vctoria',
+      address: '1234 Fake St.',
+      type: 'family',
     },
     supplies: true,
     ableToIsolate: true,
     transportation: [
-      "taxi",
-      "personal",
-      "public"
+      'taxi',
+      'personal',
+      'public',
     ],
-    certified: true
-  }
+    certified: true,
+  };
 
   it('Create new form, receive isolationPlanStatus == true', async () => {
     const res = await request.agent(app)
@@ -68,7 +68,7 @@ describe('Server V1 Form Endpoints', () => {
   it('Create new form, receive isolationPlanStatus == false', async () => {
     const res = await request.agent(app)
       .post(formEndpoint)
-      .send(Object.assign({}, form, { accomodations: false, isolationPlan: null }));
+      .send({ ...form, accomodations: false, isolationPlan: null });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('isolationPlanStatus', false);
   });
@@ -76,7 +76,7 @@ describe('Server V1 Form Endpoints', () => {
   it('Create new form using an invalid field, receive 400', async () => {
     const res = await request.agent(app)
       .post(formEndpoint)
-      .send(Object.assign({}, form, { email: 'email@test.' }));
+      .send({ ...form, email: 'email@test.' });
     expect(res.statusCode).toEqual(400);
   });
 
@@ -94,7 +94,7 @@ describe('Server V1 Form Endpoints', () => {
       .send(user);
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .get(`${formEndpoint}/${formId}`);
 
     expect(res.statusCode).toEqual(200);
@@ -114,31 +114,31 @@ describe('Server V1 Form Endpoints', () => {
       .send(user);
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .get(`${searchByNameEndpoint}/${form.lastName}`);
 
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual(
       expect.objectContaining({
-        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
-      })
+        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })]),
+      }),
     );
 
-    //try a partial name
+    // try a partial name
     const resPartial = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .get(`${searchByNameEndpoint}/${form.lastName.slice(0, 2)}`);
 
     expect(resPartial.statusCode).toEqual(200);
     expect(resPartial.body).toEqual(
       expect.objectContaining({
-        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
-      })
+        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })]),
+      }),
     );
 
-    //try empty result
+    // try empty result
     const resEmpty = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .get(`${searchByNameEndpoint}/1}`);
 
     expect(resEmpty.statusCode).toEqual(404);
@@ -150,7 +150,7 @@ describe('Server V1 Form Endpoints', () => {
       .send(user);
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .get(`${formEndpoint}/1`);
 
     expect(res.statusCode).toEqual(404);
@@ -166,7 +166,7 @@ describe('Server V1 Form Endpoints', () => {
     formId = resForm.body.id;
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer 1` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: 'Bearer 1' })
       .get(`${formEndpoint}/${formId}`);
 
     expect(res.statusCode).toEqual(401);
@@ -186,7 +186,7 @@ describe('Server V1 Form Endpoints', () => {
       .send(user);
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .patch(`${formEndpoint}/${formId}`)
       .send({
         province: 'Ontario',
@@ -211,10 +211,10 @@ describe('Server V1 Form Endpoints', () => {
       .send(user);
 
     const res = await request.agent(app)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
       .patch(`${formEndpoint}/${formId}`)
       .send({
-        province: 'Ontario'
+        province: 'Ontario',
       });
 
     expect(res.statusCode).toEqual(400);

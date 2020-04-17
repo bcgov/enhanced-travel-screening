@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport, generateJwt, restrictToken } = require('./auth.js');
-const { db, formsTable, serviceBCTable } = require('./database.js');
 const createPdf = require('./pdf.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
 const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
+const { dbClient, collections } = require('./db');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -39,52 +39,59 @@ app.post(`${apiBaseUrl}/login`,
 // Create new form, not secured
 app.post(`${apiBaseUrl}/form`, async (req, res) => {
   try {
-    const id = randomBytes(4).toString('hex').toUpperCase(); // Random ID
+    const formsCollection = dbClient.db.collection(collections.FORMS);
+
     const scrubbed = scrubObject(req.body);
+
     try {
       await validate(FormSchema, scrubbed);
     } catch (error) {
       return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
     }
+
+    // Generate unique random hex id
+    async function generateRandomHexId() {
+      const randomHexId = randomBytes(4).toString('hex').toUpperCase();
+
+      // Query database do make sure id does not exist, avoiding collision
+      if (await formsCollection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
+        return generateRandomHexId();
+      }
+      return randomHexId;
+    }
+
+    // Form ID
+    const id = await generateRandomHexId();
+
+    // Boolean indicating if user really have an isolation plan
     const isolationPlanStatus = scrubbed.accomodations
       && scrubbed.ableToIsolate && scrubbed.supplies;
-    const item = {
-      ...scrubbed,
-      created_at: new Date().toISOString(),
+
+    const currentISODate = new Date().toISOString();
+    const formItem = {
       id,
       isolationPlanStatus,
       determination: null,
       notes: null,
+      ...scrubbed,
+      createdAt: currentISODate,
+      updatedAt: currentISODate,
     };
 
-    const serviceResponse = await postServiceItem(item);
-    const params = {
-      RequestItems: {
-        [formsTable]: [
-          {
-            PutRequest: {
-              Item: item,
-              ConditionExpression: 'attribute_not_exists(id)',
-            },
-          },
-        ],
-        [serviceBCTable]: [
-          {
-            PutRequest: {
-              Item: {
-                ...serviceResponse,
-                id: randomBytes(10).toString('hex').toUpperCase(),
-                confirmationId: item.id,
-                createdAt: new Date().toISOString(),
-              },
-              ConditionExpression: 'attribute_not_exists(id)',
-            },
-          },
-        ],
-      },
-    };
+    // Post to ServicesBC and cache status of the submission
+    const serviceResponse = await postServiceItem(formItem);
 
-    await db.batchWrite(params).promise();
+    await formsCollection.insertOne({
+      ...formItem,
+      // Following NoSQL recommendation, in this case, we want to store
+      // BC Services transactional data on the form itself
+      serviceBCTransactions: [
+        {
+          ...serviceResponse,
+          processedAt: new Date().toISOString(),
+        },
+      ],
+    });
 
     return res.json({
       id,
@@ -101,26 +108,31 @@ app.patch(`${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const { id } = req.params;
-    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
+    if (!restrictToken(req.user, '*')) return res.status(401).send('Unauthorized');
+
     try {
       await validate(DeterminationSchema, req.body);
     } catch (error) {
       return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
     }
-    const params = {
-      TableName: formsTable,
-      Key: { id },
-      UpdateExpression: 'set notes = :n, determination = :d, updated_at = :t',
-      ExpressionAttributeValues: {
-        ':n': req.body.notes,
-        ':d': req.body.determination,
-        ':t': new Date().toISOString(),
-      },
-      ConditionExpression: 'attribute_exists(id)',
-      ReturnValues: 'UPDATED_NEW',
-    };
+
     try {
-      await db.update(params).promise();
+      const formsCollection = dbClient.db.collection(collections.FORMS);
+
+      await formsCollection.updateOne(
+        // Query
+        {
+          id,
+        },
+        // UpdateQuery
+        {
+          $set: {
+            notes: req.body.notes,
+            determination: req.body.determination,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      );
       return res.json({ id });
     } catch (error) {
       return res.status(500).json({ error: 'Failed to update submission' });
@@ -133,14 +145,14 @@ app.get(`${apiBaseUrl}/form/:id`,
   async (req, res) => {
     const { id } = req.params;
     if (!restrictToken(req.user, '*', [id])) return res.status(401).send('Unathorized');
-    const params = {
-      TableName: formsTable,
-      Key: { id },
-    };
+
     try {
-      const item = await db.get(params).promise();
-      if (Object.keys(item).length === 0) return res.status(404).json({ error: `No submission with ID ${id}` });
-      return res.json(item.Item);
+      const formsCollection = dbClient.db.collection(collections.FORMS);
+      const formItem = await formsCollection.findOne({ id });
+
+      if (!formItem) return res.status(404).json({ error: `No submission with ID ${id}` });
+
+      return res.json(formItem);
     } catch (error) {
       return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
     }
@@ -152,32 +164,32 @@ app.get(`${apiBaseUrl}/last-name/:lname`,
   async (req, res) => {
     const { lname } = req.params;
     if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
-    const params = {
-      TableName: formsTable,
-      FilterExpression: 'begins_with(#lName,:regular) OR begins_with(#lName,:smallcaps) OR begins_with(#lName,:capitalized)',
-      ExpressionAttributeNames: {
-        '#lName': 'lastName',
-      },
-      ExpressionAttributeValues: {
-        ':regular': lname,
-        ':smallcaps': lname.toLowerCase(),
-        ':capitalized': lname.charAt(0).toUpperCase() + lname.slice(1),
-      },
-    };
 
     try {
-      const { Items: data } = await db.scan(params).promise();
+      const formsCollection = dbClient.db.collection(collections.FORMS);
 
-      if (Object.keys(data).length === 0) {
+      const forms = await formsCollection.find({
+        // i: for substring search, case insensitive
+        // ^: match results that starts with
+        lastName: { $regex: new RegExp(`^${lname}`, 'i') },
+      }).toArray();
+
+      if (forms.length === 0) {
         return res.status(404).json({
           error: `No traveller found with last name: ${lname}`,
           success: false,
         });
       }
 
+      const travellers = forms.map((form) => {
+        // Remove serviceTransactions from return query
+        const { serviceTransactions, ...formData } = form;
+        return formData;
+      });
+
       return res.json({
         success: true,
-        travellers: data,
+        travellers,
       });
     } catch (error) {
       return res.status(500).json({

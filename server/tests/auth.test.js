@@ -1,10 +1,13 @@
-const request = require('supertest')
-const app = require('../server')
+const request = require('supertest');
+const app = require('../server');
+const { dbClient } = require('../db');
 
 describe('Server V1 Auth Endpoints', () => {
   let server;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    // Connect to DB, seed DB
+    await dbClient.connect();
     server = app.listen();
   });
 
@@ -41,14 +44,14 @@ describe('Server V1 Auth Endpoints', () => {
       });
     const res = await request.agent(app)
       .get(validateEndpoint)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` });
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` });
     expect(res.statusCode).toEqual(200);
   });
 
   it('Validate wrong JWT, receive 401', async () => {
     const res = await request.agent(app)
       .get(validateEndpoint)
-      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer 1` });
+      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: 'Bearer 1' });
     expect(res.statusCode).toEqual(401);
   });
 
