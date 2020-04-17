@@ -58,9 +58,8 @@ export default () => {
   }, [params.lastName]);
 
   const handleSearch = (values) => {
-    history.push(Routes.LookupLastName.dynamicRoute(values.query));
+    history.replace(Routes.LookupLastName.dynamicRoute(values.query));
   };
-
 
   return (
     <Page>

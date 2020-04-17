@@ -16,11 +16,15 @@ export default () => {
   const initialValuesLastName = { lastName: '' };
 
   const handleConfirmationNumberSubmit = (values) => {
-    history.push(Routes.LookupConfirmationNumber.dynamicRoute(values.confirmationNumber));
+    if (values.confirmationNumber) {
+      history.push(Routes.LookupConfirmationNumber.dynamicRoute(values.confirmationNumber));
+    }
   };
 
   const handleLastNameSubmit = (values) => {
-    history.push(Routes.LookupLastName.dynamicRoute(values.lastName));
+    if (values.lastName) {
+      history.push(Routes.LookupLastName.dynamicRoute(values.lastName));
+    }
   };
 
   return (
