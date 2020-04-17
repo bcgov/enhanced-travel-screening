@@ -152,7 +152,7 @@ app.get(`${apiBaseUrl}/last-name/:lname`,
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const { lname } = req.params;
-    if (!restrictToken(req.user, '*', [lname])) return res.status(401).send('Unathorized');
+    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
     let params = {
       TableName: formsTable,
       FilterExpression: 'begins_with(#lName,:regular) OR begins_with(#lName,:smallcaps) OR begins_with(#lName,:capitalized)',
