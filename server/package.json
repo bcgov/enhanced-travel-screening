@@ -10,8 +10,7 @@
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "pretest": "docker run --rm --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test DB_SUFFIX=test npm run db:seed",
-    "test": "NODE_ENV=test DB_SUFFIX=test jest",
-    "posttest": "docker stop test"
+    "test": "NODE_ENV=test DB_SUFFIX=test jest && docker stop test || docker stop test"
   },
   "dependencies": {
     "aws-sdk": "2.654.0",
