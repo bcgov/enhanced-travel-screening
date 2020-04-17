@@ -9,8 +9,8 @@
     "db:seed": "node database.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "pretest": "docker run --rm --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test npm run db:seed",
-    "test": "NODE_ENV=test jest && docker stop test || docker stop test "
+    "pretest": "docker run --rm --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test DB_SUFFIX=test npm run db:seed",
+    "test": "NODE_ENV=test DB_SUFFIX=test jest && docker stop test || docker stop test"
   },
   "dependencies": {
     "aws-sdk": "2.654.0",
@@ -24,6 +24,8 @@
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "puppeteer": "2.1.1",
+    "winston": "3.2.1",
+    "winston-cloudwatch": "2.3.2",
     "yup": "0.28.3"
   },
   "devDependencies": {

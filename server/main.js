@@ -1,9 +1,10 @@
-const app = require('./server')
+const app = require('./server.js');
+const logger = require('./logger.js');
 
 const port = 80;
 
 const server = app.listen(port, () => {
-  console.log(`Listening on port ${port}`); // eslint-disable-line no-console
+  logger.info(`Listening on port ${port}`);
 });
 
 module.exports = server;

@@ -4,11 +4,11 @@ const { hashPassword } = require('./auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
-const databaseSuffix = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB_SUFFIX || 'development';
+const databaseSuffix = process.env.DB_SUFFIX || 'development';
 const nodeEnv = process.env.NODE_ENV || 'development';
 AWS.config.update({
   region: 'ca-central-1',
-  ...((nodeEnv === 'development' || nodeEnv === 'test') && { endpoint: 'http://localhost:8000' }),
+  ...(['development', 'test'].includes(nodeEnv) && { endpoint: 'http://localhost:8000' }),
 });
 const db = new AWS.DynamoDB();
 const dbClient = new AWS.DynamoDB.DocumentClient();
