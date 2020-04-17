@@ -31,8 +31,8 @@ const App = () => (
             <PublicRoute exact path={Routes.Form} component={Form} />
             <PublicRoute exact path={Routes.Confirmation} component={Confirmation} />
             <PublicRoute exact path={Routes.RenderPDF.staticRoute} component={PDF} />
-            <PublicRoute exact path={Routes.Login} component={Login} />
-
+            <PublicRoute exact path={Routes.Login} component={Login} adminRedirect={Routes.Lookup} />
+            
             {/* Private routes */}
             <PrivateRoute exact path={Routes.Lookup} component={Lookup} />
             <PrivateRoute exact path={Routes.LookupLastName.staticRoute} component={LookupLastName} />
