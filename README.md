@@ -12,6 +12,7 @@ From both the client and the server folders, run `npm i` to install dependencies
 - Start Database: `npm run db:start`
 - Once the DB is running, `npm run db:seed` to seed the database
 - Run server: `npm run watch` from within the server folder
+- Run server tests: `npm test` from within the server folder
 
 Communication from front end to back end is facilitated by [the proxy field](https://create-react-app.dev/docs/proxying-api-requests-in-development/) in client package.json.
 

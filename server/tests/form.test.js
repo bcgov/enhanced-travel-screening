@@ -10,6 +10,7 @@ describe('Server V1 Form Endpoints', () => {
 
   const loginEndpoint = '/api/v1/login';
   const formEndpoint = '/api/v1/form';
+  const searchByNameEndpoint = '/api/v1/last-name';
 
   const user = {
     username: 'username',
@@ -97,6 +98,50 @@ describe('Server V1 Form Endpoints', () => {
       .get(`${formEndpoint}/${formId}`);
 
     expect(res.statusCode).toEqual(200);
+  });
+
+  it('Get existing form by last name, receive results accordingly', async () => {
+    let formId;
+
+    const resForm = await request.agent(app)
+      .post(formEndpoint)
+      .send(form);
+
+    formId = resForm.body.id;
+
+    const resLogin = await request.agent(app)
+      .post(loginEndpoint)
+      .send(user);
+
+    const res = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${searchByNameEndpoint}/${form.lastName}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
+      })
+    );
+
+    //try a partial name
+    const resPartial = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${searchByNameEndpoint}/${form.lastName.slice(0, 2)}`);
+
+    expect(resPartial.statusCode).toEqual(200);
+    expect(resPartial.body).toEqual(
+      expect.objectContaining({
+        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
+      })
+    );
+
+    //try empty result
+    const resEmpty = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${searchByNameEndpoint}/1}`);
+
+    expect(resEmpty.statusCode).toEqual(404);
   });
 
   it('Get nonexistent form, receive 404', async () => {

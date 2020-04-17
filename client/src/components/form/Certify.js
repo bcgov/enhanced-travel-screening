@@ -35,10 +35,10 @@ const Certify = ({ submitLoading, submitError }) => {
 
         {/** Disclaimer */}
         <Grid item xs={12}>
-          <Typography variant="body1">
-            Collection Notice
+          <Typography variant="body1" gutterBottom>
+            <b>Collection Notice</b>
           </Typography>
-          <Typography variant="caption" paragraph>
+          <Typography variant="body2" paragraph>
             Your personal information as well as those of your household is collected by the Ministry
             of Health under the authority of sections 26(a), (c), (e) and s.27(1)(a)(iii) of the
             Freedom of Information and Protection of Privacy Act, the Public Health Act and the
@@ -47,10 +47,10 @@ const Certify = ({ submitLoading, submitError }) => {
             self-isolation. Should you have any questions or concerns about the collection of your
             personal information please contact:
           </Typography>
-          <Typography variant="caption" paragraph>
+          <Typography variant="body2" paragraph>
             Title: Ministry of Health, Chief Privacy Officer
           </Typography>
-          <Typography variant="caption" paragraph>
+          <Typography variant="body2" paragraph>
             Telephone: 236-478-1666
           </Typography>
         </Grid>
@@ -63,6 +63,7 @@ const Certify = ({ submitLoading, submitError }) => {
                 type="submit"
                 loading={submitLoading}
                 disabled={!values.certified}
+                size="large"
                 text="Submit"
               />
 

@@ -7,9 +7,10 @@ import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import { makeStyles } from '@material-ui/core/styles';
 
-import PlanPass from '../assets/images/icon_isolation_pass.svg';
-import PlanFail from '../assets/images/icon_isolation_fail_white.svg';
-import { Page } from '../components/generic';
+import PlanPass from '../../assets/images/icon_isolation_pass.svg';
+import PlanFail from '../../assets/images/icon_isolation_fail_white.svg';
+
+import { Page } from '../../components/generic';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Confirmation ({ location: { state } }) {
+export default ({ location: { state } }) => {
 
   const classes = useStyles();
   const { id, accessToken, isolationPlanStatus } = state || { id: null, accessToken: null };
@@ -152,5 +153,3 @@ function Confirmation ({ location: { state } }) {
     </Page>
   )
 }
-
-export default Confirmation;

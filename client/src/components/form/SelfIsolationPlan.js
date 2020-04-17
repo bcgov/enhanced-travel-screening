@@ -23,7 +23,7 @@ const SelfIsolationPlan = ({ isDisabled }) => {
 
         {/** Title */}
         <Grid item xs={12}>
-          <Typography variant="h6">Self Isolation Plan</Typography>
+          <Typography variant="subtitle1">Self Isolation Plan</Typography>
           <Divider />
         </Grid>
 

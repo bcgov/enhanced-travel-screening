@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import Form from '../components/form';
 
-const PDF = ({ match: { params }}) => {
+import { Form } from '../../components/form';
+
+export default ({ match: { params }}) => {
   const [initialValues, setInitialValues] = useState(null);
   const [loading, toggleLoading] = useState(true);
   const { jwt, id } = params;
+
   useEffect(() => {
     (async () => {
       const response = await fetch(`/api/v1/form/${id}`, {
@@ -26,5 +28,3 @@ const PDF = ({ match: { params }}) => {
      </Grid>
   );
 };
-
-export default PDF;

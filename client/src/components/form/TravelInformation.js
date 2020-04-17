@@ -29,7 +29,7 @@ const TravelInformation = ({ isDisabled }) => {
 
           {/** Title */}
           <Grid item xs={12}>
-            <Typography variant="h6">Travel Information</Typography>
+            <Typography variant="subtitle1">Travel Information</Typography>
             <Divider />
           </Grid>
 
@@ -123,7 +123,7 @@ const TravelInformation = ({ isDisabled }) => {
         <Grid container spacing={3}>
 
           <Grid item xs={12}>
-            <Typography variant="h6">Arrival Information</Typography>
+            <Typography variant="subtitle1">Arrival Information</Typography>
           </Grid>
 
           {/** Arrival Date */}

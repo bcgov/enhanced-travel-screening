@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
-import { Formik, Form } from 'formik';
+import { Formik, Form as FormikForm } from 'formik';
 import { useHistory } from 'react-router-dom';
 
-import { Routes } from '../../constants';
-import { FormSchema } from '../../validation-schemas';
+import { Routes, FormSchema } from '../../constants';
 import { dateToString, handleSubmission } from '../../utils';
 
 import { Card } from '../generic';
@@ -18,7 +17,7 @@ import { SelfIsolationPlan } from './SelfIsolationPlan';
 import { Certify } from './Certify';
 import { Contact } from './Contact';
 
-export default ({ initialValues = null, isDisabled, confirmationNumber = null, isPdf = false }) => {
+const Form = ({ initialValues = null, isDisabled, confirmationNumber = null, isPdf = false }) => {
   const history = useHistory();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(false);
@@ -103,14 +102,14 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
             validationSchema={FormSchema}
             onSubmit={handleSubmit}
           >
-            <Form>
+            <FormikForm>
               <Grid container spacing={2}>
                 <PrimaryContactInformation isDisabled={isDisabled} />
                 <TravelInformation isDisabled={isDisabled} />
                 <SelfIsolationPlan isDisabled={isDisabled} />
                 {!isDisabled && <Certify submitLoading={submitLoading} submitError={submitError} />}
               </Grid>
-            </Form>
+            </FormikForm>
           </Formik>
         </Card>
       </Box>
@@ -123,3 +122,5 @@ export default ({ initialValues = null, isDisabled, confirmationNumber = null, i
     </Grid>
   );
 };
+
+export { Form };

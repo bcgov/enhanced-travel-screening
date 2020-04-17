@@ -13,7 +13,7 @@ const PrimaryContactInformation = ({ isDisabled }) => {
 
         {/** Title */}
         <Grid item xs={12}>
-          <Typography variant="h6">Primary Contact Information</Typography>
+          <Typography variant="subtitle1">Primary Contact Information</Typography>
           <Divider />
         </Grid>
 
