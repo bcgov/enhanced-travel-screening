@@ -100,7 +100,7 @@ describe('Server V1 Form Endpoints', () => {
     expect(res.statusCode).toEqual(200);
   });
 
-  it('Get existing form by last name, receive 200', async () => {
+  it('Get existing form by last name, receive results accordingly', async () => {
     let formId;
 
     const resForm = await request.agent(app)
@@ -123,6 +123,25 @@ describe('Server V1 Form Endpoints', () => {
         travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
       })
     );
+
+    //try a partial name
+    const resPartial = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${searchByNameEndpoint}/${form.lastName.slice(0, 2)}`);
+
+    expect(resPartial.statusCode).toEqual(200);
+    expect(resPartial.body).toEqual(
+      expect.objectContaining({
+        travellers: expect.arrayContaining([expect.objectContaining({ lastName: form.lastName })])
+      })
+    );
+
+    //try empty result
+    const resEmpty = await request.agent(app)
+      .set({ 'Accept': 'application/json', 'Content-type': 'application/json', 'Authorization': `Bearer ${resLogin.body.token}` })
+      .get(`${searchByNameEndpoint}/1}`);
+
+    expect(resEmpty.statusCode).toEqual(404);
   });
 
   it('Get nonexistent form, receive 404', async () => {
