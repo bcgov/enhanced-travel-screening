@@ -7,7 +7,6 @@
   "scripts": {
     "db:start": "docker run -p 8000:8000 amazon/dynamodb-local",
     "db:seed": "node database.js",
-    "lint:fix": "eslint . --fix",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "pretest": "docker run --rm --name test -p 8000:8000 -d amazon/dynamodb-local && NODE_ENV=test DB_SUFFIX=test npm run db:seed",
@@ -48,7 +47,10 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "echo test && npm run lint:fix"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
