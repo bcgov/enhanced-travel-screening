@@ -44,7 +44,8 @@ const Header = () => {
   const classes = useStyles();
 
   const isLookupScreen = location.pathname.includes(Routes.Lookup);
-  const isLookupResultsScreen = location.pathname === Routes.LookupConfirmationNumber.dynamicRoute(params.confirmationNumber);
+  const isLookupResultsScreen = (location.pathname === Routes.LookupConfirmationNumber.dynamicRoute(params.confirmationNumber)) ||
+    (location.pathname === Routes.LookupLastName.dynamicRoute(params.lastName));
 
   const handleLogoClick = () => history.push(Routes.Form);
   const handleSubmissionLookupClick = () => history.push(Routes.Lookup);

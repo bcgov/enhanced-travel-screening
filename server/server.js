@@ -180,7 +180,6 @@ app.get(`${apiBaseUrl}/last-name/:lname`,
       });
 
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ 
         success: false,
         error: `Failed to retrieve information for last name: ${lname}` 

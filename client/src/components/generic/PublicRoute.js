@@ -5,7 +5,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { Routes } from '../../constants';
 import { verifyJWT } from '../../utils';
 
-const PublicRoute = ({ component: Component, ...rest }) => {
+const PublicRoute = ({ adminRedirect, component: Component, ...rest }) => {
   const [isValid, setValidity] = useState(null);
 
   useEffect(() => {
@@ -18,10 +18,10 @@ const PublicRoute = ({ component: Component, ...rest }) => {
 
   return isValid === null ? <LinearProgress /> : (
     <Route {...rest} render={(props) => (
-      isValid
+      (isValid && adminRedirect)
         ? <Redirect to={Routes.Lookup} />
         : <Component {...props} />
-      )}
+    )}
     />
   );
 };

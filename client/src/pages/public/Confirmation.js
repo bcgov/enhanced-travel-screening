@@ -126,8 +126,8 @@ export default ({ location: { state } }) => {
                         :
                         <Card style={{ margin: '15px', color: 'white', backgroundColor: '#002C71' }}>
                           <CardContent>
-                            <Typography variant="subtitle1" style={{ marginTop: "16px" }}>Confirmation Number</Typography>
-                            <Typography variant="h2">
+                            <Typography variant="subtitle1" style={{ marginTop: "16px", color: 'white' }}>Confirmation Number</Typography>
+                            <Typography variant="h2" style={{ color: 'white' }}>
                               {id}
                             </Typography>
                             <Grid container style={{ marginTop: "1rem" }}>
@@ -137,7 +137,7 @@ export default ({ location: { state } }) => {
                               </Grid> */}
                               <Grid item xs={12}>
                                 <img src={PlanFail} alt="Isolation plan" style={{ width: "128px" }} />
-                                <Typography variant="subtitle1" style={{ marginTop: "16px" }}>Isolation Plan Status</Typography>
+                                <Typography variant="subtitle1" style={{ marginTop: "16px", color: 'white' }}>Isolation Plan Status</Typography>
                               </Grid>
                             </Grid>
                           </CardContent>
