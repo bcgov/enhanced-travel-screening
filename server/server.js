@@ -155,7 +155,7 @@ app.get(`${apiBaseUrl}/last-name/:lname`,
     if (!restrictToken(req.user, '*', [lname])) return res.status(401).send('Unathorized');
     let params = {
       TableName: formsTable,
-      FilterExpression: 'contains(#lName,:regular) OR contains(#lName,:smallcaps) OR contains(#lName,:capitalized)',
+      FilterExpression: 'begins_with(#lName,:regular) OR begins_with(#lName,:smallcaps) OR begins_with(#lName,:capitalized)',
       ExpressionAttributeNames: {
           '#lName': 'lastName'
       },
