@@ -9,7 +9,6 @@ const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
 const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 
-
 const apiBaseUrl = '/api/v1';
 const app = express();
 
@@ -153,39 +152,40 @@ app.get(`${apiBaseUrl}/last-name/:lname`,
   async (req, res) => {
     const { lname } = req.params;
     if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
-    let params = {
+    const params = {
       TableName: formsTable,
       FilterExpression: 'begins_with(#lName,:regular) OR begins_with(#lName,:smallcaps) OR begins_with(#lName,:capitalized)',
       ExpressionAttributeNames: {
-          '#lName': 'lastName'
+        '#lName': 'lastName',
       },
       ExpressionAttributeValues: {
-          ':regular': lname,
-          ':smallcaps': lname.toLowerCase(),
-          ':capitalized': lname.charAt(0).toUpperCase() + lname.slice(1),
+        ':regular': lname,
+        ':smallcaps': lname.toLowerCase(),
+        ':capitalized': lname.charAt(0).toUpperCase() + lname.slice(1),
       },
     };
-    
+
     try {
       const { Items: data } = await db.scan(params).promise();
 
-      if (Object.keys(data).length === 0) return res.status(404).json({ 
-        error: `No traveller found with last name: ${lname}`,
-        success: false
-      });
+      if (Object.keys(data).length === 0) {
+        return res.status(404).json({
+          error: `No traveller found with last name: ${lname}`,
+          success: false,
+        });
+      }
 
       return res.json({
         success: true,
-        travellers: data
+        travellers: data,
       });
-
     } catch (error) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         success: false,
-        error: `Failed to retrieve information for last name: ${lname}` 
+        error: `Failed to retrieve information for last name: ${lname}`,
       });
     }
-});
+  });
 
 // Generate PDF for submission, requires access token
 app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
@@ -201,7 +201,6 @@ app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
     return res.status(500).json({ error: `Failed to create PDF for ID ${id}` });
   }
 });
-
 
 // Validate JWT
 app.get(`${apiBaseUrl}/validate`,
