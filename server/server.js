@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
-const { passport, generateJwt, restrictToken } = require('./auth.js');
-const createPdf = require('./pdf.js');
+const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
 const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
 const { dbClient, collections } = require('./db');
+const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -32,22 +32,14 @@ const scrubObject = (obj) => {
 // Login using username and password, receive JWT
 app.post(`${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
-  (req, res) => {
-    res.json({ token: req.user.token });
-  });
+  (req, res) => res.json({ token: req.user.token }));
 
 // Create new form, not secured
-app.post(`${apiBaseUrl}/form`, async (req, res) => {
-  try {
-    const formsCollection = dbClient.db.collection(collections.FORMS);
-
+app.post(`${apiBaseUrl}/form`,
+  asyncMiddleware(async (req, res) => {
     const scrubbed = scrubObject(req.body);
-
-    try {
-      await validate(FormSchema, scrubbed);
-    } catch (error) {
-      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
-    }
+    await validate(FormSchema, scrubbed); // Validate submitted form against schema
+    const formsCollection = dbClient.db.collection(collections.FORMS);
 
     // Generate unique random hex id
     async function generateRandomHexId() {
@@ -93,140 +85,77 @@ app.post(`${apiBaseUrl}/form`, async (req, res) => {
       ],
     });
 
-    return res.json({
-      id,
-      isolationPlanStatus,
-      accessToken: generateJwt(id, 'pdf'),
-    });
-  } catch (error) {
-    return res.status(500).json({ error: `Failed to create submission: ${error.message}` });
-  }
-});
+    return res.json({ id, isolationPlanStatus });
+  }));
 
 // Edit existing form
 app.patch(`${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
+  asyncMiddleware(async (req, res) => {
+    await validate(DeterminationSchema, req.body);
     const { id } = req.params;
-    if (!restrictToken(req.user, '*')) return res.status(401).send('Unauthorized');
+    const formsCollection = dbClient.db.collection(collections.FORMS);
 
-    try {
-      await validate(DeterminationSchema, req.body);
-    } catch (error) {
-      return res.status(400).json({ error: `Failed form validation: ${error.errors}` });
-    }
-
-    try {
-      const formsCollection = dbClient.db.collection(collections.FORMS);
-
-      await formsCollection.updateOne(
-        // Query
-        {
-          id,
+    await formsCollection.updateOne(
+      { id }, // Query
+      { // UpdateQuery
+        $set: {
+          notes: req.body.notes,
+          determination: req.body.determination,
+          updatedAt: new Date().toISOString(),
         },
-        // UpdateQuery
-        {
-          $set: {
-            notes: req.body.notes,
-            determination: req.body.determination,
-            updatedAt: new Date().toISOString(),
-          },
-        },
-      );
-      return res.json({ id });
-    } catch (error) {
-      return res.status(500).json({ error: 'Failed to update submission' });
-    }
-  });
+      },
+    );
+    return res.json({ id });
+  }));
 
 // Get existing form by ID
 app.get(`${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
+  asyncMiddleware(async (req, res) => {
     const { id } = req.params;
-    if (!restrictToken(req.user, '*', [id])) return res.status(401).send('Unathorized');
+    const formsCollection = dbClient.db.collection(collections.FORMS);
+    const formItem = await formsCollection.findOne({ id });
 
-    try {
-      const formsCollection = dbClient.db.collection(collections.FORMS);
-      const formItem = await formsCollection.findOne({ id });
+    if (!formItem) return res.status(404).json({ error: `No submission with ID ${id}` });
 
-      if (!formItem) return res.status(404).json({ error: `No submission with ID ${id}` });
-
-      return res.json(formItem);
-    } catch (error) {
-      return res.status(500).json({ error: `Failed to retrieve submission with ID ${id}` });
-    }
-  });
+    return res.json(formItem);
+  }));
 
 // get travellers by last name (partial match)
 app.get(`${apiBaseUrl}/last-name/:lname`,
   passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
+  asyncMiddleware(async (req, res) => {
     const { lname } = req.params;
-    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
+    const formsCollection = dbClient.db.collection(collections.FORMS);
 
-    try {
-      const formsCollection = dbClient.db.collection(collections.FORMS);
+    const forms = await formsCollection.find({
+      // i: for substring search, case insensitive
+      // ^: match results that starts with
+      lastName: { $regex: new RegExp(`^${lname}`, 'i') },
+    }).toArray();
 
-      const forms = await formsCollection.find({
-        // i: for substring search, case insensitive
-        // ^: match results that starts with
-        lastName: { $regex: new RegExp(`^${lname}`, 'i') },
-      }).toArray();
+    if (forms.length === 0) return res.status(404).json({ error: `No traveller found with last name ${lname}` });
 
-      if (forms.length === 0) {
-        return res.status(404).json({
-          error: `No traveller found with last name: ${lname}`,
-          success: false,
-        });
-      }
-
-      const travellers = forms.map((form) => {
-        // Remove serviceTransactions from return query
-        const { serviceTransactions, ...formData } = form;
-        return formData;
-      });
-
-      return res.json({
-        success: true,
-        travellers,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        error: `Failed to retrieve information for last name: ${lname}`,
-      });
-    }
-  });
-
-// Generate PDF for submission, requires access token
-app.post(`${apiBaseUrl}/pdf`, async (req, res) => {
-  const { id, accessToken } = req.body;
-  try {
-    const pdf = await createPdf(id, accessToken);
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Length': pdf.length,
+    const travellers = forms.map((form) => {
+      // Remove serviceTransactions from return query
+      const { serviceTransactions, ...formData } = form;
+      return formData;
     });
-    return res.sendFile(pdf.path);
-  } catch (error) {
-    return res.status(500).json({ error: `Failed to create PDF for ID ${id}` });
-  }
-});
+
+    return res.json({ travellers });
+  }));
 
 // Validate JWT
 app.get(`${apiBaseUrl}/validate`,
   passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    if (!restrictToken(req.user, '*')) return res.status(401).send('Unathorized');
-    return res.json({});
-  });
+  (req, res) => res.json({}));
 
 // Client app
 if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
-  });
+  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build/index.html')));
 }
+
+app.use(errorHandler);
 
 module.exports = app;
