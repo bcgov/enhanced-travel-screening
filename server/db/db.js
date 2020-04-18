@@ -60,7 +60,7 @@ class DBClient {
    * @returns {Promise<void>}
    * @memberof DB
    */
-  async connect(database = null) {
+  async connect() {
     if (this._connection) return;
 
     const {
@@ -73,11 +73,9 @@ class DBClient {
       useReplicaSet,
     } = this.config();
 
-    const databaseName = database || dbName;
-
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
 
-    const uri = `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${databaseName}`;
+    const uri = `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`;
 
     /** @type {MongoClientOptions} */
     const options = {
@@ -89,7 +87,7 @@ class DBClient {
       options.ssl = true;
       options.sslValidate = true;
       // Specify the Amazon DocumentDB cert
-      options.sslCA = [fs.readFileSync('./certificates/rds-combined-ca-bundle.pem')];
+      options.sslCA = [fs.readFileSync(__dirname + '/certificates/rds-combined-ca-bundle.pem')];
     }
 
     // Create a MongoDB client opening a connection to Amazon DocumentDB as a replica set,
@@ -107,6 +105,16 @@ class DBClient {
       console.log('Failed to connect with database', err);
       throw new Error('DBError');
     }
+  }
+
+  /**
+   * Change database being used
+   *
+   * @param {*} database
+   * @memberof DBClient
+   */
+  useDB(database) {
+    this.db = this._connection.db(database);
   }
 
   /**

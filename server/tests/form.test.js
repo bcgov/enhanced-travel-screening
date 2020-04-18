@@ -1,12 +1,18 @@
 const request = require('supertest');
 const app = require('../server');
+const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Form Endpoints', () => {
   let server;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    await startDB();
     server = app.listen();
   });
+
+  afterAll(async ()=> {
+    await closeDB();
+  })
 
   const loginEndpoint = '/api/v1/login';
   const formEndpoint = '/api/v1/form';

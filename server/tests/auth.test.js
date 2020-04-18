@@ -1,15 +1,18 @@
 const request = require('supertest');
 const app = require('../server');
-const { dbClient } = require('../db');
+const { startDB, closeDB } = require('./util/db');
 
 describe('Server V1 Auth Endpoints', () => {
   let server;
 
   beforeAll(async () => {
-    // Connect to DB, seed DB
-    await dbClient.connect();
+    await startDB();
     server = app.listen();
   });
+
+  afterAll(async ()=> {
+    await closeDB();
+  })
 
   const loginEndpoint = '/api/v1/login';
   const validateEndpoint = '/api/v1/validate';

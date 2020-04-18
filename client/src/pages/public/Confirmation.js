@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 export default ({ location: { state } }) => {
 
   const classes = useStyles();
-  const { id, accessToken, isolationPlanStatus } = state || { id: null, accessToken: null };
+  const { id, isolationPlanStatus } = state || { id: null };
 
   useEffect(() => {
     window.snowplow('trackSelfDescribingEvent', {
@@ -68,7 +68,7 @@ export default ({ location: { state } }) => {
     <Page>
       <Grid className={classes.root} style={{ margin: "0 1rem" }} container justify="center">
         {
-          (!id || !accessToken) ? (
+          (!id) ? (
             <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
               <Box margin="2rem 0">
                 <Typography variant="h4">

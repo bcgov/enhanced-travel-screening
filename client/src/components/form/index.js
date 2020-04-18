@@ -67,11 +67,11 @@ const Form = ({ initialValues = null, isDisabled, confirmationNumber = null, isP
       body: JSON.stringify({ ...modifiedValues }),
     });
     if (response.ok) {
-      const { id, healthStatus, isolationPlanStatus, error, accessToken } = await response.json();
+      const { id, isolationPlanStatus, error } = await response.json();
       if (error) {
         setSubmitError(error.message || 'Failed to submit this form');
       } else {
-        history.push(Routes.Confirmation, { id, healthStatus, isolationPlanStatus, accessToken });
+        history.push(Routes.Confirmation, { id, isolationPlanStatus });
         return;
       }
     } else {

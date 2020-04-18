@@ -18,7 +18,7 @@ endef
 ##############################################################
 export PROJECT := $(or $(PROJECT),ets)
 export DB_USER := $(or $(DB_USER),development)
-export DB_PASSWORD := $(or $(DB_PASSWORD),'development)
+export DB_PASSWORD := $(or $(DB_PASSWORD),development)
 export DB_NAME := $(or $(DB_NAME),development)
 export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
