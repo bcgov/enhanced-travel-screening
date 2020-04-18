@@ -1,0 +1,32 @@
+name: Promote To Prod
+on:
+  push:
+    tags:
+      - 'prod'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env variables
+        run: |
+          echo ::set-env name=ACCOUNT_ID::${{ secrets.ACCOUNT_ID }}
+          echo ::set-env name=S3_BUCKET::${{ secrets.S3_BUCKET }}
+          echo ::set-env name=PROJECT::${{ secrets.PROJECT }}
+          echo ::set-env name=REGION::${{ secrets.REGION }}
+          echo ::set-env name=AWS_ACCESS_KEY_ID::${{ secrets.AWS_ACCESS_KEY_ID }}
+          echo ::set-env name=AWS_SECRET_ACCESS_KEY:${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.REGION }}
+
+      - name: Promote Version
+        run: make version-promote-prod
