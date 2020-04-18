@@ -10,9 +10,9 @@ describe('Server V1 Form Endpoints', () => {
     server = app.listen();
   });
 
-  afterAll(async ()=> {
+  afterAll(async () => {
     await closeDB();
-  })
+  });
 
   const loginEndpoint = '/api/v1/login';
   const formEndpoint = '/api/v1/form';
@@ -87,13 +87,11 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Get existing form, receive 200', async () => {
-    let formId;
-
     const resForm = await request.agent(app)
       .post(formEndpoint)
       .send(form);
 
-    formId = resForm.body.id;
+    const formId = resForm.body.id;
 
     const resLogin = await request.agent(app)
       .post(loginEndpoint)
@@ -107,14 +105,6 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Get existing form by last name, receive results accordingly', async () => {
-    let formId;
-
-    const resForm = await request.agent(app)
-      .post(formEndpoint)
-      .send(form);
-
-    formId = resForm.body.id;
-
     const resLogin = await request.agent(app)
       .post(loginEndpoint)
       .send(user);
@@ -163,13 +153,11 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Try to get a form without authorization, receive 401 (Unauthorized)', async () => {
-    let formId;
-
     const resForm = await request.agent(app)
       .post(formEndpoint)
       .send(form);
 
-    formId = resForm.body.id;
+    const formId = resForm.body.id;
 
     const res = await request.agent(app)
       .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: 'Bearer 1' })
@@ -179,13 +167,11 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Edit form, receive 200', async () => {
-    let formId;
-
     const resForm = await request.agent(app)
       .post(formEndpoint)
       .send(form);
 
-    formId = resForm.body.id;
+    const formId = resForm.body.id;
 
     const resLogin = await request.agent(app)
       .post(loginEndpoint)
@@ -204,13 +190,11 @@ describe('Server V1 Form Endpoints', () => {
   });
 
   it('Edit form missing mandatory attributes, receive 400', async () => {
-    let formId;
-
     const resForm = await request.agent(app)
       .post(formEndpoint)
       .send(form);
 
-    formId = resForm.body.id;
+    const formId = resForm.body.id;
 
     const resLogin = await request.agent(app)
       .post(loginEndpoint)

@@ -10,9 +10,9 @@ describe('Server V1 Auth Endpoints', () => {
     server = app.listen();
   });
 
-  afterAll(async ()=> {
+  afterAll(async () => {
     await closeDB();
-  })
+  });
 
   const loginEndpoint = '/api/v1/login';
   const validateEndpoint = '/api/v1/validate';

@@ -1,7 +1,6 @@
-/* eslint-disable no-underscore-dangle */
-/** eslint-disable-next-line */
-const { MongoClient, Db, MongoClientOptions } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const fs = require('fs');
+const logger = require('../logger.js');
 
 /**
  * This utility module provides helper methods to allow the application
@@ -33,7 +32,7 @@ class DBClient {
    * @returns
    * @memberof DBClient
    */
-  config() {
+  static config() {
     return {
       dbServer: process.env.DB_SERVER || 'localhost',
       dbPort: process.env.DB_PORT || '27017',
@@ -49,9 +48,8 @@ class DBClient {
    * Console log current configuration but password
    */
   printConfig() {
-    const { dbPassword, ...config } = this.config();
-    /* eslint-disable-next-line */
-    console.log(config);
+    const { dbPassword, ...config } = this.constructor.config();
+    console.log(config); // eslint-disable-line no-console
   }
 
   /**
@@ -71,7 +69,7 @@ class DBClient {
       dbName,
       dbTLSEnabled,
       useReplicaSet,
-    } = this.config();
+    } = this.constructor.config();
 
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
 
@@ -87,7 +85,7 @@ class DBClient {
       options.ssl = true;
       options.sslValidate = true;
       // Specify the Amazon DocumentDB cert
-      options.sslCA = [fs.readFileSync(__dirname + '/certificates/rds-combined-ca-bundle.pem')];
+      options.sslCA = [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)];
     }
 
     // Create a MongoDB client opening a connection to Amazon DocumentDB as a replica set,
@@ -102,7 +100,7 @@ class DBClient {
       this._connection = await MongoClient.connect(uri, options);
       this.db = this._connection.db(dbName);
     } catch (err) {
-      console.log('Failed to connect with database', err);
+      logger.error(`Failed to connect to database: ${err}`);
       throw new Error('DBError');
     }
   }
@@ -129,7 +127,7 @@ class DBClient {
     try {
       await this._connection.close();
     } catch (err) {
-      console.log('Failed to disconnect from database', err);
+      logger.error(`Failed to disconnect from database: ${err}`);
     }
   }
 }
