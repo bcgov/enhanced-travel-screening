@@ -9,7 +9,7 @@
     "db:migration": "node db/scripts/migration.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest --runInBand"
   },
   "dependencies": {
     "aws-sdk": "2.654.0",
