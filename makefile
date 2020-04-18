@@ -13,6 +13,14 @@ define deployTag
 "${PROJECT}-${DEPLOY_DATE}"
 endef
 
+##############################################################
+# Define default environment variables for local development #
+##############################################################
+export PROJECT := $(or $(PROJECT),ets)
+export DB_USER := $(or $(DB_USER),development)
+export DB_PASSWORD := $(or $(DB_PASSWORD),development)
+export DB_NAME := $(or $(DB_NAME),development)
+export DB_SERVER := $(or $(DB_SERVER),mongodb)
 
 #################
 # Status Output #
@@ -36,6 +44,43 @@ print-status:
 
 # If no .env file exists in the project root dir, run `make setup-development-env` and fill in credentials
 pipeline-deploy-dev: | pipeline-build pipeline-push pipeline-deploy-prep pipeline-deploy-version
+
+local:  | build-local run-local ## Task-Alias -- Run the steps for local development
+
+#####################
+# Local Development #
+#####################
+
+build-local: ## -- Target : Builds the local development containers.
+	@echo "+\n++ Make: Building local Docker image ...\n+"
+	@docker-compose -f docker-compose.dev.yml build
+
+run-local: ## -- Target : Runs the local development containers.
+	@echo "+\n++ Make: Running locally ...\n+"
+	@docker-compose -f docker-compose.dev.yml up
+
+run-local-db: ## -- Target : Runs the local development containers.
+	@echo "+\n++ Make: Running db locally ...\n+"
+	@docker-compose -f docker-compose.dev.yml up mongodb
+
+close-local: ## -- Target : Closes the local development containers.
+	@echo "+\n++ Make: Closing local container ...\n+"
+	@docker-compose -f docker-compose.dev.yml down
+
+local-client-workspace: 
+	@docker exec -it $(PROJECT)-client bash
+
+local-server-workspace: 
+	@docker exec -it $(PROJECT)-server bash
+
+local-db-seed:
+	@docker exec -it $(PROJECT)-server npm run db:seed
+
+local-db-migration:
+	@docker exec -it $(PROJECT)-server npm run db:migration
+
+local-server-tests:
+	@docker exec -it $(PROJECT)-server npm test
 
 
 ####################

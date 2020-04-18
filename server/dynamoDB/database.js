@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const { randomBytes } = require('crypto');
-const { hashPassword } = require('./auth.js');
+const { hashPassword } = require('../auth.js');
 const schema = require('./schema.js');
 
 // Run DynamoDB locally: docker run -p 8000:8000 amazon/dynamodb-local
@@ -24,6 +24,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient();
         console.error('Environment variable NODE_ENV must be set to either development or test');
         return;
       }
+
       if (Array.isArray(tables.TableNames) && tables.TableNames.length > 0) {
         console.log('DB tables already exist');
         return;
