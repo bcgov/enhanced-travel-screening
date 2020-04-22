@@ -158,7 +158,7 @@ version-deploy-dev: ## -- Target : Promotes a version to the DEV environment
 	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(PROJECT)-dev --version-label v$(VERSION)
 
 version-deploy-staging: ## -- Target : Promotes a version to the STAGING environment
-	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(PROJECT)-test2 --version-label v$(VERSION)
+	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(PROJECT)-staging --version-label v$(VERSION)
 
 version-deploy-pod: ## -- Target : Promotes a version to the PROD environment
 	@aws --profile $(PROFILE) elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(PROJECT)-prod --version-label v$(VERSION)
