@@ -117,8 +117,8 @@ async function migrateForms() {
 
         // Convert current BC transaction format
         const serviceBCTransactions = serviceBCTransactionsForForm.map((item) => ({
-          ...(item.serviceBCId) && {serviceBCId: item.serviceBCId},
-          ...(item.errorDetails) && {errorDetails: item.errorDetails},
+          ...(item.serviceBCId && {serviceBCId: item.serviceBCId}),
+          ...(item.errorDetails && {errorDetails: item.errorDetails}),
           processedAt: item.createdAt,
           status: item.status,
         }));
