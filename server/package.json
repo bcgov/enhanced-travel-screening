@@ -8,6 +8,7 @@
     "db:seed": "node db/scripts/seed.js",
     "db:migration": "node db/scripts/migration.js",
     "watch": "NODE_ENV=development nodemon main.js",
+    "lint": "NODE_ENV=development eslint '*.js'",
     "start": "NODE_ENV=production node main.js",
     "test": "NODE_ENV=test jest --runInBand"
   },
