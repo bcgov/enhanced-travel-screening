@@ -26,7 +26,7 @@ This application has been released and is in active feature development.
 This project includes the following features:
 
 1. Public web form for returning travellers
-1. Ability to download a PDF version of the form
+1. Ability to download a blank PDF version of the form
 1. Admin portal with login
 1. Secure lookup of submissions
 1. Tracking notes and determinations associated with submissions
