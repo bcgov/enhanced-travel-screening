@@ -1,8 +1,47 @@
 # Enhanced Traveller Screening
 
-### Covid 19 response app
+### A component of the COVID-19 response
 
 ---
+
+## Introduction
+
+This is a digital service built in partnership with the Ministry of Health and Service B.C. which supports British Columbians returning from out-of-country to self isolate. Travellers complete a self isolation plan which may be reviewed with a provincial official to determine whether they require additional support in order to self isolate. In addition, Service BC is able to followup with travellers to ensure the success of their self isolation plan.
+
+## Table of Contents
+
+1. [Project Status](#project-status)
+1. [Features](#features)
+1. [Getting Help or Reporting an Issue](#getting-help-or-reporting-an-issue)
+1. [How to Contribute](#how-to-contribute)
+1. [Development](#development)
+1. [License](#license)
+
+## Project Status
+
+This application has been released and is in active feature development.
+
+## Features
+
+This project includes the following features:
+
+1. Public web form for returning travellers
+1. Ability to download a PDF version of the form
+1. Admin portal with login
+1. Secure lookup of submissions
+1. Tracking notes and determinations associated with submissions
+1. Integration with Service BC
+1. Real-time analytics
+
+## Getting Help or Reporting an Issue
+
+To report bugs/issues/feature requests, please file an [issue](https://github.com/bcgov/enhanced-travel-screening/issues).
+
+## How to Contribute
+
+If you would like to contribute, please see our [contributing](CONTRIBUTING.md) guidelines.
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE-OF-CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Development
 
@@ -118,3 +157,19 @@ You can find the cluster URLS, credentials, and certificates on the project fold
 
 Find supplementary reference on the link below:
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
+
+## License
+
+    Copyright 2020 Province of British Columbia
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
