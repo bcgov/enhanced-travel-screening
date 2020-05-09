@@ -27,16 +27,12 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-export const LoginSchema = yup.object().shape({
+export const LoginSchema = yup.object().noUnknown().shape({
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
 
-export const LookupSchema = yup.object().shape({
-  confirmationNumber: yup.string().required('Confirmation number is required'),
-});
-
-export const DeterminationSchema = yup.object().shape({
+export const DeterminationSchema = yup.object().noUnknown().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
 });

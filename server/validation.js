@@ -27,19 +27,16 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
-const LoginSchema = yup.object().shape({
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
-});
-
-const LookupSchema = yup.object().shape({
-  confirmationNumber: yup.string().required('Confirmation number is required'),
-});
-
-const DeterminationSchema = yup.object().shape({
+const DeterminationSchema = yup.object().noUnknown().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
 });
+
+const PhacSchema = yup.array().required('Submission must contain at least one item').of(
+  yup.object().shape({
+    covid_id: yup.string().typeError('covid_id must be a string').required('covid_id is required'),
+  }),
+);
 
 const FormSchema = yup.object().noUnknown().shape({
   // Primary contact
@@ -99,5 +96,5 @@ const FormSchema = yup.object().noUnknown().shape({
 const validate = async (schema, data) => schema.validate(data, { strict: true });
 
 module.exports = {
-  LoginSchema, LookupSchema, DeterminationSchema, FormSchema, validate,
+  DeterminationSchema, FormSchema, PhacSchema, validate,
 };

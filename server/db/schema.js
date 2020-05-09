@@ -4,6 +4,7 @@
 
 const collections = {
   FORMS: 'ets-forms',
+  PHAC: 'ets-phac',
   USERS: 'ets-users',
 };
 
@@ -12,6 +13,12 @@ const schema = [
     collection: collections.USERS,
     indexes: [
       { key: 'username', options: { unique: true } },
+    ],
+  },
+  {
+    collection: collections.PHAC,
+    indexes: [
+      { key: 'id', options: { unique: true } },
     ],
   },
   {
