@@ -15,9 +15,10 @@ const hashPassword = (password, salt) => (
 
 // Create JWT for admin user or PDF generation
 // PDF JWTs should only have access to form with ID matchin sub property
-const generateJwt = (id) => jwt.sign({
+const generateJwt = (id, type) => jwt.sign({
   sub: id,
-}, jwtSecret, { expiresIn: '24h' });
+  type,
+}, jwtSecret, { expiresIn: type === 'phac' ? '4h' : '24h' });
 
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
@@ -36,7 +37,7 @@ passport.use('login', new LocalStrategy(
       if (user && user.salt && user.password !== hashPassword(password, user.salt)) {
         return done(null, false); // Incorrect password
       }
-      user.token = generateJwt(username);
+      user.token = generateJwt(username, user.type);
       return done(null, user); // Success
     } catch (error) {
       return done(null, false); // Invalid user ID
