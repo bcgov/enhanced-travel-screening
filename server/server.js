@@ -31,10 +31,10 @@ const scrubObject = (obj) => {
   return scrubbed;
 };
 
-const generateRandomHexId = async (collection) => {
+const generateUniqueHexId = async (collection) => {
   const randomHexId = randomBytes(4).toString('hex').toUpperCase();
   if (await collection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
-    return generateRandomHexId(collection); // Ensure ID is unique
+    return generateUniqueHexId(collection); // Ensure ID is unique
   }
   return randomHexId;
 };
@@ -50,7 +50,7 @@ app.post(`${apiBaseUrl}/form`,
     const scrubbed = scrubObject(req.body);
     await validate(FormSchema, scrubbed); // Validate submitted form against schema
     const formsCollection = dbClient.db.collection(collections.FORMS);
-    const id = await generateRandomHexId(formsCollection);
+    const id = await generateUniqueHexId(formsCollection);
 
     // Boolean indicating if user really have an isolation plan
     const isolationPlanStatus = scrubbed.accomodations
@@ -91,7 +91,7 @@ app.post(`${apiBaseUrl}/phac/submission`,
   asyncMiddleware(async (req, res) => {
     await validate(PhacSchema, req.body); // Validate submitted submissions against schema
     const phacCollection = dbClient.db.collection(collections.PHAC);
-    const id = await generateRandomHexId(phacCollection);
+    const id = await generateUniqueHexId(phacCollection);
 
     const currentIsoDate = new Date().toISOString();
     const phacItems = req.body.map((item) => ({
