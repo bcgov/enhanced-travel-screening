@@ -5,7 +5,9 @@ const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/ServiceBC.js');
-const { validate, FormSchema, DeterminationSchema } = require('./validation.js');
+const {
+  validate, FormSchema, DeterminationSchema, PhacSchema,
+} = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
 
@@ -29,6 +31,14 @@ const scrubObject = (obj) => {
   return scrubbed;
 };
 
+const generateUniqueHexId = async (collection) => {
+  const randomHexId = randomBytes(4).toString('hex').toUpperCase();
+  if (await collection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
+    return generateUniqueHexId(collection); // Ensure ID is unique
+  }
+  return randomHexId;
+};
+
 // Login using username and password, receive JWT
 app.post(`${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
@@ -40,34 +50,21 @@ app.post(`${apiBaseUrl}/form`,
     const scrubbed = scrubObject(req.body);
     await validate(FormSchema, scrubbed); // Validate submitted form against schema
     const formsCollection = dbClient.db.collection(collections.FORMS);
-
-    // Generate unique random hex id
-    async function generateRandomHexId() {
-      const randomHexId = randomBytes(4).toString('hex').toUpperCase();
-
-      // Query database do make sure id does not exist, avoiding collision
-      if (await formsCollection.countDocuments({ id: randomHexId }, { limit: 1 }) > 0) {
-        return generateRandomHexId();
-      }
-      return randomHexId;
-    }
-
-    // Form ID
-    const id = await generateRandomHexId();
+    const id = await generateUniqueHexId(formsCollection);
 
     // Boolean indicating if user really have an isolation plan
     const isolationPlanStatus = scrubbed.accomodations
       && scrubbed.ableToIsolate && scrubbed.supplies;
 
-    const currentISODate = new Date().toISOString();
+    const currentIsoDate = new Date().toISOString();
     const formItem = {
+      ...scrubbed,
       id,
       isolationPlanStatus,
       determination: null,
       notes: null,
-      ...scrubbed,
-      createdAt: currentISODate,
-      updatedAt: currentISODate,
+      createdAt: currentIsoDate,
+      updatedAt: currentIsoDate,
     };
 
     // Post to ServicesBC and cache status of the submission
@@ -86,6 +83,29 @@ app.post(`${apiBaseUrl}/form`,
     });
 
     return res.json({ id, isolationPlanStatus });
+  }));
+
+// Create new form, not secured
+app.post(`${apiBaseUrl}/phac/submission`,
+  passport.authenticate('jwt-phac', { session: false }),
+  asyncMiddleware(async (req, res) => {
+    await validate(PhacSchema, req.body); // Validate submitted submissions against schema
+    const phacCollection = dbClient.db.collection(collections.PHAC);
+    const id = await generateUniqueHexId(phacCollection);
+
+    const currentIsoDate = new Date().toISOString();
+    const phacItems = req.body.map((item) => ({
+      ...item,
+      id,
+      createdAt: currentIsoDate,
+      updatedAt: currentIsoDate,
+    }));
+
+    await phacCollection.insertMany(phacItems);
+
+    const idMap = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
+
+    return res.json(idMap);
   }));
 
 // Edit existing form
