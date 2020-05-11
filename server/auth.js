@@ -8,6 +8,8 @@ const { dbClient, collections } = require('./db');
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
 
+const USER_TYPE_PHAC = 'phac';
+
 // Hash and salt password (static + dynamic salt)
 const hashPassword = (password, salt) => (
   scryptSync(password, `${passwordSalt}${salt}`, 64).toString('hex')
@@ -18,7 +20,7 @@ const hashPassword = (password, salt) => (
 const generateJwt = (id, type) => jwt.sign({
   sub: id,
   type,
-}, jwtSecret, { expiresIn: type === 'phac' ? '4h' : '24h' });
+}, jwtSecret, { expiresIn: type === USER_TYPE_PHAC ? '4h' : '24h' });
 
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
@@ -45,15 +47,29 @@ passport.use('login', new LocalStrategy(
   },
 ));
 
-// JWT auth method using Bearer token
-passport.use('jwt', new JwtStrategy(
-  {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtSecret,
-  },
+const strategyOpt = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: jwtSecret,
+};
+
+// JWT auth methods using Bearer token
+passport.use('jwt', new JwtStrategy(strategyOpt,
   async (payload, done) => {
-    done(null, { id: payload.sub, type: payload.type }); // Success
-  },
-));
+    console.log(payload);
+    if (!payload.type) {
+      done(null, { id: payload.sub, type: null }); // Success
+    } else {
+      done(null, false); // Invalid user type
+    }
+  }));
+
+passport.use('jwt-phac', new JwtStrategy(strategyOpt,
+  async (payload, done) => {
+    if (payload.type === USER_TYPE_PHAC) {
+      done(null, { id: payload.sub, type: payload.type }); // Success
+    } else {
+      done(null, false); // Invalid user type
+    }
+  }));
 
 module.exports = { passport, hashPassword };
