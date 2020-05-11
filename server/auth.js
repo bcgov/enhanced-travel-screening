@@ -8,6 +8,8 @@ const { dbClient, collections } = require('./db');
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
 
+const USER_TYPE_PHAC = 'phac';
+
 // Hash and salt password (static + dynamic salt)
 const hashPassword = (password, salt) => (
   scryptSync(password, `${passwordSalt}${salt}`, 64).toString('hex')
@@ -15,9 +17,10 @@ const hashPassword = (password, salt) => (
 
 // Create JWT for admin user or PDF generation
 // PDF JWTs should only have access to form with ID matchin sub property
-const generateJwt = (id) => jwt.sign({
+const generateJwt = (id, type) => jwt.sign({
   sub: id,
-}, jwtSecret, { expiresIn: '24h' });
+  type,
+}, jwtSecret, { expiresIn: type === USER_TYPE_PHAC ? '4h' : '24h' });
 
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
@@ -36,7 +39,7 @@ passport.use('login', new LocalStrategy(
       if (user && user.salt && user.password !== hashPassword(password, user.salt)) {
         return done(null, false); // Incorrect password
       }
-      user.token = generateJwt(username);
+      user.token = generateJwt(username, user.type);
       return done(null, user); // Success
     } catch (error) {
       return done(null, false); // Invalid user ID
@@ -44,15 +47,31 @@ passport.use('login', new LocalStrategy(
   },
 ));
 
-// JWT auth method using Bearer token
-passport.use('jwt', new JwtStrategy(
-  {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtSecret,
-  },
+const strategyOpt = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: jwtSecret,
+};
+
+// JWT auth methods using Bearer token
+
+// General ETS endpoints strategy (for users without specific type)
+passport.use('jwt', new JwtStrategy(strategyOpt,
   async (payload, done) => {
-    done(null, { id: payload.sub, type: payload.type }); // Success
-  },
-));
+    if (!payload.type) {
+      done(null, { id: payload.sub, type: null }); // Success
+    } else {
+      done(null, false); // Invalid user type
+    }
+  }));
+
+// PHAC strategy for phac endpoint only (only users with type === 'phac' can access)
+passport.use('jwt-phac', new JwtStrategy(strategyOpt,
+  async (payload, done) => {
+    if (payload.type === USER_TYPE_PHAC) {
+      done(null, { id: payload.sub, type: payload.type }); // Success
+    } else {
+      done(null, false); // Invalid user type
+    }
+  }));
 
 module.exports = { passport, hashPassword };
