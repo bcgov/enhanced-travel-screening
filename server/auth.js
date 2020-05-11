@@ -53,6 +53,8 @@ const strategyOpt = {
 };
 
 // JWT auth methods using Bearer token
+
+// General ETS endpoints strategy (for users without specific type)
 passport.use('jwt', new JwtStrategy(strategyOpt,
   async (payload, done) => {
     console.log(payload);
@@ -63,6 +65,7 @@ passport.use('jwt', new JwtStrategy(strategyOpt,
     }
   }));
 
+// PHAC strategy for phac endpoint only (only users with type === 'phac' can access)
 passport.use('jwt-phac', new JwtStrategy(strategyOpt,
   async (payload, done) => {
     if (payload.type === USER_TYPE_PHAC) {
