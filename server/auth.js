@@ -57,7 +57,6 @@ const strategyOpt = {
 // General ETS endpoints strategy (for users without specific type)
 passport.use('jwt', new JwtStrategy(strategyOpt,
   async (payload, done) => {
-    console.log(payload);
     if (!payload.type) {
       done(null, { id: payload.sub, type: null }); // Success
     } else {
