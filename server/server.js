@@ -87,6 +87,7 @@ app.post(`${apiBaseUrl}/form`,
 
 // Create new form, not secured
 app.post(`${apiBaseUrl}/phac/submission`,
+  passport.authenticate('jwt-phac', { session: false }),
   asyncMiddleware(async (req, res) => {
     await validate(PhacSchema, req.body); // Validate submitted submissions against schema
     const phacCollection = dbClient.db.collection(collections.PHAC);
