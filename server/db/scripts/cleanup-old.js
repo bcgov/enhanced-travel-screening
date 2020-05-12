@@ -1,4 +1,3 @@
-/* eslint-disable */
 const { dbClient, collections } = require('..');
 const oldRecords = require('./old-records');
 
@@ -12,7 +11,7 @@ const oldRecords = require('./old-records');
       console.log('Setting blank "createdAt"');
       const formsCollection = dbClient.db.collection(collections.FORMS);
 
-      await formsCollection.updateMany(
+      const { result } = await formsCollection.updateMany(
         { id: { $in: oldRecords } }, // Query
         { // UpdateQuery
           $unset: {
@@ -20,8 +19,7 @@ const oldRecords = require('./old-records');
           },
         },
       );
-      console.log('Done.');
-      return process.exit();
+      console.log(result);
     } catch (error) {
       console.error(`Failed to clean up old data records, ${error}`);
     }
