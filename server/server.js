@@ -10,6 +10,7 @@ const {
 } = require('./validation.js');
 const { dbClient, collections } = require('./db');
 const { errorHandler, asyncMiddleware } = require('./error-handler.js');
+const logger = require('./logger.js');
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -115,6 +116,7 @@ app.patch(`${apiBaseUrl}/form/:id`,
     await validate(DeterminationSchema, req.body);
     const { id } = req.params;
     const formsCollection = dbClient.db.collection(collections.FORMS);
+    const currentDate = new Date().toISOString();
 
     await formsCollection.updateOne(
       { id }, // Query
@@ -122,10 +124,13 @@ app.patch(`${apiBaseUrl}/form/:id`,
         $set: {
           notes: req.body.notes,
           determination: req.body.determination,
-          updatedAt: new Date().toISOString(),
+          updatedAt: currentDate,
         },
       },
     );
+
+    logger.verbose(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}" and notes "${req.body.notes}"`, currentDate);
+
     return res.json({ id });
   }));
 
