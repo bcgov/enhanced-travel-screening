@@ -4,7 +4,7 @@ const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
-const postServiceItem = require('./utils/ServiceBC.js');
+const postServiceItem = require('./utils/service-bc.js');
 const {
   validate, FormSchema, DeterminationSchema, PhacSchema,
 } = require('./validation.js');
@@ -86,27 +86,38 @@ app.post(`${apiBaseUrl}/form`,
     return res.json({ id, isolationPlanStatus });
   }));
 
-// Create new form, not secured
+// Submission from PHAC, secured by JWT for PHAC users only
 app.post(`${apiBaseUrl}/phac/submission`,
   passport.authenticate('jwt-phac', { session: false }),
   asyncMiddleware(async (req, res) => {
     await validate(PhacSchema, req.body); // Validate submitted submissions against schema
     const phacCollection = dbClient.db.collection(collections.PHAC);
-    const id = await generateUniqueHexId(phacCollection);
 
     const currentIsoDate = new Date().toISOString();
-    const phacItems = req.body.map((item) => ({
+    const phacItems = await Promise.all(req.body.map(async (item) => ({
       ...item,
-      id,
+      id: await generateUniqueHexId(phacCollection),
       createdAt: currentIsoDate,
       updatedAt: currentIsoDate,
-    }));
+    })));
 
-    await phacCollection.insertMany(phacItems);
+    const results = { successful: {}, duplicates: [], errors: [] };
+    try {
+      await phacCollection.insertMany(phacItems, { ordered: false });
+      results.successful = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
+    } catch (error) {
+      results.duplicates = error.writeErrors
+        .filter((e) => e.err.code === 11000)
+        .map((e) => e.err.op.covid_id);
+      results.errors = error.writeErrors
+        .filter((e) => e.err.code !== 11000)
+        .map((e) => e.err.op.covid_id);
+      results.successful = phacItems.filter((i) => (
+        !results.duplicates.includes(i.covid_id) && !results.duplicates.includes(i.covid_id)
+      )).reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
+    }
 
-    const idMap = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
-
-    return res.json(idMap);
+    return res.json(results);
   }));
 
 // Edit existing form
