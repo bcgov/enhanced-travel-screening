@@ -118,6 +118,8 @@ app.patch(`${apiBaseUrl}/form/:id`,
     const formsCollection = dbClient.db.collection(collections.FORMS);
     const currentDate = new Date().toISOString();
 
+    const { notes } = await formsCollection.findOne({ id });
+
     await formsCollection.updateOne(
       { id }, // Query
       { // UpdateQuery
@@ -129,7 +131,8 @@ app.patch(`${apiBaseUrl}/form/:id`,
       },
     );
 
-    logger.verbose(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}" and notes "${req.body.notes}"`, currentDate);
+    const notesLog = notes !== req.body.notes ? ' and new notes' : '';
+    logger.verbose(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}"${notesLog}`, currentDate);
 
     return res.json({ id });
   }));
