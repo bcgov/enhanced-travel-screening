@@ -106,15 +106,20 @@ app.post(`${apiBaseUrl}/phac/submission`,
       await phacCollection.insertMany(phacItems, { ordered: false });
       results.successful = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
     } catch (error) {
-      results.duplicates = error.writeErrors
-        .filter((e) => e.err.code === 11000)
-        .map((e) => e.err.op.covid_id);
-      results.errors = error.writeErrors
-        .filter((e) => e.err.code !== 11000)
-        .map((e) => e.err.op.covid_id);
-      results.successful = phacItems.filter((i) => (
-        !results.duplicates.includes(i.covid_id) && !results.duplicates.includes(i.covid_id)
-      )).reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
+      try {
+        const { writeErrors } = error.result.result;
+        results.duplicates = writeErrors
+          .filter((e) => e.err.code === 11000)
+          .map((e) => e.err.op.covid_id);
+        results.errors = writeErrors
+          .filter((e) => e.err.code !== 11000)
+          .map((e) => e.err.op.covid_id);
+        results.successful = phacItems.filter((i) => (
+          !results.duplicates.includes(i.covid_id) && !results.duplicates.includes(i.covid_id)
+        )).reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
+      } catch (_) {
+        results.errors = phacItems.map((i) => i.covid_id);
+      }
     }
 
     return res.json(results);
