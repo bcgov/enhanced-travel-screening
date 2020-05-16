@@ -23,7 +23,7 @@ const RenderCheckboxGroup = ({
             <Checkbox
               color="primary"
               value={option.value}
-              checked={field.value.includes(option.value)}
+              checked={Array.isArray(field.value) && field.value.includes(option.value)}
             />
           }
           {...field}

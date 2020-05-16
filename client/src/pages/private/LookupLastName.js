@@ -34,7 +34,6 @@ export default () => {
 
       if (response.ok) {
         const { travellers } = await response.json();
-        console.log(travellers)
         const rows = travellers.map((traveller) =>
           ({
             date: traveller.arrival.date,
@@ -49,7 +48,6 @@ export default () => {
         setRows(rows)
         setLookupError(null)
       } else {
-        console.log(response)
         setLookupError(response.error || `No traveller found with last name: "${params.lastName}"`);
       }
 

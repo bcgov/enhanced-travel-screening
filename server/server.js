@@ -132,7 +132,7 @@ app.patch(`${apiBaseUrl}/form/:id`,
     );
 
     const notesLog = notes !== req.body.notes ? ' and new notes' : '';
-    logger.verbose(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}"${notesLog}`, currentDate);
+    logger.info(`Form ${id} updated by "${req.user.id}" with determination "${req.body.determination}"${notesLog}`, currentDate);
 
     return res.json({ id });
   }));
