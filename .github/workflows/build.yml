@@ -13,12 +13,12 @@ env:
   REGION: ca-central-1
 
 jobs:
-  # test:
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: NPM Audit
         run: |
@@ -28,7 +28,7 @@ jobs:
 
   deploy:
     name: Deploy to Dev
-    # needs: test
+    needs: test
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout

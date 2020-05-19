@@ -10,11 +10,11 @@ RUN npm run build
 
 # Server
 FROM node:12 AS server
+ENV NODE_ENV production
 
 # Run server
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
-
 COPY server/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY server/. .
