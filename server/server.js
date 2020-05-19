@@ -16,7 +16,7 @@ const apiBaseUrl = '/api/v1';
 const app = express();
 
 app.use(requireHttps);
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Remove empty strings (DynamoDB doesn't accept)
