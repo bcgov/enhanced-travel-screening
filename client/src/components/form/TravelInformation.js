@@ -16,7 +16,7 @@ const TravelInformation = ({ isDisabled }) => {
       for (let i = 0; i < numberOfAdditionalTravellers; i++) travellers.push({ firstName: '', lastName: '', dob: '' });
       setFieldValue('additionalTravellers', travellers);
     }
-    if (includeAdditionalTravellers === false && additionalTravellers.length > 0) {
+    if (includeAdditionalTravellers === false && additionalTravellers?.length > 0) {
       setFieldValue('additionalTravellers', []);
       setFieldValue('numberOfAdditionalTravellers', 1);
     }

@@ -22,7 +22,7 @@ jobs:
 
       - name: NPM Audit
         run: |
-          cd "$GITHUB_WORKSPACE/client" && npm audit --audit-level=moderate
+          cd "$GITHUB_WORKSPACE/client" && npm audit --audit-level=moderate --production
           cd "$GITHUB_WORKSPACE/server" && npm audit --audit-level=moderate
           cd "$GITHUB_WORKSPACE"
 
