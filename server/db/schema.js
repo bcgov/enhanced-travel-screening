@@ -19,6 +19,7 @@ const schema = [
     collection: collections.PHAC,
     indexes: [
       { key: 'id', options: { unique: true } },
+      { key: 'covid_id', options: { unique: true } },
     ],
   },
   {
