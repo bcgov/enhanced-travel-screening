@@ -55,8 +55,8 @@ async function seedCsvIntoDatabase() {
   phacDataString = formatHeaders(phacDataString);
 
   const phacData = await fromCsvString(phacDataString);
-  // const usersCollection = dbClient.db.collection(collections.FORMS);
-  console.log(phacData);
+  const usersCollection = dbClient.db.collection(collections.PHAC);
+  await usersCollection.insertMany(phacData);
 }
 
 async function clearDB() {
