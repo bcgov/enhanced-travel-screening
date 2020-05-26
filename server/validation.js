@@ -35,7 +35,7 @@ const DeterminationSchema = yup.object().noUnknown().shape({
 const PhacSchema = yup.array().required('Submission must contain at least one item').of(
   yup.object().shape({
     covid_id: yup.string().typeError('covid_id must be a string').required('covid_id is required'),
-  }).test('no-empty-keys', 'Empty keys are not allowed', (v) => Object.keys(v).map((k) => k.trim()).includes('')),
+  }).test('no-empty-keys', 'Empty keys are not allowed', (v) => !Object.keys(v).map((k) => k.trim()).includes('')),
 );
 
 const FormSchema = yup.object().noUnknown().shape({
