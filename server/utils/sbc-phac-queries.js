@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 
 const getUnsuccessfulSbcTransactions = async (collection, currentDate) => {
-  const dateRange = [dayjs(currentDate).subtract(13, 'day'), dayjs(currentDate).subtract(2, 'day')]
+  const dateRange = [dayjs(currentDate).subtract(14, 'day'), dayjs(currentDate).subtract(2, 'day')]
     .map((d) => d.startOf('day').toDate());
   const query = [
     { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: '$arrival_date', timezone: '-0700' } } } },

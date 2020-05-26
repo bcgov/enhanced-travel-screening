@@ -1,18 +1,6 @@
 const { randomBytes } = require('crypto');
-const { readFileSync } = require('fs');
-const { join } = require('path');
 const { dbClient, schema, collections } = require('../../db');
 const { hashPassword } = require('../../auth.js');
-const { fromCsvString } = require('./csv.js');
-
-const formatHeaders = (csvString) => {
-  const rows = csvString.split(/\r?\n/g);
-  rows[0] = rows[0]
-    .toLowerCase()
-    .trim()
-    .replace(/[\s/]+/g, '_');
-  return rows.join('\n'); // Replace line breaks with UNIX style
-};
 
 async function seedDatabase() {
   // Create collections if needed
@@ -47,20 +35,8 @@ async function seedDatabase() {
   });
 }
 
-async function seedCsvIntoDatabase() {
-  // let etsDataString = readFileSync(join(__dirname, '../mock/ets-data.csv')).toString();
-  // etsDataString = formatHeaders(etsDataString);
-
-  let phacDataString = readFileSync(join(__dirname, '../mock/phac-data.csv')).toString();
-  phacDataString = formatHeaders(phacDataString);
-
-  const phacData = await fromCsvString(phacDataString);
-  const usersCollection = dbClient.db.collection(collections.PHAC);
-  await usersCollection.insertMany(phacData);
-}
-
 async function clearDB() {
-  dbClient.useDB(TEST_DB);
+  dbClient.useDB('TEST_DB');
   await dbClient.db.dropDatabase();
 }
 
@@ -80,7 +56,6 @@ async function closeDB() {
 }
 
 module.exports = {
-  seedCsvIntoDatabase,
   seedDatabase,
   startDB,
   closeDB,
