@@ -3,7 +3,7 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 const app = require('../server');
 const { getUnsuccessfulSbcTransactions } = require('../utils/sbc-phac-queries');
-const { dbClient, collections } = require('../db');
+const { dbClient, collections, TEST_DB } = require('../db');
 const { startDB, closeDB } = require('./util/db');
 const { fromCsvString } = require('./util/csv');
 
@@ -19,9 +19,41 @@ const formatHeaders = (csvString) => {
 describe('Test phac-servicebc queries and endpoints', () => {
   let server;
 
+  async function feedDbEtsForms() {
+    let etsDataString = readFileSync(join(__dirname, './mock/ets-data.csv')).toString();
+    etsDataString = formatHeaders(etsDataString);
+    const etsData = await fromCsvString(etsDataString);
+    const currentIsoDate = new Date().toISOString();
+    const formattedEtsData = etsData.map((item) => ({
+      id: item.confirmation_number,
+      firstName: item.first_name,
+      lastName: item.last_name,
+      dob: item.date_of_birth,
+      telephone: item.phone_number,
+      email: item.email,
+      address: item.home_address,
+      city: item.city,
+      postalCode: item.postal_code,
+      province: item.province,
+      arrival: {
+        date: item.arrival_date,
+        by: item.arrival_by,
+        flight: item.airline_flight_number,
+        from: item.arrival_from,
+      },
+      createdAt: currentIsoDate,
+      updatedAt: currentIsoDate,
+    }));
+
+    dbClient.useDB(TEST_DB);
+    const formsCollection = dbClient.db.collection(collections.FORMS);
+    return formsCollection.insertMany(formattedEtsData);
+  }
+
   beforeAll(async () => {
     await startDB();
     server = app.listen();
+    await feedDbEtsForms();
   });
 
   afterAll(async () => {
@@ -37,13 +69,6 @@ describe('Test phac-servicebc queries and endpoints', () => {
   };
 
   const currentDate = '2020-05-26'; // Must match current date which CSV files are based on
-
-  // // TODO seed DB with ETS records for further tests
-  // async function sendEtsForms() {
-  //   let etsDataString = readFileSync(join(__dirname, '../mock/ets-data.csv')).toString();
-  //   etsDataString = formatHeaders(etsDataString);
-  //   const etsData = await fromCsvString(etsDataString);
-  // }
 
   async function sendPhacForms() {
     let phacDataString = readFileSync(join(__dirname, './mock/phac-data.csv')).toString();
@@ -66,7 +91,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
   });
 
   it('Should NOT send records beyond end of quarantine period from PHAC to Service BC', async () => {
-    dbClient.useDB('TEST_DB');
+    dbClient.useDB(TEST_DB);
     const phacCollection = dbClient.db.collection(collections.PHAC);
     const itemsToSend = await getUnsuccessfulSbcTransactions(phacCollection, currentDate);
     const count = await phacCollection.countDocuments();
