@@ -65,24 +65,14 @@ describe('Test phac-servicebc queries and endpoints', () => {
     expect(resPhacForms.statusCode).toEqual(200);
   });
 
-  it('Should NOT send records with arrival date less than two days in the past from PHAC to Service BC', async () => {
-    dbClient.useDB('TEST_DB');
-    const phacCollection = dbClient.db.collection(collections.PHAC);
-    const itemsToSend = await getUnsuccessfulSbcTransactions(phacCollection, currentDate);
-    expect(itemsToSend.filter((item) => (
-      item.covid_id === 'CVR-0159105'
-      || item.covid_id === 'CVR-0159108'
-    )).length).toEqual(0);
-  });
-
   it('Should NOT send records beyond end of quarantine period from PHAC to Service BC', async () => {
     dbClient.useDB('TEST_DB');
     const phacCollection = dbClient.db.collection(collections.PHAC);
     const itemsToSend = await getUnsuccessfulSbcTransactions(phacCollection, currentDate);
-    expect(itemsToSend.filter((item) => (
-      item.covid_id === 'CVR-0159102'
-      || item.covid_id === 'CVR-0159103'
-    )).length).toEqual(0);
+    const count = await phacCollection.countDocuments();
+    const testTargets = ['CVR-0159105', 'CVR-0159108', 'CVR-0159102', 'CVR-0159103'];
+    expect(itemsToSend.filter((item) => testTargets.includes(item.covid_id)).length).toEqual(0);
+    expect(itemsToSend.length).toEqual(count - testTargets.length);
   });
 
   afterAll(() => {
