@@ -114,8 +114,8 @@ app.post(`${apiBaseUrl}/phac/submission`,
         results.errors = writeErrors
           .filter((e) => e.err.code !== 11000)
           .map((e) => e.err.op.covid_id);
-        results.successful = phacItems.filter((i) => (
-          !results.duplicates.includes(i.covid_id) && !results.errors.includes(i.covid_id)
+        results.successful = phacItems.filter((_, i) => (
+          !writeErrors.map((e) => e.err.index).includes(i)
         )).reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
       } catch (_) {
         results.errors = phacItems.map((i) => i.covid_id);

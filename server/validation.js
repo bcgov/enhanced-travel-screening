@@ -35,7 +35,7 @@ const DeterminationSchema = yup.object().noUnknown().shape({
 const PhacSchema = yup.array().required('Submission must contain at least one item').of(
   yup.object().shape({
     covid_id: yup.string().typeError('covid_id must be a string').required('covid_id is required'),
-  }),
+  }).test('no-empty-keys', 'Empty keys are not allowed', (v) => !Object.keys(v).map((k) => k.trim()).includes('')),
 );
 
 const FormSchema = yup.object().noUnknown().shape({
@@ -60,7 +60,7 @@ const FormSchema = yup.object().noUnknown().shape({
       yup.object().noUnknown('Unknown key for additional traveller information').shape({
         firstName: yup.string().required('First name is required'),
         lastName: yup.string().required('Last name is required'),
-        dob: yup.string().required('Date of birth is required').test('is-date', ' Not a valid date', validateDateString),
+        dob: yup.string().required('Date of birth is required').test('is-date', 'Not a valid date', validateDateString),
       }),
     ).test('is-length', 'Number of additional travellers must be between 1 and 10', (v) => v.length >= 1 && v.length <= 10),
     otherwise: yup.array().test('is-empty', 'Additional travellers must be empty', (v) => v && v.length === 0),
