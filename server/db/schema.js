@@ -8,6 +8,8 @@ const collections = {
   USERS: 'ets-users',
 };
 
+const TEST_DB = 'TEST_DB';
+
 const schema = [
   {
     collection: collections.USERS,
@@ -36,4 +38,5 @@ const schema = [
 module.exports = {
   collections,
   schema,
+  TEST_DB,
 };

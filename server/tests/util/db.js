@@ -1,5 +1,7 @@
 const { randomBytes } = require('crypto');
-const { dbClient, schema, collections } = require('../../db');
+const {
+  dbClient, schema, collections, TEST_DB,
+} = require('../../db');
 const { hashPassword } = require('../../auth.js');
 
 async function seedDatabase() {
@@ -36,7 +38,7 @@ async function seedDatabase() {
 }
 
 async function clearDB() {
-  dbClient.useDB('TEST_DB');
+  dbClient.useDB(TEST_DB);
   await dbClient.db.dropDatabase();
 }
 
@@ -45,7 +47,7 @@ async function clearDB() {
  */
 async function startDB() {
   await dbClient.connect();
-  dbClient.useDB('TEST_DB');
+  dbClient.useDB(TEST_DB);
   await clearDB();
   await seedDatabase();
 }
