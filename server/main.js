@@ -1,6 +1,7 @@
 const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
+const initCronJobs = require('./cron-job');
 
 const port = 80;
 
@@ -38,6 +39,7 @@ process.on('SIGTERM', () => {
 (async () => {
   try {
     await dbClient.connect();
+    initCronJobs();
     server = app.listen(port, async () => {
       logger.info(`Listening on port ${port}`);
     });
