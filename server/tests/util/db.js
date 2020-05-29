@@ -1,5 +1,7 @@
 const { randomBytes } = require('crypto');
-const { dbClient, schema, collections } = require('../../db');
+const {
+  dbClient, schema, collections, TEST_DB,
+} = require('../../db');
 const { hashPassword } = require('../../auth.js');
 
 async function seedDatabase() {
@@ -19,7 +21,7 @@ async function seedDatabase() {
 
   await Promise.all(results); // Wait for all synchronous operations to pass/fail
 
-  // Create default user
+  // Create default users
   const usersCollection = dbClient.db.collection(collections.USERS);
   const salt = randomBytes(16).toString('hex');
   await usersCollection.insertOne({
@@ -27,17 +29,17 @@ async function seedDatabase() {
     password: hashPassword('password', salt),
     salt,
   });
+  await usersCollection.insertOne({
+    username: 'username_phac',
+    password: hashPassword('password', salt),
+    salt,
+    type: 'phac',
+  });
 }
 
 async function clearDB() {
-  const collectionsToDelete = await dbClient.db.collections();
-
-  const results = [];
-  collectionsToDelete.forEach((collection) => {
-    results.push(collection.deleteOne());
-  });
-
-  return Promise.all(results); // Wait for all synchronous operations to pass/fail
+  dbClient.useDB(TEST_DB);
+  await dbClient.db.dropDatabase();
 }
 
 /**
@@ -45,7 +47,7 @@ async function clearDB() {
  */
 async function startDB() {
   await dbClient.connect();
-  dbClient.useDB('TEST_DB');
+  dbClient.useDB(TEST_DB);
   await clearDB();
   await seedDatabase();
 }
