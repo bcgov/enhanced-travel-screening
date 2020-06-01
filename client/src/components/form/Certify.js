@@ -51,8 +51,7 @@ const Certify = ({ submitLoading, submitError }) => {
             Title: Ministry of Health, Chief Privacy Officer
           </Typography>
           <Typography variant="body2" paragraph>
-            Address: 3rd floor – 1483 Douglas Street<br />
-            Victoria BC V8W 9P1
+            Address: 3rd floor – 1483 Douglas Street Victoria BC V8W 9P1
           </Typography>
           <Typography variant="body2" paragraph>
             Telephone: 236-478-1666
