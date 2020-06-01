@@ -19,17 +19,21 @@ const etsToSbcJob = async () => {
       let data = await getUnsuccessfulSbcTransactions(etsCollection);
       // Remove SBC transactions from submission
       data = data.map((d) => {
-        const { serviceBCTransactions, ...rest } = d; return rest;
+        const { serviceBCTransactions, ...rest } = d;
+        return rest;
       });
       const promises = data.map((d) => postToSbcAndUpdateDb(etsCollection, d));
       // Wait for all SBC and associated DB interactions to complete
       const results = await Promise.all(promises);
       logger.info(results, currentDate);
+      console.log(results);
     } catch (error) {
       logger.error(`Failed one or more SBC transactions: ${error}`, currentDate);
+      console.log(`Failed one or more SBC transactions: ${error}`);
     }
   } catch (error) {
     logger.error(`Failed to establish DB connection: ${error}`, currentDate);
+    console.log(`Failed to establish DB connection: ${error}`);
   }
 };
 
@@ -47,4 +51,7 @@ const initCronJobs = () => {
   (new CronJob(cronTime, etsToSbcJob, null, false, timezone)).start();
 };
 
-module.exports = initCronJobs;
+module.exports = {
+  initCronJobs,
+  etsToSbcJob,
+};

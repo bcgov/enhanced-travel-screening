@@ -57,4 +57,4 @@ const postServiceItem = async (item) => {
   }
 };
 
-module.exports = postServiceItem;
+module.exports = { postServiceItem };
