@@ -26,14 +26,11 @@ const etsToSbcJob = async () => {
       // Wait for all SBC and associated DB interactions to complete
       const results = await Promise.all(promises);
       logger.info(results, currentDate);
-      console.log(results);
     } catch (error) {
       logger.error(`Failed one or more SBC transactions: ${error}`, currentDate);
-      console.log(`Failed one or more SBC transactions: ${error}`);
     }
   } catch (error) {
     logger.error(`Failed to establish DB connection: ${error}`, currentDate);
-    console.log(`Failed to establish DB connection: ${error}`);
   }
 };
 

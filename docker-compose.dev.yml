@@ -27,6 +27,7 @@ services:
   server:
     image: ${PROJECT}-server:latest
     container_name: ${PROJECT}-server
+    env_file: ./server/.env
     build:
       context: ./server
       dockerfile: Dockerfile.dev
