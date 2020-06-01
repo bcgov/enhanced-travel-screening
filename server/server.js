@@ -4,8 +4,7 @@ const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
-const postServiceItem = require('./utils/service-bc.js');
-const deriveTravellerKey = require('./utils/derive-traveller-key.js');
+const { postServiceItem } = require('./utils/service-bc.js');
 const {
   validate, FormSchema, DeterminationSchema, PhacSchema,
 } = require('./validation.js');
