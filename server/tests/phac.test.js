@@ -17,7 +17,7 @@ const formatHeaders = (csvString) => {
   return rows.join('\n'); // Replace line breaks with UNIX style
 };
 
-const failSbcSubmissions = 3;
+const failSbcSubmissionsCount = 3;
 
 describe('Test phac-servicebc queries and endpoints', () => {
   let server;
@@ -46,7 +46,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
       },
       serviceBCTransactions: [
         {
-          status: index >= failSbcSubmissions ? 'success' : 'fail',
+          status: index >= failSbcSubmissionsCount ? 'success' : 'fail',
           processedAt: currentIsoDate,
         },
       ],
@@ -114,7 +114,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
     dbClient.useDB(TEST_DB);
     const etsCollection = dbClient.db.collection(collections.FORMS);
     const failData = await getUnsuccessfulSbcTransactions(etsCollection);
-    expect(failData.length).toEqual(failSbcSubmissions);
+    expect(failData.length).toEqual(failSbcSubmissionsCount);
     await etsToSbcJob();
     const newFailData = await getUnsuccessfulSbcTransactions(etsCollection);
     expect(newFailData.length).toEqual(0);
