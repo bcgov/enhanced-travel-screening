@@ -15,7 +15,7 @@ const deriveTravellerKey = (item) => {
   components.forEach((i) => {
     if (typeof i !== 'string') throw Error('All identifier components must be strings');
   });
-  return components.map(cleanString).join('');
+  return components.map(cleanString).join('-');
 };
 
 module.exports = deriveTravellerKey;
