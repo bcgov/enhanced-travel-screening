@@ -2,10 +2,11 @@ const request = require('supertest');
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const app = require('../server');
-const { getArrivalUnsuccessfulSbcTransactions } = require('../utils/sbc-phac-queries');
+const { getArrivalUnsuccessfulSbcTransactions, getUnsuccessfulSbcTransactions } = require('../utils/sbc-phac-queries');
 const { dbClient, collections, TEST_DB } = require('../db');
 const { startDB, closeDB } = require('./util/db');
 const { fromCsvString } = require('./util/csv');
+const { etsToSbcJob } = require('../cron-job');
 
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);
@@ -24,7 +25,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
     etsDataString = formatHeaders(etsDataString);
     const etsData = await fromCsvString(etsDataString);
     const currentIsoDate = new Date().toISOString();
-    const formattedEtsData = etsData.map((item) => ({
+    const formattedEtsData = etsData.map((item, index) => ({
       id: item.confirmation_number,
       firstName: item.first_name,
       lastName: item.last_name,
@@ -41,6 +42,13 @@ describe('Test phac-servicebc queries and endpoints', () => {
         flight: item.airline_flight_number,
         from: item.arrival_from,
       },
+      serviceBCTransactions: [
+        {
+          status: index >= 3 ? 'success' : 'fail',
+          processedAt: currentIsoDate,
+        },
+      ],
+      certified: true,
       createdAt: currentIsoDate,
       updatedAt: currentIsoDate,
     }));
@@ -98,6 +106,16 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const testTargets = ['CVR-0159105', 'CVR-0159108', 'CVR-0159102', 'CVR-0159103'];
     expect(itemsToSend.filter((item) => testTargets.includes(item.covid_id)).length).toEqual(0);
     expect(itemsToSend.length).toEqual(count - testTargets.length);
+  });
+
+  it('Send unsuccessful Service BC transactions again', async () => {
+    dbClient.useDB(TEST_DB);
+    const etsCollection = dbClient.db.collection(collections.FORMS);
+    const data = await getUnsuccessfulSbcTransactions(etsCollection);
+    expect(data.length).toEqual(3);
+    await etsToSbcJob();
+    const newData = await getUnsuccessfulSbcTransactions(etsCollection);
+    expect(newData.length).toEqual(0);
   });
 
   afterAll(() => {
