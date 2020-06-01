@@ -2,7 +2,7 @@ const request = require('supertest');
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const app = require('../server');
-const { getUnsuccessfulSbcTransactions } = require('../utils/sbc-phac-queries');
+const { getArrivalUnsuccessfulSbcTransactions } = require('../utils/sbc-phac-queries');
 const { dbClient, collections, TEST_DB } = require('../db');
 const { startDB, closeDB } = require('./util/db');
 const { fromCsvString } = require('./util/csv');
@@ -93,7 +93,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
   it('Should NOT send records beyond end of quarantine period from PHAC to Service BC', async () => {
     dbClient.useDB(TEST_DB);
     const phacCollection = dbClient.db.collection(collections.PHAC);
-    const itemsToSend = await getUnsuccessfulSbcTransactions(phacCollection, currentDate);
+    const itemsToSend = await getArrivalUnsuccessfulSbcTransactions(phacCollection, currentDate);
     const count = await phacCollection.countDocuments();
     const testTargets = ['CVR-0159105', 'CVR-0159108', 'CVR-0159102', 'CVR-0159103'];
     expect(itemsToSend.filter((item) => testTargets.includes(item.covid_id)).length).toEqual(0);
