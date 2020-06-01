@@ -44,11 +44,7 @@ const initCronJobs = () => {
   const cronTime = '0 59 23 * * *'; // 23:59:00
 
   (new CronJob(cronTime, phacToSbcJob, null, false, timezone)).start();
-  // const phacToSbc = new CronJob(cronTime, phacToSbcJob, null, false, timezone);
-  // phacToSbc.start();
-
-  const etsToSbc = new CronJob(cronTime, etsToSbcJob, null, false, timezone);
-  etsToSbc.start();
+  (new CronJob(cronTime, etsToSbcJob, null, false, timezone)).start();
 };
 
 module.exports = initCronJobs;
