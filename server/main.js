@@ -1,7 +1,7 @@
 const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
-const initCronJobs = require('./cron-job');
+const { initCronJobs } = require('./cron-job');
 
 const port = 80;
 
