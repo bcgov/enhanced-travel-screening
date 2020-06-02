@@ -5,6 +5,7 @@ const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
 const postServiceItem = require('./utils/service-bc.js');
+const deriveTravellerKey = require('./utils/derive-traveller-key.js');
 const {
   validate, FormSchema, DeterminationSchema, PhacSchema,
 } = require('./validation.js');
@@ -64,6 +65,7 @@ app.post(`${apiBaseUrl}/form`,
       isolationPlanStatus,
       determination: null,
       notes: null,
+      derivedTravellerKey: deriveTravellerKey(scrubbed),
       createdAt: currentIsoDate,
       updatedAt: currentIsoDate,
     };
@@ -97,6 +99,7 @@ app.post(`${apiBaseUrl}/phac/submission`,
     const phacItems = await Promise.all(req.body.map(async (item) => ({
       ...item,
       id: await generateUniqueHexId(phacCollection),
+      derivedTravellerKey: deriveTravellerKey(item),
       createdAt: currentIsoDate,
       updatedAt: currentIsoDate,
     })));
