@@ -159,6 +159,17 @@ gh-pipeline-deploy-version:
 	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(call deployTag) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(call deployTag).zip"
 	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DEPLOY_ENV) --version-label $(call deployTag)
 
+gh-pipeline-deploy-bg-version:
+	@echo "+\n++ Deploying to Elasticbeanstalk...\n+"
+	@zip -r $(CLONED_ENV).zip  Dockerrun.aws.json
+	@aws configure set region $(REGION)
+	@aws s3 cp $(CLONED_ENV).zip s3://$(S3_BUCKET)/$(PROJECT)/$(CLONED_ENV).zip
+	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(CLONED_ENV) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(CLONED_ENV).zip"
+	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(CLONED_ENV) --version-label $(CLONED_ENV)
+
+gh-get-current-aws-env:
+	@aws elasticbeanstalk describe-environments | grep -o -E '"EnvironmentName": .*' | grep -o -E '$(DEPLOY_ENV)-[0-9]+' | sort -r | head -n 1
+
 ##########################################
 # IMG Promotion commands #
 ##########################################
