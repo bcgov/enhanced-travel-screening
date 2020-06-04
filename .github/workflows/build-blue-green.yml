@@ -41,6 +41,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
+      - name: Add Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
       - name: Build Image
         run: make pipeline-build
 
@@ -57,14 +62,10 @@ jobs:
         run: echo "##[set-output name=date;]$(date '+%Y%m%d%H%M')"
         id: extract_date
 
-      - name: Clone EB enviroment
-        uses: mauriciofreshw/actions-aws-eb@v1.0.0
-        with:
-          command: 'clone ${{ steps.current_env_name.outputs.env }} --clone_name ${{ env.DEPLOY_ENV }}-${{ steps.extract_date.outputs.date }} --exact --verbose'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.REGION }}
+      - name: Clone EB enviroment          
+        run: |
+          pip install awsebcli
+          eb clone ${{ steps.current_env_name.outputs.env }} --clone_name ${{ env.DEPLOY_ENV }}-${{ steps.extract_date.outputs.date }} --exact --verbose
 
       - name: Creating EB Deployment Artifact
         run: make gh-pipeline-deploy-prep
