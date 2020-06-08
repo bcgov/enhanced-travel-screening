@@ -30,8 +30,11 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${COMMIT_SHA}
     environment:
       - DB_SERVER=${DB_SERVER}
+      - VERSION=${COMMIT_SHA}
     expose:
       - "80"
     ports:

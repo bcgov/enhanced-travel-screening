@@ -1,5 +1,9 @@
 FROM node:12
 
+# Static env vars
+ARG VERSION
+ENV VERSION $VERSION
+
 MAINTAINER FreshWorks <web@freshworks.io>
 
 ENV PATH $PATH:/usr/src/app/node_modules/.bin

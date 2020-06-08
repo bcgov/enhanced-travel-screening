@@ -8,6 +8,8 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
+      args:
+        VERSION: ${COMMIT_SHA}
     ports:
       - "80:80"
     expose:
