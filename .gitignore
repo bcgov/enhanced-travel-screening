@@ -1,5 +1,4 @@
 # Elastic Beanstalk Files
-.elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 enhanced-travel-screening*.zip
@@ -21,6 +20,7 @@ docs
 Dockerrun.aws.json
 audit-report.*
 .DS_Store
+.ebextensions/*
 !.ebextensions/.keep
 .env
 test-results
