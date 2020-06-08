@@ -1,0 +1,104 @@
+const dayjs = require('dayjs');
+const PromisePool = require('es6-promise-pool');
+const { dbClient, collections } = require('../db');
+const { postServiceItem } = require('./service-bc');
+const logger = require('../logger.js');
+
+const getUnsuccessfulSbcTransactions = async (collection, blacklist) => {
+  const dateRange = [dayjs().subtract(300, 'day'), dayjs().subtract(-300, 'day')]
+    .map((d) => d.startOf('day').toDate());
+  const query = [
+    { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: '$arrival_date', timezone: '-0700' } } } },
+    {
+      $match: {
+        $and: [
+          { 'serviceBCTransactions.status': { $ne: 'success' } },
+          { parsed_arrival_date: { $gte: dateRange[0], $lte: dateRange[1] } },
+          { derivedTravellerKey: { $nin: blacklist, $exists: true } },
+        ],
+      },
+    },
+    {
+      $project: { // Scrub unneeded fields
+        _id: 0, serviceBCTransactions: 0, parsed_arrival_date: 0, derivedTravellerKey: 0,
+      },
+    },
+  ];
+  const items = await collection.aggregate(query).toArray();
+  return items;
+};
+
+const getEtsTravellerKeys = async (collection) => {
+  const query = { derivedTravellerKey: { $exists: true } };
+  const items = await collection.find(query).toArray();
+  return items.map((i) => i.derivedTravellerKey);
+};
+
+const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
+  { id },
+  { $push: { serviceBCTransactions: transaction }, $set: { updatedAt: new Date().toISOString() } },
+);
+
+const postToSbcAndUpdateDb = async (collection, submission) => {
+  const transaction = await postServiceItem(submission);
+  await updateSbcTransactions(collection, submission.id, transaction);
+  return { id: submission.id, status: transaction.status };
+};
+
+const cleanJoinArray = (a) => a
+  .filter((i) => ['string', 'number'].includes(typeof i))
+  .map((i) => String(i).trim())
+  .filter((i) => i !== '')
+  .join(', ');
+
+const phacToSbc = (phacItem) => {
+  const oldKeys = [
+    'first_name', 'last_name', 'date_of_birth', 'address_1', 'postal_code', 'home_phone', 'mobile_phone', 'other_phone', 'arrival_date',
+    'destination_type', 'email_address', 'province_territory', 'port_of_entry', 'land_port_of_entry', 'other_port_of_entry',
+  ];
+  const telephone = cleanJoinArray([
+    phacItem.home_phone, phacItem.mobile_phone, phacItem.other_phone]);
+  const by = cleanJoinArray([
+    phacItem.port_of_entry, phacItem.land_port_of_entry, phacItem.other_port_of_entry]);
+  const sbcItem = {
+    ...phacItem,
+    firstName: phacItem.first_name,
+    lastName: phacItem.last_name,
+    dob: phacItem.date_of_birth,
+    address: phacItem.address_1,
+    postalCode: phacItem.postal_code,
+    email: phacItem.email_address,
+    province: phacItem.province_territory,
+    telephone,
+    arrival: {
+      date: phacItem.arrival_date,
+      by,
+    },
+    isolationPlan: {
+      type: phacItem.destination_type,
+    },
+  };
+  oldKeys.forEach((k) => delete sbcItem[k]);
+  return sbcItem;
+};
+
+function* makeSbcTransactionIterator(collection, data) {
+  for (const d of data) { // eslint-disable-line no-restricted-syntax
+    yield postToSbcAndUpdateDb(collection, d);
+  }
+}
+
+const sendPhacToSBC = async () => {
+  const etsCollection = dbClient.db.collection(collections.FORMS);
+  const phacCollection = dbClient.db.collection(collections.PHAC);
+  const etsTravellerKeys = await getEtsTravellerKeys(etsCollection);
+  let data = await getUnsuccessfulSbcTransactions(phacCollection, etsTravellerKeys);
+  data = data.map(phacToSbc);
+  data = data.slice(0, 20);
+  logger.info(`Sending ${data.length} PHAC record(s) to SBC`);
+  const sbcTransactionIterator = makeSbcTransactionIterator(phacCollection, data);
+  const pool = new PromisePool(sbcTransactionIterator, 10);
+  await pool.start();
+};
+
+module.exports = { sendPhacToSBC };
