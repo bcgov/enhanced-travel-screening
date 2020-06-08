@@ -3,6 +3,7 @@ const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { getUnsuccessfulSbcTransactions, updateSbcTransactions } = require('./utils/sbc-phac-queries');
 const { postServiceItem } = require('./utils/service-bc');
+const { sendPhacToSBC } = require('./utils/sbc-phac');
 const { runTaskOnMaster } = require('./utils/aws-services');
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
@@ -38,7 +39,12 @@ const phacToSbcJob = async () => {
   if (process.env.DISABLE_PHAC_CRONJOB === 'true') return;
   const currentDate = new Date().toISOString();
   logger.info('phac to sbc cron job executed', currentDate);
-  // TODO run phac to sbc logic
+  try {
+    const results = sendPhacToSBC();
+    logger.info(`Sent ${results.length} PHAC record(s) to SBC`);
+  } catch (error) {
+    logger.error(`Failed to send PHAC records to SBC ${error}`);
+  }
 };
 
 const startCronJobOnMaster = (cronTime, job, timezone) => {

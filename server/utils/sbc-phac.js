@@ -2,7 +2,6 @@ const dayjs = require('dayjs');
 const PromisePool = require('es6-promise-pool');
 const { dbClient, collections } = require('../db');
 const { postServiceItem } = require('./service-bc');
-const logger = require('../logger.js');
 
 const getUnsuccessfulSbcTransactions = async (collection, blacklist) => {
   const dateRange = [dayjs().subtract(300, 'day'), dayjs().subtract(-300, 'day')]
@@ -94,11 +93,10 @@ const sendPhacToSBC = async () => {
   const etsTravellerKeys = await getEtsTravellerKeys(etsCollection);
   let data = await getUnsuccessfulSbcTransactions(phacCollection, etsTravellerKeys);
   data = data.map(phacToSbc);
-  data = data.slice(0, 20);
-  logger.info(`Sending ${data.length} PHAC record(s) to SBC`);
   const sbcTransactionIterator = makeSbcTransactionIterator(phacCollection, data);
   const pool = new PromisePool(sbcTransactionIterator, 10);
   await pool.start();
+  return data;
 };
 
 module.exports = { sendPhacToSBC };
