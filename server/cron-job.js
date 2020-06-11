@@ -25,8 +25,7 @@ const etsToSbcJob = async () => {
       });
       const promises = data.map((d) => postToSbcAndUpdateDb(etsCollection, d));
       // Wait for all SBC and associated DB interactions to complete
-      const results = await Promise.all(promises);
-      logger.info(results, currentDate);
+      await Promise.all(promises);
     } catch (error) {
       logger.error(`Failed one or more SBC transactions: ${error}`, currentDate);
     }
@@ -41,16 +40,16 @@ const phacToSbcJob = async () => {
   // TODO run phac to sbc logic
 };
 
-const startCronJob = (cronTime, job, timezone) => {
-  (new CronJob(cronTime, runTaskOnMaster(job), null, false, timezone)).start();
+const startCronJobOnMaster = (cronTime, job, timezone) => {
+  (new CronJob(cronTime, () => { runTaskOnMaster(job); }, null, false, timezone)).start();
 };
 
 const initCronJobs = () => {
   const timezone = 'America/Los_Angeles';
   const cronTime = '0 59 23 * * *'; // 23:59:00
 
-  startCronJob(cronTime, phacToSbcJob, timezone);
-  startCronJob(cronTime, etsToSbcJob, timezone);
+  startCronJobOnMaster(cronTime, phacToSbcJob, timezone);
+  startCronJobOnMaster(cronTime, etsToSbcJob, timezone);
 };
 
 module.exports = {
