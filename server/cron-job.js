@@ -3,6 +3,7 @@ const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { getUnsuccessfulSbcTransactions, updateSbcTransactions } = require('./utils/sbc-phac-queries');
 const { postServiceItem } = require('./utils/service-bc');
+const { runTaskOnMaster } = require('./utils/aws-services');
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
   const transaction = await postServiceItem(submission);
@@ -40,12 +41,16 @@ const phacToSbcJob = async () => {
   // TODO run phac to sbc logic
 };
 
+const startCronJob = (cronTime, job, timezone) => {
+  (new CronJob(cronTime, runTaskOnMaster(job), null, false, timezone)).start();
+};
+
 const initCronJobs = () => {
   const timezone = 'America/Los_Angeles';
   const cronTime = '0 59 23 * * *'; // 23:59:00
 
-  (new CronJob(cronTime, phacToSbcJob, null, false, timezone)).start();
-  (new CronJob(cronTime, etsToSbcJob, null, false, timezone)).start();
+  startCronJob(cronTime, phacToSbcJob, timezone);
+  startCronJob(cronTime, etsToSbcJob, timezone);
 };
 
 module.exports = {
