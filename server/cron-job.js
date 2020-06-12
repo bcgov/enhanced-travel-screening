@@ -35,6 +35,7 @@ const etsToSbcJob = async () => {
 };
 
 const phacToSbcJob = async () => {
+  if (process.env.DISABLE_PHAC_CRONJOB === 'true') return;
   const currentDate = new Date().toISOString();
   logger.info('phac to sbc cron job executed', currentDate);
   // TODO run phac to sbc logic
