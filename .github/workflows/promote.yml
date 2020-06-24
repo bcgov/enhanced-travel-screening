@@ -1,0 +1,51 @@
+name: Blue Green Image Promotion
+
+on:
+  push:
+    tags:
+      - staging
+      - prod
+
+env:
+  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  PROJECT: enhanced-travel-screening
+  REGION: ca-central-1
+
+jobs:
+  promote:
+    name: Blue Green Image Promotion
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Add Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Extract Tag, Set Source and Destination Env
+        run: |
+          export ENV_SUFFIX=${GITHUB_REF#refs/*/}
+          echo ::set-env name=ENV_SUFFIX::$ENV_SUFFIX
+          echo ::set-env name=SOURCE_ENV::$(make get-latest-env-name)
+          echo ::set-env name=DESTINATION_ENV::$(make create-new-env-name)
+
+      - name: Validate Image
+        run: make validate-image
+
+      - name: Clone EB Enviroment
+        run: |
+          pip install awsebcli
+          eb clone ${{ env.SOURCE_ENV }} --clone_name ${{ env.DESTINATION_ENV }} --exact --verbose
+
+      - name: Create Artifact and Deploy to EB
+        run: make promote-image
