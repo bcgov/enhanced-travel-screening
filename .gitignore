@@ -9,18 +9,10 @@ client/.pnp
 client/.pnp.js
 client/build
 
-# Server
-server/*.pdf
-server/pdfs/*
-
 # Misc.
-docs
 Dockerrun.aws.json
-audit-report.*
 .DS_Store
 .env
-test-results
-bcfs-web-*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
