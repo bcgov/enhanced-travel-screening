@@ -12,9 +12,7 @@ const deriveTravellerKey = (item) => {
     item.dob || item.date_of_birth,
     item.arrival && item.arrival.date ? item.arrival.date : item.arrival_date,
   ];
-  components.forEach((i) => {
-    if (typeof i !== 'string') throw Error('All identifier components must be strings');
-  });
+  if (components.some((c) => typeof c !== 'string')) return undefined;
   return components.map(cleanString).join('-');
 };
 
