@@ -72,11 +72,12 @@ push-image:
 
 deploy-lambda:
 	@cd server/lambda
+	@echo $(IMAGE_TAG) > version.txt
 	@npm install
 	@zip -r lambdaFunc.zip .
 	@aws lambda update-function-code --function-name $(LAMBDA_FUNC) --zip-file fileb://$(PWD)/lambdaFunc.zip
-	@cd ..
-	@rm -r lambda
+	@rm lambdaFunc.zip
+	@rm version.txt
 
 validate-image:
 	@echo "Ensuring $(PROJECT):$(IMAGE_TAG) is in container registry"
@@ -106,3 +107,8 @@ tag-prod:
 	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to prod env"
 	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
 	@git push --force origin refs/tags/prod:refs/tags/prod
+
+tag-lambda-prod:
+	@echo "Deploying lambda function code to prod AWS Lambda"
+	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
+	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
