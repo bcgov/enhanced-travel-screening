@@ -30,7 +30,7 @@ jobs:
           echo ${GITHUB_REF#refs/*/} > version.txt
           npm install
           zip -r lambdaFunc.zip .
-          aws lambda update-function-code --function-name ${{ env.REGION }} --zip-file fileb://${PWD}/lambdaFunc.zip
+          aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNC }} --zip-file fileb://${PWD}/lambdaFunc.zip
           rm lambdaFunc.zip
           rm version.txt
 
