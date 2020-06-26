@@ -8,6 +8,7 @@ export IMAGE_TAG=${COMMIT_SHA}
 export PROJECT:=enhanced-travel-screening
 export ENV_PREFIX?=ets
 export ENV_SUFFIX?=dev
+export LAMBDA_FUNC?=phacToSbc
 export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
 .DEFAULT_GOAL:=print-status
 
@@ -36,7 +37,7 @@ run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 
-run-lambda:
+run-local-lambda:
 	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
 
 close-local: ## -- Target : Closes the local development containers.
@@ -74,8 +75,11 @@ build-image:
 
 pipeline-deploy-lambda:
 	@cd server/lambda
+	@npm install
 	@zip -r lambdaFunc.zip .
-	@aws lambda update-function-code --function-name phacToSbc --zip-file fileb://$(PWD)/lambdaFunc.zip
+	@aws lambda update-function-code --function-name $(LAMBDA_FUNC) --zip-file fileb://$(PWD)/lambdaFunc.zip
+	@cd ..
+	@rm -r lambda
 
 pipeline-build:
 	@echo "+\n++ Performing build of Docker images...\n+"

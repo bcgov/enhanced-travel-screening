@@ -53,9 +53,14 @@ services:
   
   ### Lambda Function #############################
   lambda:
-    container_name: ${PROJECT}-lambda:${GIT_LOCAL_BRANCH}
+    container_name: ${PROJECT}-lambda
     image: lambci/lambda:nodejs12.x
-    env_file: ./server/.env
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     expose:
       - "9001"
     ports:
@@ -67,10 +72,10 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./lambda:/var/task:ro,delegated
+      - ./server/lambda:/var/task:ro,delegated
     command: index.handler
     networks:
-      - backend
+      - frontend
 
   ### MongoDB #############################
   mongodb:
