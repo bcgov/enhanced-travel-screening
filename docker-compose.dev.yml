@@ -3,7 +3,7 @@ version: '3.7'
 services:
   ### Frontend Application #############################
   client:
-    image: ${PROJECT}_client:${GIT_LOCAL_BRANCH}
+    image: ${PROJECT}_client:latest
     container_name: ${PROJECT}-client
     build:
       context: ./client
@@ -25,7 +25,7 @@ services:
 
   ### Backend Application #############################
   server:
-    image: ${PROJECT}-server:${GIT_LOCAL_BRANCH}
+    image: ${PROJECT}-server:latest
     container_name: ${PROJECT}-server
     build:
       context: ./server
