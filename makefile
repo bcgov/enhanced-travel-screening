@@ -70,14 +70,6 @@ push-image:
 	@docker tag $(PROJECT):$(IMAGE_TAG) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
-deploy-lambda:
-	@echo $(IMAGE_TAG) > version.txt
-	@npm install
-	@zip -r lambdaFunc.zip .
-	@aws lambda update-function-code --function-name $(LAMBDA_FUNC) --zip-file fileb://$(PWD)/lambdaFunc.zip
-	@rm lambdaFunc.zip
-	@rm version.txt
-
 validate-image:
 	@echo "Ensuring $(PROJECT):$(IMAGE_TAG) is in container registry"
 	@aws ecr describe-images --repository-name=$(PROJECT) --image-ids=imageTag=$(IMAGE_TAG)
