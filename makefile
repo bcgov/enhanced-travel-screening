@@ -71,7 +71,6 @@ push-image:
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
 deploy-lambda:
-	@cd $(PWD)/server/lambda
 	@echo $(IMAGE_TAG) > version.txt
 	@npm install
 	@zip -r lambdaFunc.zip .
