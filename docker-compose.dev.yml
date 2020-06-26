@@ -50,6 +50,27 @@ services:
       - mongodb
     networks:
       - frontend
+  
+  ### Lambda Function #############################
+  lambda:
+    container_name: ${PROJECT}-lambda:${GIT_LOCAL_BRANCH}
+    image: lambci/lambda:nodejs12.x
+    env_file: ./server/.env
+    expose:
+      - "9001"
+    ports:
+      - "9001:9001"
+    environment:
+      - AWS_DEFAULT_REGION=ca-central-1
+      - DOCKER_LAMBDA_WATCH=1
+      - DOCKER_LAMBDA_STAY_OPEN=1
+    depends_on:
+      - mongodb
+    volumes:
+      - ./lambda:/var/task:ro,delegated
+    command: index.handler
+    networks:
+      - backend
 
   ### MongoDB #############################
   mongodb:
