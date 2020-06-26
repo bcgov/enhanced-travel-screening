@@ -40,8 +40,8 @@ run-local-db:
 run-local-lambda:
 	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
 
-close-local: ## -- Target : Closes the local development containers.
-	@echo "+\n++ Make: Closing local container ...\n+"
+close-local:
+	@echo "Stopping local app container"
 	@docker-compose -f docker-compose.dev.yml down
 
 local-db-seed:
@@ -52,15 +52,10 @@ local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(PROJECT)-server npm test
 
-####################
-# Utility commands #
-####################
+# Pipeline
 
-# Set an AWS profile for pipeline
-setup-aws-profile:
-	@echo "+\n++ Make: Setting AWS Profile...\n+"
-	@aws configure set aws_access_key_id $(AWS_ACCESS_KEY_ID) --profile $(PROFILE)
-	@aws configure set aws_secret_access_key $(AWS_SECRET_ACCESS_KEY) --profile $(PROFILE)
+get-latest-env-name:
+	@aws elasticbeanstalk describe-environments | jq -cr '.Environments | .[] | select(.Status == "Ready" and (.EnvironmentName | test("^$(ENV_PREFIX)-$(ENV_SUFFIX)(-[0-9]+)?$$"))) | .EnvironmentName' | sort | tail -n 1
 
 create-new-env-name:
 	@echo $(ENV_PREFIX)-$(ENV_SUFFIX)-$(shell date '+%Y%m%d%H%M')
@@ -69,29 +64,19 @@ build-image:
 	@echo "Building image $(PROJECT):$(IMAGE_TAG)"
 	@docker build -t $(PROJECT):$(IMAGE_TAG) --build-arg VERSION=$(IMAGE_TAG) .
 
-##########################################
-# Pipeline build and deployment commands #
-##########################################
+push-image:
+	@echo "Pushing image $(PROJECT):$(IMAGE_TAG) to ECR"
+	@aws ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+	@docker tag $(PROJECT):$(IMAGE_TAG) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
+	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
-pipeline-deploy-lambda:
+deploy-lambda:
 	@cd server/lambda
 	@npm install
 	@zip -r lambdaFunc.zip .
 	@aws lambda update-function-code --function-name $(LAMBDA_FUNC) --zip-file fileb://$(PWD)/lambdaFunc.zip
 	@cd ..
 	@rm -r lambda
-
-pipeline-build:
-	@echo "+\n++ Performing build of Docker images...\n+"
-	@echo "Building images with: $(GIT_LOCAL_BRANCH)"
-	@docker-compose -f docker-compose.yml build
-
-pipeline-push:
-	@echo "+\n++ Pushing image to Dockerhub...\n+"
-	# @$(shell aws ecr get-login --no-include-email --region $(REGION) --profile $(PROFILE))
-	@aws --region $(REGION) --profile $(PROFILE) ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(GIT_LOCAL_BRANCH) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
 
 validate-image:
 	@echo "Ensuring $(PROJECT):$(IMAGE_TAG) is in container registry"
