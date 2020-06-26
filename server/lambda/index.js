@@ -304,7 +304,8 @@ const reportOnDuplicates = async (db) => {
   /* eslint-disable no-console */
 };
 
-exports.handler = async () => {
+/* eslint-disable no-unused-vars */
+exports.handler = async (event, context) => {
   const { connection, db } = await dbConnection();
   let result = 'ok';
   try {
