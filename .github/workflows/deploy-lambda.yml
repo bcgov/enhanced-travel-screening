@@ -7,6 +7,7 @@ on:
 
 env:
   REGION: ca-central-1
+  LAMBDA_FUNC: phacToSbc
 
 jobs:
   deploy:
@@ -25,5 +26,11 @@ jobs:
 
       - name: Zip lambda folder and ship to AWS Lambda
         working-directory: ./server/lambda
-        run: make deploy-lambda
+        run: |
+          echo ${GITHUB_REF#refs/*/} > version.txt
+          npm install
+          zip -r lambdaFunc.zip .
+          aws lambda update-function-code --function-name ${{ env.REGION }} --zip-file fileb://${PWD}/lambdaFunc.zip
+          rm lambdaFunc.zip
+          rm version.txt
 
