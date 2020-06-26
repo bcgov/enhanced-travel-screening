@@ -198,6 +198,10 @@ app.get(`${apiBaseUrl}/validate`,
   passport.authenticate('jwt', { session: false }),
   (req, res) => res.json({}));
 
+// Version number
+app.get(`${apiBaseUrl}/version`,
+  (req, res) => res.json({ version: process.env.VERSION }));
+
 // Client app
 if (process.env.NODE_ENV === 'production') {
   app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build/index.html')));

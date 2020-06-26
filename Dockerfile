@@ -10,7 +10,11 @@ RUN npm run build
 
 # Server
 FROM node:12 AS server
+
+# Static env vars
+ARG VERSION
 ENV NODE_ENV production
+ENV VERSION $VERSION
 
 # Run server
 COPY --from=client /client/build /client/build/.

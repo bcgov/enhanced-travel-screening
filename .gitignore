@@ -1,7 +1,4 @@
 # Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
 enhanced-travel-screening*.zip
 
 # Dependencies
@@ -12,20 +9,10 @@ client/.pnp
 client/.pnp.js
 client/build
 
-# Server
-server/*.pdf
-server/pdfs/*
-
 # Misc.
-docs
 Dockerrun.aws.json
-audit-report.*
 .DS_Store
-.ebextensions/*
-!.ebextensions/.keep
 .env
-test-results
-bcfs-web-*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
