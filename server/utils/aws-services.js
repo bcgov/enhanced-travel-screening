@@ -46,6 +46,7 @@ const runTaskOnMaster = async (taskToRun) => {
     .then((envId, currentInstanceId) => new Promise((resolve, reject) => {
       elasticbeanstalk.describeEnvironmentResources({ EnvironmentId: envId }, (err, data) => {
         if (err) { return reject(new Error(`describeEnvironmentResources: ${err}`)); }
+        logger.info(data.EnvironmentResources.Instances[0]);
         if (currentInstanceId !== data.EnvironmentResources.Instances[0].Id) {
           return resolve(false);
         }
