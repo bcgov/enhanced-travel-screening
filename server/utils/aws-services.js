@@ -10,58 +10,59 @@ const elasticbeanstalk = new AWS.ElasticBeanstalk(opts);
 const ec2 = new AWS.EC2(opts);
 const metadata = new AWS.MetadataService(opts);
 
+const isCurrentInstanceMaster = async () => {
+  try {
+    // get ec2 instance id
+    const request = new Promise((resolve, reject) => {
+      // MetadataService.request has no support for promise, make one ourselves
+      metadata.request('/latest/meta-data/instance-id', (err, InstanceId) => {
+        if (err) { return reject(err); }
+        return resolve(InstanceId);
+      });
+    });
+    const currentInstanceId = await request;
+    logger.info('currentInstanceId', currentInstanceId);
+    // get env id
+    const params = {
+      Filters: [
+        {
+          Name: 'resource-id',
+          Values: [currentInstanceId],
+        },
+      ],
+    };
+    const tagData = await ec2.describeTags(params).promise(); // needs ec2:DescribeTags permission
+    logger.info('tagData', tagData);
+    const envIdTag = tagData.Tags.find((t) => t.Key === 'elasticbeanstalk:environment-id');
+    if (envIdTag === null) {
+      throw Error('Failed to find the value of "elasticbeanstalk:environment-id" tag.');
+    }
+    // get ebs instances for env
+    // needs elasticbeanstalk:DescribeEnvironmentResources,
+    // autoscaling:DescribeAutoScalingGroups
+    const envData = await elasticbeanstalk.describeEnvironmentResources(
+      { EnvironmentId: envIdTag.Value },
+    ).promise();
+    logger.info('envData', envData);
+    logger.info('instances', envData.EnvironmentResources.Instances);
+    // see if we are first
+    return currentInstanceId === envData.EnvironmentResources.Instances[0].Id;
+  } catch (e) {
+    logger.error(e);
+  }
+  return false;
+};
+
 const runTaskOnMaster = async (taskToRun) => {
   if (process.env.NODE_ENV !== 'production') {
     return taskToRun();
   }
-  return new Promise((resolve, reject) => {
-    metadata.request('/latest/meta-data/instance-id', (err, instanceId) => {
-      if (err) { return reject(err); }
-      return resolve(instanceId);
-    });
-  })
-    .then((currentInstanceId) => {
-      logger.info(`InstanceId: ${currentInstanceId}`);
-      return new Promise((resolve, reject) => {
-        const params = {
-          Filters: [
-            {
-              Name: 'resource-id',
-              Values: [currentInstanceId],
-            },
-          ],
-        };
-
-        ec2.describeTags(params, (err, data) => {
-          if (err) { return reject(new Error(`describeTags: ${err}`)); }
-
-          const envIdTag = data.Tags.find((t) => t.Key === 'elasticbeanstalk:environment-id');
-          if (envIdTag === null) {
-            return reject(new Error('Failed to find the value of "elasticbeanstalk:environment-id" tag.'));
-          }
-          return resolve(envIdTag.Value, currentInstanceId);
-        });
-      });
-    })
-    .then((envId, currentInstanceId) => new Promise((resolve, reject) => {
-      elasticbeanstalk.describeEnvironmentResources({ EnvironmentId: envId }, (err, data) => {
-        if (err) { return reject(new Error(`describeEnvironmentResources: ${err}`)); }
-        logger.info(data.EnvironmentResources.Instances[0]);
-        if (currentInstanceId !== data.EnvironmentResources.Instances[0].Id) {
-          return resolve(false);
-        }
-        return resolve(true);
-      });
-    }))
-    .then((isMaster) => {
-      if (!isMaster) {
-        logger.info('Not running cron job as master EB instance. Aborting.');
-      } else {
-        logger.info('Identified as master EB instance. Running cron job.');
-        taskToRun();
-      }
-    })
-    .catch((err) => logger.error(err));
+  const isMaster = await isCurrentInstanceMaster();
+  if (isMaster) {
+    return taskToRun();
+  }
+  logger.info('Cronjob not running as master EB instance. Aborting.');
+  return false;
 };
 
 module.exports = { runTaskOnMaster };
