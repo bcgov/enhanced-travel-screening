@@ -51,10 +51,10 @@ const runTaskOnMaster = async (taskToRun) => {
   }
   const isMaster = await isCurrentInstanceMaster();
   if (isMaster) {
-    logger.info('Cronjob running as master EB instance. Executing...');
+    logger.info('Cron-job running as master EB instance. Executing...');
     return taskToRun();
   }
-  logger.info('Cronjob not running as master EB instance. Aborting.');
+  logger.info('Cron-job not running as master EB instance. Aborting.');
   return false;
 };
 
