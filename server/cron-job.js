@@ -53,7 +53,7 @@ const startCronJobOnMaster = (cronTime, job, timezone) => {
 
 const initCronJobs = () => {
   const timezone = 'America/Los_Angeles';
-  const cronTime = '0 59 23 * * *'; // 23:59:00
+  const cronTime = '00 00 11 * * *';
 
   startCronJobOnMaster(cronTime, phacToSbcJob, timezone);
   startCronJobOnMaster(cronTime, etsToSbcJob, timezone);
