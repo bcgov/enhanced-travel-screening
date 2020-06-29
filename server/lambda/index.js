@@ -296,21 +296,27 @@ const reportOnDuplicates = async (db) => {
   //     console.log(key, value.join(', '));
   // }
 
-  console.log(`Found ${Object.entries(duplicates).length} total duplicates`);
-  console.log(`--- ${internalPhacDuplicateCount} 
-    duplicates or groups within the PHAC collection`);
-  console.log(`--- ${phacToEtsDuplicateCount} 
-    duplicates or groups of PHAC records found in the ETS collection`);
+  // console.log(`Found ${Object.entries(duplicates).length} total duplicates`);
+  // console.log(`--- ${internalPhacDuplicateCount}
+  //   duplicates or groups within the PHAC collection`);
+  // console.log(`--- ${phacToEtsDuplicateCount}
+  //   duplicates or groups of PHAC records found in the ETS collection`);
+
   /* eslint-disable no-console */
+  return {
+    totalDuplicates: Object.entries(duplicates).length,
+    internalPhacDuplicateCount,
+    phacToEtsDuplicateCount,
+  };
 };
 
 /* eslint-disable no-unused-vars */
 exports.handler = async (event, context) => {
   const { connection, db } = await dbConnection();
-  let result = 'ok';
+  let result;
   try {
     // Print results, using one of the algorithms written above
-    await reportOnDuplicates(db);
+    result = await reportOnDuplicates(db);
   } catch (err) {
     result = err;
   }
