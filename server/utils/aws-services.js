@@ -12,17 +12,13 @@ const metadata = new AWS.MetadataService(opts);
 
 const isCurrentInstanceMaster = async () => {
   try {
-    // get ec2 instance id
     const request = new Promise((resolve, reject) => {
-      // MetadataService.request has no support for promise, make one ourselves
       metadata.request('/latest/meta-data/instance-id', (err, InstanceId) => {
         if (err) { return reject(err); }
         return resolve(InstanceId);
       });
     });
     const currentInstanceId = await request;
-    logger.info('currentInstanceId', currentInstanceId);
-    // get env id
     const params = {
       Filters: [
         {
@@ -31,21 +27,17 @@ const isCurrentInstanceMaster = async () => {
         },
       ],
     };
-    const tagData = await ec2.describeTags(params).promise(); // needs ec2:DescribeTags permission
-    logger.info('tagData', tagData);
+    // premission: ec2:DescribeTags
+    const tagData = await ec2.describeTags(params).promise();
     const envIdTag = tagData.Tags.find((t) => t.Key === 'elasticbeanstalk:environment-id');
     if (envIdTag === null) {
       throw Error('Failed to find the value of "elasticbeanstalk:environment-id" tag.');
     }
-    // get ebs instances for env
-    // needs elasticbeanstalk:DescribeEnvironmentResources,
+    // permissions: elasticbeanstalk:DescribeEnvironmentResources,
     // autoscaling:DescribeAutoScalingGroups
     const envData = await elasticbeanstalk.describeEnvironmentResources(
       { EnvironmentId: envIdTag.Value },
     ).promise();
-    logger.info('envData', envData);
-    logger.info('instances', envData.EnvironmentResources.Instances);
-    // see if we are first
     return currentInstanceId === envData.EnvironmentResources.Instances[0].Id;
   } catch (e) {
     logger.error(e);
@@ -59,6 +51,7 @@ const runTaskOnMaster = async (taskToRun) => {
   }
   const isMaster = await isCurrentInstanceMaster();
   if (isMaster) {
+    logger.info('Cronjob running as master EB instance. Executing...');
     return taskToRun();
   }
   logger.info('Cronjob not running as master EB instance. Aborting.');
