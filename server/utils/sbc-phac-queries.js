@@ -1,6 +1,6 @@
 const dayjs = require('dayjs');
 
-const getUnsuccessfulSbcTransactions = async (collection, currentDate) => {
+const getArrivalUnsuccessfulSbcTransactions = async (collection, currentDate) => {
   const dateRange = [dayjs(currentDate).subtract(13, 'day'), dayjs(currentDate).subtract(2, 'day')]
     .map((d) => d.startOf('day').toDate());
   const query = [
@@ -19,4 +19,19 @@ const getUnsuccessfulSbcTransactions = async (collection, currentDate) => {
   return items;
 };
 
-module.exports = { getUnsuccessfulSbcTransactions };
+const getUnsuccessfulSbcTransactions = async (collection) => {
+  const query = { $and: [{ 'serviceBCTransactions.status': { $nin: ['success'] } }, { certified: true }] };
+  const items = await collection.find(query).toArray();
+  return items;
+};
+
+const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
+  { id },
+  { $push: { serviceBCTransactions: transaction }, $set: { updatedAt: new Date().toISOString() } },
+);
+
+module.exports = {
+  getArrivalUnsuccessfulSbcTransactions,
+  getUnsuccessfulSbcTransactions,
+  updateSbcTransactions,
+};
