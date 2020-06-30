@@ -1,0 +1,35 @@
+name: Deploy Lambda Function
+
+on:
+  push:
+    tags:
+      - lambda-prod
+
+env:
+  REGION: ca-central-1
+  LAMBDA_FUNC: phacToSbc
+
+jobs:
+  deploy:
+    name: Deploy to AWS Lambda
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Zip lambda folder and ship to AWS Lambda
+        working-directory: ./server/lambda
+        run: |
+          echo ${GITHUB_SHA} > commit_hash.txt
+          npm install
+          zip -r lambdaFunc.zip .
+          aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNC }} --zip-file fileb://${PWD}/lambdaFunc.zip | tail -n 0
+
+

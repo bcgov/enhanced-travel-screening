@@ -8,6 +8,7 @@ export IMAGE_TAG=${COMMIT_SHA}
 export PROJECT:=enhanced-travel-screening
 export ENV_PREFIX?=ets
 export ENV_SUFFIX?=dev
+export LAMBDA_FUNC?=phacToSbc
 export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
 .DEFAULT_GOAL:=print-status
 
@@ -35,6 +36,9 @@ run-local:
 run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
+
+run-local-lambda:
+	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
 
 close-local:
 	@echo "Stopping local app container"
@@ -94,3 +98,8 @@ tag-prod:
 	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to prod env"
 	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
 	@git push --force origin refs/tags/prod:refs/tags/prod
+
+tag-lambda-prod:
+	@echo "Deploying lambda function code to prod AWS Lambda"
+	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
+	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
