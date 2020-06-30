@@ -1,10 +1,17 @@
 const { CronJob } = require('cron');
+const AWS = require('aws-sdk');
 const logger = require('./logger.js');
 const { dbClient, collections } = require('./db');
 const { getUnsuccessfulSbcTransactions, updateSbcTransactions } = require('./utils/sbc-phac-queries');
 const { postServiceItem } = require('./utils/service-bc');
-const { sendPhacToSBC } = require('./utils/sbc-phac');
 const { runTaskOnMaster } = require('./utils/aws-services');
+
+const lambda = new AWS.Lambda({ region: process.env.AWS_REGION, apiVersion: '2015-03-31' });
+const phacToSbcParams = {
+  FunctionName: 'phacToSbc',
+  InvocationType: 'RequestResponse',
+  Payload: '{}',
+};
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
   const transaction = await postServiceItem(submission);
@@ -37,13 +44,11 @@ const etsToSbcJob = async () => {
 
 const phacToSbcJob = async () => {
   if (process.env.ENABLE_PHAC_CRONJOB !== 'true') return;
-  const currentDate = new Date().toISOString();
-  logger.info('phac to sbc cron job executed', currentDate);
   try {
-    const results = await sendPhacToSBC();
-    logger.info(`Sent ${results.length} PHAC record(s) to SBC`);
+    const data = await lambda.invoke(phacToSbcParams).promise();
+    logger.info(`Lambda function (phacToSbc) executed with response: ${data.Payload}`);
   } catch (error) {
-    logger.error(`Failed to send PHAC records to SBC ${error}`);
+    logger.error(`Failed to request Lambda function: ${error}`);
   }
 };
 
