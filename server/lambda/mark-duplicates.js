@@ -249,7 +249,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
     ];
     // Create keys for the entry
     phacPhones.forEach((item) => { if (item) { phacEntryKeys.push(item); } });
-    phacEntryKeys.push(phacEntry.derivedTravellerKey);
+    if (phacEntry.derivedTravellerKey != null) phacEntryKeys.push(phacEntry.derivedTravellerKey);
     phacEntryKeys.push(`${transformAddress(phacEntry.address_1)}${cleanString(phacEntry.date_of_birth)}`);
 
     // Iterate through the keys to compare against our collections
