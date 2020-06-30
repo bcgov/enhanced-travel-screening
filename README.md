@@ -30,6 +30,7 @@ This project includes the following features:
 1. Admin portal with login
 1. Secure lookup of submissions
 1. Tracking notes and determinations associated with submissions
+1. Integration with PHAC
 1. Integration with Service BC
 1. Real-time analytics
 
@@ -45,6 +46,12 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ## Development
 
+### Set up local .env
+
+You will need to create a local .env file in the project root directory. Take a look at /.config/.env.example for an example.
+
+This .env file is gitignored as it is only used for local development work. Note that locally there will always be a `TEST_DB` database created, so you will most likely want to choose a different value for your DB_NAME variable.
+
 ### Using Docker
 
 Make sure you have Docker and Docker-compose installed in your local environment. For instructions on how to install it, follow the links below:
@@ -52,40 +59,28 @@ Make sure you have Docker and Docker-compose installed in your local environment
 - https://docs.docker.com/compose/install/
 
 To set up and run database, backend (server), and frontend (client) applications:
-- Run `make local` within the root folder of the project
+- Run `make build-local` within the root folder of the project
+- Run `make run-local`
+- The first time you run the application locally, you'll also need to seed the database collections and users:
+  - Run `make local-db-seed`
 
 To tear down your environment:
 - Run `make close-local`
 
-To migrate from dynamoDB to MongoDB/DocumentDB database:
-- Run DynamoDB 
-  - `docker run -p 8000:8000 --name dynamoDB --network=enhanced-travel-screening_frontend amazon/dynamodb-local`
-  - `enhanced-travel-screening` represents the folder name of your project directory
-  - Keep in mind if you were not using
-- Run the migration script
-  - `make local-db-migration`
-
-To seed database, run:
-- `make local-db-seed`
-
 To run server tests:
 - Make sure containers are running
-  - `make local`
-- Shell into the server container by running
-  - `make local-server-workspace` 
-  - `npm test`
-- or by running
-  - `make local-server-tests`
+  - `make run-local`
+- Run `make local-server-tests`
+
+Additional commands for local development with Docker can be found in the [Makefile](makefile).
 
 ### Using npm
 
 From both the client and the server folders, run `npm i` to install dependencies.
 
 - Add a hostname alias to your environment
-- - Edit your `/etc/hosts` filename
-- - Add `127.0.0.1   server`
-
-
+  - Edit your `/etc/hosts` filename
+  - Add `127.0.0.1   server`
 - Run client: `npm start` run within client folder
 - Start Database: `make run-local-db`
 - Once the DB is running, `npm run db:seed` to seed the database
@@ -96,31 +91,35 @@ Communication from front end to back end is facilitated by [the proxy field](htt
 
 ### Front End Views
 
+The application frontend will be served locally at http://localhost:4000/
+
 ##### /form
  - allows a traveller to submit their traveller data and receive a confirmation number
+ - link to download a blank PDF version of the form
 
 ##### /confirmation/:formId
  - redirect here after form submission, display confirmation number and retrieve the health status and isolation plan status from the server's response to the form submission.
  - display statuses as friendly icons
- - button to download a PDF version of traveller submission
 
 ##### /login
 - allows an admin to login
 
 ##### /lookup
-- single input field to search for a form submission by confirmation number
+- search for a form submission by confirmation number or last name
 
 ##### /form/:formId
 - render a static version of a form submission
-- allow the admin to set a status for this submission: ["accepted", "support", "rejected"] and add notes
+- allow the admin to set a status for this submission and add notes
 
 ### API Routes
-
-- /login [POST] validate login creds, isssue token
+The API uses a proxy so does not need a port specified. All routes will be served at http://localhost/api/v1/
+- /version [GET] return app version information
+- /login [POST] validate login credentials, issue token
 - /form [POST] submit new form
-- /form/:id [POST] edits an existing form
-- /form/:id [GET] retrieves an existing form
-- In production: / [GET] serves the built client app
+- /form/:id [POST] edit an existing form
+- /form/:id [GET] retrieve an existing form
+- /phac/submission [POST] submit PHAC records
+- In production: / [GET] serve the built client app
 
 ## Database
 
@@ -130,18 +129,17 @@ You can find more information at:
 - https://aws.amazon.com/documentdb/
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html
 
-Keep in mind that DocumentDB does not support all MongoDB 3.6 features and APIs. Check the link below to explore the differences:
+Keep in mind that DocumentDB does not support all MongoDB 3.6 features and APIs. Check the links below to explore the differences:
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/mongo-apis.html
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/functional-differences.html
 
-For this project, there are 2 database clusters configured under private subnets inside a custom VPC. One to be used for development and staging environments and the other for the production environment.
+For this project, there are 2 database clusters configured under private subnets inside a custom VPC; one to be used for development and staging environments and the other for the production environment.
 
 For local development, a MongoDB 3.6 container is being used.
 
 ### Shelling into the Database [Development/Production]
 
 Because the database clusters are not exposed to the web, we need to create a SSH tunnel to bridge a connection with the database. To do that, we need to use a bastion host inside the same VPC but exposed to the web.
-
 
 ```bash
 ssh -i "~/.ssh/ets-bastion-host.pem" -L 27017:DOCUMENT_DB_CLUSTER_URL:27017 ec2-user@BASTION_HOST_URL -N
@@ -153,10 +151,24 @@ ssh -i "~/.ssh/ets-bastion-host.pem" -L 27017:DOCUMENT_DB_CLUSTER_URL:27017 ec2-
 - Keep in mind, our DocumentDB clusters have TLS enabled and will require a public key to connect. You can downloaded it [here](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem).
 
 
-You can find the cluster URLS, credentials, and certificates on the project folder on TeamPass.
+You can find the cluster URLS, credentials, and certificates in our AWS services including KMS.
 
 Find supplementary reference on the link below:
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
+
+### Lambda functions
+
+This application uses AWS Lambda functions to facilitate memory-intensive tasks. The server/lambda folder must contain everything that is necessary for the lambda function to work, since it will be shipped to AWS using its own .yml workflow.
+
+To run the lambda locally:
+- Prerequisite: Install and configure the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+- Navigate to the lambda folder `cd server/lambda` and run `npm i` to install dependencies
+- Back at the project root `cd ../..`, start the application with `make run-local`
+- Run `make run-local-lambda`
+- Wait for output.json to appear in the project root directory
+
+To trigger the workflow and deploy to AWS:
+- Run `make tag-lambda-prod`
 
 ## License
 

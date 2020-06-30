@@ -7,10 +7,10 @@ const dbConnection = async () => {
   let options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    ssl: server !== 'localhost',
-    sslValidate: server !== 'localhost',
+    ssl: server !== 'mongodb',
+    sslValidate: server !== 'mongodb',
   };
-  if (server !== 'localhost') {
+  if (server !== 'mongodb') {
     options = { ...options, sslCA: [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)] };
   }
   const connection = await MongoClient.connect(uri, options);
@@ -23,7 +23,28 @@ const collections = {
   PHAC: 'ets-phac',
 };
 
+/**
+ * Flatten nested collection
+ * 
+ * @param {*} a 
+ */
 const flatten = (a) => [].concat(...a);
+
+/**
+ * Add items into array
+ * 
+ * @param {*} array 
+ * @param {*} item 
+ */
+const merge = (array, item) => flatten([...array, item]).filter(
+  (value, index, self) => self.indexOf(value) === index,
+);
+
+/**
+ * Lowercase, remove diacritics, remove special characters and whitespace
+ * 
+ * @param {*} s 
+ */
 const cleanString = (s) => {
   if (!s) {
     return s;
@@ -34,10 +55,6 @@ const cleanString = (s) => {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\w]/gi, '');
 };
-
-const merge = (array, item) => flatten([...array, item]).filter(
-  (value, index, self) => self.indexOf(value) === index,
-);
 
 /**
  * Simplify addresses into a "clean" version for comparison
@@ -82,6 +99,13 @@ const transformAddress = (baseAddress) => {
     .join('-');
 };
 
+/**
+ * Compare two dates and return true if within a provided range (# of days)
+ * 
+ * @param {*} s1 
+ * @param {*} s2 
+ * @param {*} tolerateDays 
+ */
 const compareDates = (s1, s2, tolerateDays) => {
   if (!s1 || !s2) return false;
   const d1 = parseInt(cleanString(s1), 10);
@@ -163,24 +187,30 @@ const createEtsKeys = (ets) => {
  * @param db
  */
 const reportOnDuplicates = async (db) => {
+  console.log(`Loading collections from database`); // eslint-disable-line no-console
   const etsCollection = db.collection(collections.FORMS);
   const phacCollection = db.collection(collections.PHAC);
 
   const phac = await phacCollection.aggregate([
     {
-      $project: {
-        _id: 0,
-        covid_id: 1,
-        arrival_date: 1,
-        home_phone: 1,
-        mobile_phone: 1,
-        other_phone: 1,
-        derivedTravellerKey: 1,
-        address_1: 1,
-        date_of_birth: 1,
-      },
-    },
+      '$match': {
+        'serviceBCTransactions.status': { '$ne': 'success' }
+      }
+    }, {
+      '$project': {
+        '_id': 0, 
+        'covid_id': 1, 
+        'arrival_date': 1, 
+        'home_phone': 1, 
+        'mobile_phone': 1, 
+        'other_phone': 1, 
+        'derivedTravellerKey': 1, 
+        'address_1': 1, 
+        'date_of_birth': 1
+      }
+    }
   ]).toArray();
+  console.log(`Loaded ${phac.length} PHAC entries requiring processing`); // eslint-disable-line no-console
 
   const ets = await etsCollection.aggregate([
     {
@@ -275,9 +305,8 @@ const reportOnDuplicates = async (db) => {
           etsDates.push(ets.find((item) => item.id === etsCode).arrivalDate);
         }
 
-        // If not within a date of any ETS match, treat as unique
+        // If not within a date range of any ETS match, treat as unique
         const insideRange = etsDates.find((item) => compareDates(phacArrivalDate, item, 7));
-
         if (insideRange) {
           if (duplicates[covidId]) {
             duplicates[covidId] = merge(duplicates[covidId], etsKeys[phacKey]);
@@ -288,21 +317,30 @@ const reportOnDuplicates = async (db) => {
         }
       }
     }
+
+    // If we found a duplicate in either collection, update the record
+    if (duplicates[covidId]) {
+      await phacCollection.updateOne(
+         { covid_id: covidId },
+         { $push: { 
+            serviceBCTransactions: {
+              status: 'success',
+              duplicateIds: duplicates[covidId],
+              processedAt: new Date().toISOString(),
+          },
+        },
+        $set: { updatedAt: new Date().toISOString() }},
+     );
+    }
   }
 
-  /* eslint-disable no-console */
-  // console.log(`${['PHAC_COVID_ID', 'MATCHES'].join(', ')}`);
-  // for (const [key, value] of Object.entries(duplicates)) {
-  //     console.log(key, value.join(', '));
-  // }
+  // Report summary of results
+  console.log(`Found ${Object.entries(duplicates).length} total duplicates`); // eslint-disable-line no-console
+  console.log(`--- ${internalPhacDuplicateCount}
+    duplicates or groups within the PHAC collection`); // eslint-disable-line no-console
+  console.log(`--- ${phacToEtsDuplicateCount}
+    duplicates or groups of PHAC records found in the ETS collection`); // eslint-disable-line no-console
 
-  // console.log(`Found ${Object.entries(duplicates).length} total duplicates`);
-  // console.log(`--- ${internalPhacDuplicateCount}
-  //   duplicates or groups within the PHAC collection`);
-  // console.log(`--- ${phacToEtsDuplicateCount}
-  //   duplicates or groups of PHAC records found in the ETS collection`);
-
-  /* eslint-disable no-console */
   return {
     totalDuplicates: Object.entries(duplicates).length,
     internalPhacDuplicateCount,

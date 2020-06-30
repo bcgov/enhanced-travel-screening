@@ -34,6 +34,10 @@ services:
         VERSION: ${COMMIT_SHA}
     environment:
       - DB_SERVER=${DB_SERVER}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
       - VERSION=${COMMIT_SHA}
     expose:
       - "80"
@@ -83,9 +87,9 @@ services:
     image: mongo:3.6-xenial
     restart: always
     expose:
-      - "27017"
+      - ${DB_PORT}
     ports:
-        - "27017:27017"
+        - ${DB_PORT}:${DB_PORT}
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
