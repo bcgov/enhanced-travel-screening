@@ -1,6 +1,8 @@
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 
+/* eslint-disable no-console */
+
 const dbConnection = async () => {
   const server = process.env.DB_SERVER;
   const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${server}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -25,16 +27,16 @@ const collections = {
 
 /**
  * Flatten nested collection
- * 
- * @param {*} a 
+ *
+ * @param {*} a
  */
 const flatten = (a) => [].concat(...a);
 
 /**
  * Add items into array
- * 
- * @param {*} array 
- * @param {*} item 
+ *
+ * @param {*} array
+ * @param {*} item
  */
 const merge = (array, item) => flatten([...array, item]).filter(
   (value, index, self) => self.indexOf(value) === index,
@@ -42,8 +44,8 @@ const merge = (array, item) => flatten([...array, item]).filter(
 
 /**
  * Lowercase, remove diacritics, remove special characters and whitespace
- * 
- * @param {*} s 
+ *
+ * @param {*} s
  */
 const cleanString = (s) => {
   if (!s) {
@@ -101,10 +103,10 @@ const transformAddress = (baseAddress) => {
 
 /**
  * Compare two dates and return true if within a provided range (# of days)
- * 
- * @param {*} s1 
- * @param {*} s2 
- * @param {*} tolerateDays 
+ *
+ * @param {*} s1
+ * @param {*} s2
+ * @param {*} tolerateDays
  */
 const compareDates = (s1, s2, tolerateDays) => {
   if (!s1 || !s2) return false;
@@ -187,30 +189,30 @@ const createEtsKeys = (ets) => {
  * @param db
  */
 const reportOnDuplicates = async (db) => {
-  console.log(`Loading collections from database`); // eslint-disable-line no-console
+  console.log('Loading collections from database');
   const etsCollection = db.collection(collections.FORMS);
   const phacCollection = db.collection(collections.PHAC);
 
   const phac = await phacCollection.aggregate([
     {
-      '$match': {
-        'serviceBCTransactions.status': { '$ne': 'success' }
-      }
+      $match: {
+        'serviceBCTransactions.status': { $ne: 'success' },
+      },
     }, {
-      '$project': {
-        '_id': 0, 
-        'covid_id': 1, 
-        'arrival_date': 1, 
-        'home_phone': 1, 
-        'mobile_phone': 1, 
-        'other_phone': 1, 
-        'derivedTravellerKey': 1, 
-        'address_1': 1, 
-        'date_of_birth': 1
-      }
-    }
+      $project: {
+        _id: 0,
+        covid_id: 1,
+        arrival_date: 1,
+        home_phone: 1,
+        mobile_phone: 1,
+        other_phone: 1,
+        derivedTravellerKey: 1,
+        address_1: 1,
+        date_of_birth: 1,
+      },
+    },
   ]).toArray();
-  console.log(`Loaded ${phac.length} PHAC entries requiring processing`); // eslint-disable-line no-console
+  console.log(`Loaded ${phac.length} PHAC entries requiring processing`);
 
   const ets = await etsCollection.aggregate([
     {
@@ -320,26 +322,26 @@ const reportOnDuplicates = async (db) => {
 
     // If we found a duplicate in either collection, update the record
     if (duplicates[covidId]) {
-      await phacCollection.updateOne(
-         { covid_id: covidId },
-         { $push: { 
+      await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
+        { covid_id: covidId },
+        {
+          $push: {
             serviceBCTransactions: {
               status: 'success',
               duplicateIds: duplicates[covidId],
               processedAt: new Date().toISOString(),
+            },
           },
+          $set: { updatedAt: new Date().toISOString() },
         },
-        $set: { updatedAt: new Date().toISOString() }},
-     );
+      );
     }
   }
 
   // Report summary of results
-  console.log(`Found ${Object.entries(duplicates).length} total duplicates`); // eslint-disable-line no-console
-  console.log(`--- ${internalPhacDuplicateCount}
-    duplicates or groups within the PHAC collection`); // eslint-disable-line no-console
-  console.log(`--- ${phacToEtsDuplicateCount}
-    duplicates or groups of PHAC records found in the ETS collection`); // eslint-disable-line no-console
+  console.log(`Found ${Object.entries(duplicates).length} total duplicates`);
+  console.log(`--- ${internalPhacDuplicateCount} duplicates or groups within the PHAC collection`);
+  console.log(`--- ${phacToEtsDuplicateCount} duplicates or groups of PHAC records found in the ETS collection`);
 
   return {
     totalDuplicates: Object.entries(duplicates).length,
@@ -348,8 +350,7 @@ const reportOnDuplicates = async (db) => {
   };
 };
 
-/* eslint-disable no-unused-vars */
-exports.handler = async (event, context) => {
+exports.handler = async () => {
   const { connection, db } = await dbConnection();
   let result;
   try {
