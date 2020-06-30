@@ -59,17 +59,16 @@ services:
   lambda:
     container_name: ${PROJECT}-lambda
     image: lambci/lambda:nodejs12.x
+    expose:
+      - "9001"
+    ports:
+      - "9001:9001"
     environment:
       - DB_SERVER=${DB_SERVER}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-    expose:
-      - "9001"
-    ports:
-      - "9001:9001"
-    environment:
       - AWS_DEFAULT_REGION=ca-central-1
       - DOCKER_LAMBDA_WATCH=1
       - DOCKER_LAMBDA_STAY_OPEN=1
