@@ -10,7 +10,7 @@ const dbConnectionOptions = (server) => ({
   useUnifiedTopology: true,
   ssl: server !== 'mongodb',
   sslValidate: server !== 'mongodb',
-  sslCA: server !== 'mongodb' ? undefined : [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)],
+  sslCA: server === 'mongodb' ? undefined : [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)],
 });
 
 const dbConnectionAndCollections = async (collections) => {
