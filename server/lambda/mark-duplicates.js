@@ -295,19 +295,19 @@ const markDuplicates = async (etsCollection, phacCollection) => {
 
     // If we found a duplicate in either collection, update the record
     if (duplicates[covidId]) {
-      await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
-        { covid_id: covidId },
-        {
-          $push: {
-            serviceBCTransactions: {
-              status: 'success',
-              duplicateIds: duplicates[covidId],
-              processedAt: new Date().toISOString(),
-            },
-          },
-          $set: { updatedAt: new Date().toISOString() },
-        },
-      );
+      // await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
+      //   { covid_id: covidId },
+      //   {
+      //     $push: {
+      //       serviceBCTransactions: {
+      //         status: 'success',
+      //         duplicateIds: duplicates[covidId],
+      //         processedAt: new Date().toISOString(),
+      //       },
+      //     },
+      //     $set: { updatedAt: new Date().toISOString() },
+      //   },
+      // );
     }
   }
 
