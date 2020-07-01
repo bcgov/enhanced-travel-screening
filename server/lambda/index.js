@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 const markDuplicates = require('./mark-duplicates');
-const sendPhacToSBC = require('./sbc-phac');
+// const sendPhacToSBC = require('./sbc-phac');
 
 /* eslint-disable no-console */
 
@@ -26,8 +26,8 @@ exports.handler = async () => {
   try {
     const duplicates = await markDuplicates(etsCollection, phacCollection);
     console.log(duplicates);
-    const transactions = await sendPhacToSBC(phacCollection);
-    console.log(transactions);
+    // const transactions = await sendPhacToSBC(phacCollection);
+    // console.log(transactions);
   } catch (error) {
     console.error(`Failed to mark duplicates or post to SBC ${error}`);
   } finally {
