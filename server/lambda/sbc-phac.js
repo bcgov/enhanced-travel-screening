@@ -85,7 +85,7 @@ const sendPhacToSBC = async (phacCollection) => {
   const sbcTransactionIterator = makeSbcTransactionIterator(phacCollection, data);
   const pool = new PromisePool(sbcTransactionIterator, 10);
   await pool.start();
-  return data;
+  return `Attempted to send ${data.length} items to SBC`;
 };
 
 module.exports = sendPhacToSBC;
