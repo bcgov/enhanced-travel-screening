@@ -1,15 +1,13 @@
 const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
-const { initCronJobs } = require('./cron-job');
 
 const port = 80;
 
 /** @type {http.Server|undefined} */
 let server;
 
-// shut down server
-async function shutdown() {
+async function shutdown() { // Close server and DB connection
   await dbClient.disconnect();
 
   if (server) {
@@ -23,23 +21,19 @@ async function shutdown() {
   }
 }
 
-// quit on ctrl-c when running docker in terminal
-process.on('SIGINT', () => {
+process.on('SIGINT', () => { // Quit on ctrl-c when running docker in terminal
   logger.info('Got SIGINT (aka ctrl-c in docker). Graceful shutdown ', new Date().toISOString());
   shutdown();
 });
 
-// quit properly on docker stop
-process.on('SIGTERM', () => {
+process.on('SIGTERM', () => { // Quit properly on docker stop
   logger.info('Got SIGTERM (docker container stop). Graceful shutdown ', new Date().toISOString());
   shutdown();
 });
 
-// Start server
-(async () => {
+(async () => { // Start server
   try {
     await dbClient.connect();
-    initCronJobs();
     server = app.listen(port, async () => {
       logger.info(`Listening on port ${port}`);
     });
@@ -48,9 +42,5 @@ process.on('SIGTERM', () => {
     shutdown();
   }
 })();
-
-//
-// need above in docker container to properly exit
-//
 
 module.exports = server;
