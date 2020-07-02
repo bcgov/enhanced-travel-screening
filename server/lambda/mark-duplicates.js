@@ -134,7 +134,16 @@ const markDuplicates = async (etsCollection, phacCollection) => {
         'serviceBCTransactions.status': { $ne: 'success' },
       },
     }, {
-      $project: { _id: 0 },
+      $project: {
+        _id: 0,
+        covid_id: 1,
+        arrival_date: 1,
+        home_phone: 1,
+        mobile_phone: 1,
+        other_phone: 1,
+        derivedTravellerKey: 1,
+        address_1: 1,
+      },
     },
   ]).toArray();
   console.log(`Loaded ${phac.length} PHAC entries requiring processing`);
@@ -147,7 +156,15 @@ const markDuplicates = async (etsCollection, phacCollection) => {
       },
     },
     {
-      $project: { _id: 0 },
+      $project: {
+        _id: 0,
+        telephone: 1,
+        id: 1,
+        derivedTravellerKey: 1,
+        address: 1,
+        arrivalDate: 1,
+        isoAddress: 1,
+      },
     },
   ]).toArray();
 
