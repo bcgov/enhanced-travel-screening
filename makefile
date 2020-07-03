@@ -37,11 +37,11 @@ run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 
-run-e2e-test:
-	@npm test --prefix server
-
-run-local-lambda:
+run-local-lambda-phacToSbc:
 	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
+
+run-local-lambda-etsToSbc:
+	@aws lambda invoke --endpoint http://localhost:9002 --no-sign-request --function-name index.handler --payload '{}' output.json
 
 close-local:
 	@echo "Stopping local app container"
@@ -102,7 +102,12 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
-tag-lambda-prod:
-	@echo "Deploying lambda function code to prod AWS Lambda"
+tag-phactosbc-lambda-prod:
+	@echo "Deploying phacToSbc lambda function code to prod AWS Lambda"
 	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
-	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
+	@git push --force origin refs/tags/phactosbc-lambda-prod:refs/tags/phactosbc-lambda-prod
+
+tag-etstosbc-lambda-prod:
+	@echo "Deploying etsToSbc lambda function code to prod AWS Lambda"
+	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
+	@git push --force origin refs/tags/etstosbc-lambda-prod:refs/tags/etstosbc-lambda-prod

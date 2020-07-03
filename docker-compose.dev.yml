@@ -41,10 +41,11 @@ services:
     depends_on:
       - mongodb
     networks:
-      - ets-dev
-
-  lambda:
-    container_name: ${PROJECT}-lambda
+      - frontend
+  
+  ### Lambda Function #############################
+  lambda-phacToSbc:
+    container_name: ${PROJECT}-lambda-phacToSbc
     image: lambci/lambda:nodejs12.x
     ports:
       - "9001:9001"
@@ -60,7 +61,32 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./server/lambda:/var/task:ro,delegated
+      - ./server/lambda/phacToSbc:/var/task:ro,delegated
+    command: index.handler
+    networks:
+      - frontend
+
+  ### Lambda Function #############################
+  lambda-etsToSbc:
+    container_name: ${PROJECT}-lambda-etsToSbc
+    image: lambci/lambda:nodejs12.x
+    expose:
+      - "9002"
+    ports:
+      - "9002:9001"
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - AWS_DEFAULT_REGION=ca-central-1
+      - DOCKER_LAMBDA_WATCH=1
+      - DOCKER_LAMBDA_STAY_OPEN=1
+    depends_on:
+      - mongodb
+    volumes:
+      - ./server/lambda/etsToSbc:/var/task:ro,delegated
     command: index.handler
     networks:
       - ets-dev

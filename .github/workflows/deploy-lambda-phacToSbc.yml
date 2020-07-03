@@ -3,7 +3,7 @@ name: Deploy Lambda Function
 on:
   push:
     tags:
-      - lambda-prod
+      - phactosbc-lambda-prod
 
 env:
   REGION: ca-central-1
@@ -25,7 +25,7 @@ jobs:
           aws-region: ${{ env.REGION }}
 
       - name: Zip lambda folder and ship to AWS Lambda
-        working-directory: ./server/lambda
+        working-directory: ./server/lambda/phacToSbc
         run: |
           echo ${GITHUB_SHA} > commit_hash.txt
           npm install
