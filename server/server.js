@@ -77,12 +77,7 @@ app.post(`${apiBaseUrl}/form`,
       ...formItem,
       // Following NoSQL recommendation, in this case, we want to store
       // BC Services transactional data on the form itself
-      serviceBCTransactions: [
-        {
-          ...serviceResponse,
-          processedAt: new Date().toISOString(),
-        },
-      ],
+      serviceBCTransactions: [serviceResponse],
     });
 
     return res.json({ id, isolationPlanStatus });
