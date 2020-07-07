@@ -20,14 +20,14 @@ app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Remove empty strings (DynamoDB doesn't accept)
+// Remove empty strings
 const scrubObject = (obj) => {
   const scrubbed = obj;
   Object.keys(scrubbed).forEach((key) => {
     if (typeof scrubbed[key] === 'object' && scrubbed[key] !== null) {
       scrubbed[key] = scrubObject(scrubbed[key]); // Nested object
     } else if (scrubbed[key] === '') {
-      scrubbed[key] = null; // Null instead of empty for DynamoDB
+      scrubbed[key] = null;
     }
   });
   return scrubbed;

@@ -6,8 +6,6 @@
   "license": "ISC",
   "scripts": {
     "db:seed": "node db/scripts/seed.js",
-    "db:migration": "node db/scripts/migration.js",
-    "db:cleanup-old": "node db/scripts/cleanup-old.js",
     "watch": "NODE_ENV=development nodemon main.js",
     "start": "NODE_ENV=production node main.js",
     "test": "NODE_ENV=test jest --runInBand"
