@@ -1,16 +1,15 @@
-FROM node:12
+FROM node:12-alpine
 
-MAINTAINER FreshWorks <web@freshworks.io>
+# Allow node modules to be called directly
+ENV PATH $PATH:/client/node_modules/.bin
 
-ENV PATH $PATH:/usr/src/app/node_modules/.bin
-
-WORKDIR /usr/src/app
-
+# Build client
+RUN apk add --no-cache git python g++ make
+WORKDIR /client
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+RUN npm set progress=false && npm ci --no-cache
 
+# Run dev client
 EXPOSE 4000
-
 CMD [ "npm", "run", "start" ]

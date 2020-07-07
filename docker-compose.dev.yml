@@ -1,31 +1,24 @@
 version: '3.7'
 
 services:
-  ### Frontend Application #############################
   client:
-    image: ${PROJECT}_client:latest
+    image: ${PROJECT}-client
     container_name: ${PROJECT}-client
     build:
       context: ./client
       dockerfile: Dockerfile.dev
-    expose:
-      - "4000"
     ports:
       - "4000:4000"
     volumes:
-      # Binds the application folder from the host inside the container for fast changes
-      - ./client:/usr/src/app
-      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
-      # from inside the container to be used instead
-      - /usr/src/app/node_modules
+      - ./client:/client # Use client dir in host for hot reloading
+      - /client/node_modules # Use node_modules in container
     depends_on:
       - server
     networks:
-      - frontend
+      - ets-dev
 
-  ### Backend Application #############################
   server:
-    image: ${PROJECT}-server:latest
+    image: ${PROJECT}-server
     container_name: ${PROJECT}-server
     build:
       context: ./server
@@ -39,28 +32,20 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - VERSION=${COMMIT_SHA}
-    expose:
-      - "80"
     ports:
       - "80:80"
       - "9229:9229"
     volumes:
-      # Binds the application folder from the host inside the container for fast changes
-      - ./server:/usr/src/app
-      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
-      # from inside the container to be used instead
-      - /usr/src/app/node_modules
+      - ./server:/server # Use server dir in host for hot reloading
+      - /server/node_modules # Use node_modules in container
     depends_on:
       - mongodb
     networks:
-      - frontend
-  
-  ### Lambda Function #############################
+      - ets-dev
+
   lambda:
     container_name: ${PROJECT}-lambda
     image: lambci/lambda:nodejs12.x
-    expose:
-      - "9001"
     ports:
       - "9001:9001"
     environment:
@@ -78,15 +63,12 @@ services:
       - ./server/lambda:/var/task:ro,delegated
     command: index.handler
     networks:
-      - frontend
+      - ets-dev
 
-  ### MongoDB #############################
   mongodb:
     container_name: ${PROJECT}-mongodb
     image: mongo:3.6-xenial
     restart: always
-    expose:
-      - ${DB_PORT}
     ports:
         - ${DB_PORT}:${DB_PORT}
     environment:
@@ -98,10 +80,10 @@ services:
       - ets-mongo-data-configdb:/data/configdb
       - ets-mongo-data-db:/data/db
     networks:
-      - frontend
+      - ets-dev
 
 networks:
-  frontend:
+  ets-dev:
     driver: "bridge"
 
 volumes:
