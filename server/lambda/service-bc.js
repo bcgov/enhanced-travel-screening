@@ -48,11 +48,13 @@ const postServiceItem = async (item) => {
     return {
       status: 'success',
       serviceBCId: response.data.id,
+      processedAt: new Date().toISOString(),
     };
   } catch (error) {
     return {
       status: 'fail',
       errorDetails: JSON.stringify(error),
+      processedAt: new Date().toISOString(),
     };
   }
 };
