@@ -14,5 +14,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: NPM Test
-        run: npm test --prefix server
+        working-directory: ./server
+        run: |
+          npm install
+          npm test
 
