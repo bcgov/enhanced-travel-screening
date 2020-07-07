@@ -37,6 +37,9 @@ run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
 
+run-e2e-test:
+	@npm test --prefix server
+
 run-local-lambda:
 	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
 

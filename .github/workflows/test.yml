@@ -1,0 +1,18 @@
+name: Test application (e2e)
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Run NPM Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: NPM Test
+        run: make run-e2e-test
+
