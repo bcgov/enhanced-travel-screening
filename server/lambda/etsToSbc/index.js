@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
-const sendEtsToSBC = require('./sbc-phac');
+const sendEtsToSBC = require('./sbc-ets');
 
 /* eslint-disable no-console */
 
