@@ -23,6 +23,9 @@ jobs:
       - name: Create tunnel to the dev database
         run: ssh -i ~/.ssh/ets-bastion-host.pem -L ${{ secrets.DB_PORT }}:${{ secrets.DB_REMOTE_SERVER }}:${{ secrets.DB_PORT }} ec2-user@${{ secrets.ETS_BASTION_HOST }} -N &
 
+      - name: Check tunnel connection
+        run: netstat -a | grep -i ${{ secrets.DB_PORT }}
+
       - name: NPM Test
         working-directory: ./server
         run: |
