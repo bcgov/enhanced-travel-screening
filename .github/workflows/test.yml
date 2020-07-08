@@ -28,6 +28,14 @@ jobs:
 
       - name: NPM Test
         working-directory: ./server
+        env:
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_AWS_TLS_ENABLED: ${{ secrets.DB_AWS_TLS_ENABLED }}
+          DB_AWS_TLS_DISABLE_CERTIFICATE: ${{ secrets.DB_AWS_TLS_DISABLE_CERTIFICATE }}
         run: |
           npm ci
           npm test
