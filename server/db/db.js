@@ -40,6 +40,7 @@ class DBClient {
       dbPassword: process.env.DB_PASSWORD || 'development',
       dbName: process.env.DB_NAME || 'development',
       dbTLSEnabled: process.env.DB_AWS_TLS_ENABLED === 'true',
+      dbTLSDisableCert: process.env.DB_AWS_TLS_DISABLE_CERTIFICATE === 'true',
       useReplicaSet: process.env.DB_USE_REPLICA_SET === 'true',
     };
   }
@@ -69,6 +70,7 @@ class DBClient {
       dbName,
       dbTLSEnabled,
       useReplicaSet,
+      dbTLSDisableCert,
     } = this.constructor.config();
 
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
@@ -83,9 +85,9 @@ class DBClient {
 
     if (dbTLSEnabled) {
       options.ssl = true;
-      options.sslValidate = true;
+      options.sslValidate = !dbTLSDisableCert;
       // Specify the Amazon DocumentDB cert
-      options.sslCA = [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)];
+      options.sslCA = dbTLSDisableCert ? undefined : [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)];
     }
 
     // Create a MongoDB client opening a connection to Amazon DocumentDB as a replica set,

@@ -12,12 +12,16 @@ async function seedDatabase() {
 
   // Create collection indexes if needed
   const results = [];
-  schema.forEach((schemaItem) => {
+  for (const schemaItem of schema) { // eslint-disable-line no-restricted-syntax
     const schemaItemCollection = dbClient.db.collection(schemaItem.collection);
-    schemaItem.indexes.forEach((index) => {
-      results.push(schemaItemCollection.createIndex({ [index.key]: 1 }, index.options));
-    });
-  });
+    for (const index of schemaItem.indexes) { // eslint-disable-line no-restricted-syntax
+      // eslint-disable-next-line no-await-in-loop
+      const indexExists = await schemaItemCollection.indexExists(index.key);
+      if (!indexExists) {
+        results.push(schemaItemCollection.createIndex({ [index.key]: 1 }, index.options));
+      }
+    }
+  }
 
   await Promise.all(results); // Wait for all synchronous operations to pass/fail
 
