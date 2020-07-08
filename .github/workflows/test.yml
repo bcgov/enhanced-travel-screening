@@ -21,7 +21,7 @@ jobs:
           known_hosts: ${{ secrets.ETS_BASTION_KNOWN_HOSTS }}
 
       - name: Create tunnel to the dev database
-        run: ssh -i ~/.ssh/ets-bastion-host.pem -L ${{ secrets.DB_PORT }}:${{ secrets.DB_REMOTE_SERVER }}:${{ secrets.DB_PORT }} ec2-user@${{ secrets.ETS_BASTION_HOST }} -N &
+        run: ssh -i ~/.ssh/ets-bastion-host.pem -L ${{ secrets.DB_PORT }}:${{ secrets.DB_REMOTE_SERVER }}:${{ secrets.DB_PORT }} ec2-user@${{ secrets.ETS_BASTION_HOST }} -T &
 
       - name: NPM Test
         working-directory: ./server
