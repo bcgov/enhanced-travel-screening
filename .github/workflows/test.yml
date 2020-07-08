@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Create SSH Key
+      - name: Create SSH key
         run: echo ${{ secrets.ETS_BASTION_HOST_KEY }} > ets-bastion-host.pem
 
       - name: SSH to the dev database
