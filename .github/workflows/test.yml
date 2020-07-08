@@ -13,6 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: SSH to the dev database
+        run: |
+          echo ${{ secrets.ETS_BASTION_HOST_KEY }} > ets-bastion-host.pem
+          ssh -i ets-bastion-host.pem -L ${{ secrets.DB_PORT }}:${{ secrets.DB_REMOTE_SERVER }} ec2-user@${{ secrets.ETS_BASTION_HOST }} -N
+
       - name: NPM Test
         working-directory: ./server
         run: |
