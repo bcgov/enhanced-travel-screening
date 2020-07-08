@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Run NPM Test
+    name: Run NPM Test (e2e)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
