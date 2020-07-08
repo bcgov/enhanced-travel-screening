@@ -1,20 +1,20 @@
-FROM node:12
+FROM node:12-alpine
 
 # Static env vars
 ARG VERSION
 ENV VERSION $VERSION
 
-MAINTAINER FreshWorks <web@freshworks.io>
-
+# Allow node modules to be called directly
 ENV PATH $PATH:/usr/src/app/node_modules/.bin
 
-WORKDIR /usr/src/app
+# Configure server
+RUN apk add --no-cache git
+WORKDIR /server
 
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+RUN npm set progress=false && npm ci --no-cache
 
+# Run dev server
 EXPOSE 80
-
 CMD [ "npm", "run", "watch" ]
