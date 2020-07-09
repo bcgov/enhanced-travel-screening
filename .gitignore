@@ -2,10 +2,7 @@
 enhanced-travel-screening*.zip
 
 # Dependencies
-client/node_modules
-server/node_modules
-server/lambda/layer/common/nodejs/node_modules/*
-!server/lambda/layer/common/nodejs/node_modules/custom_modules/
+node_modules
 
 # Client
 client/.pnp
