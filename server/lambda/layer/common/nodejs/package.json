@@ -6,6 +6,7 @@
     "dayjs": "1.8.28",
     "es6-promise-pool": "2.5.0",
     "mongodb": "3.5.6",
-    "node-cache": "5.1.1"
+    "node-cache": "5.1.1",
+    "custom_modules": "file:./custom_modules"
   }
 }
