@@ -38,7 +38,7 @@ jobs:
           echo ${GITHUB_SHA} > commit_hash.txt
           zip -r lambdaFunc.zip .
           aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNC }} --zip-file fileb://${PWD}/lambdaFunc.zip | tail -n 0
-          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC }} --layers $(LAYER_ARN)
+          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC }} --layers ${LAYER_ARN}
 
 
 
