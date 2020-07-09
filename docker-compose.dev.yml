@@ -61,6 +61,7 @@ services:
     depends_on:
       - mongodb
     volumes:
+      - ./server/lambda/layer/common:/opt:ro,delegated
       - ./server/lambda/phacToSbc:/var/task:ro,delegated
     command: index.handler
     networks:
@@ -86,6 +87,7 @@ services:
     depends_on:
       - mongodb
     volumes:
+      - ./server/lambda/layer/common:/opt:ro,delegated
       - ./server/lambda/etsToSbc:/var/task:ro,delegated
     command: index.handler
     networks:

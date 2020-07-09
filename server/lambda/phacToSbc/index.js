@@ -1,7 +1,9 @@
-const fs = require('fs');
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 const { MongoClient } = require('mongodb');
+const { sendPhacToSBC } = require('custom_modules/sbc-phac-ets');
+const readAwsRdsCA = require('custom_modules/certificates/read-aws-rds');
 const markDuplicates = require('./mark-duplicates');
-const sendPhacToSBC = require('./sbc-phac');
 
 /* eslint-disable no-console */
 
@@ -10,7 +12,7 @@ const dbConnectionOptions = (server) => ({
   useUnifiedTopology: true,
   ssl: server !== 'mongodb',
   sslValidate: server !== 'mongodb',
-  sslCA: server === 'mongodb' ? undefined : [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)],
+  sslCA: server === 'mongodb' ? undefined : [readAwsRdsCA()],
 });
 
 const dbConnectionAndCollections = async (collections) => {

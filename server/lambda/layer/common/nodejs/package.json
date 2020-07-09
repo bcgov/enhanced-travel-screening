@@ -1,5 +1,5 @@
 {
-  "name": "ets-lambda",
+  "name": "ets-layer",
   "version": "1.0.0",
   "dependencies": {
     "axios": "0.19.2",
