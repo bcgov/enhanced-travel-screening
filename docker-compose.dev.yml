@@ -41,7 +41,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - frontend
+      - ets-dev
   
   ### Lambda Function #############################
   lambda-phacToSbc:
