@@ -1,9 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-/* eslint-disable import/no-absolute-path */
-const { MongoClient } = require('/opt/nodejs/node_modules/mongodb');
-const { sendEtsToSBC } = require('/opt/nodejs/node_modules/custom_modules/sbc-phac-ets');
-const readAwsRdsCA = require('/opt/nodejs/node_modules/custom_modules/certificates/read-aws-rds');
+const { MongoClient } = require('mongodb');
+const { sendEtsToSBC } = require('custom_modules/sbc-phac-ets');
+const readAwsRdsCA = require('custom_modules/certificates/read-aws-rds');
 
 
 /* eslint-disable no-console */
