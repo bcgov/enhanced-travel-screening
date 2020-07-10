@@ -1,8 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-const { MongoClient } = require('mongodb');
-const { sendPhacToSBC } = require('custom_modules/sbc-phac-ets');
-const readAwsRdsCA = require('custom_modules/certificates/read-aws-rds');
+/* eslint-disable import/no-absolute-path */
+const { MongoClient } = require('/opt/nodejs/node_modules/mongodb');
+const { sendPhacToSBC } = require('/opt/nodejs/node_modules/custom_modules/sbc-phac-ets');
+const readAwsRdsCA = require('/opt/nodejs/node_modules/custom_modules/certificates/read-aws-rds');
 const markDuplicates = require('./mark-duplicates');
 
 /* eslint-disable no-console */
