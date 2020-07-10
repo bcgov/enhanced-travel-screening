@@ -65,7 +65,7 @@ services:
       - ./server/lambda/phacToSbc:/var/task:ro,delegated
     command: index.handler
     networks:
-      - frontend
+      - ets-dev
 
   ### Lambda Function #############################
   lambda-etsToSbc:
