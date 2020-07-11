@@ -43,7 +43,6 @@ services:
     networks:
       - ets-dev
   
-  ### Lambda Function #############################
   lambda-phacToSbc:
     container_name: ${PROJECT}-lambda-phacToSbc
     image: lambci/lambda:nodejs12.x
@@ -67,7 +66,6 @@ services:
     networks:
       - ets-dev
 
-  ### Lambda Function #############################
   lambda-etsToSbc:
     container_name: ${PROJECT}-lambda-etsToSbc
     image: lambci/lambda:nodejs12.x
