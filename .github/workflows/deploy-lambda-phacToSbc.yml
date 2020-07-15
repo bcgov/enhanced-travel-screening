@@ -3,7 +3,7 @@ name: Deploy Lambda Function
 on:
   push:
     tags:
-      - phactosbc-lambda-prod
+      - phactsbc-lambda-prod
 
 env:
   REGION: ca-central-1

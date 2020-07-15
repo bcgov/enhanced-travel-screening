@@ -105,10 +105,10 @@ tag-prod:
 	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
-tag-phactosbc-lambda-prod:
+tag-phactsbc-lambda-prod:
 	@echo "Deploying phacToSbc lambda function code to prod AWS Lambda"
-	@git tag -fa phactosbc-lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
-	@git push --force origin refs/tags/phactosbc-lambda-prod:refs/tags/phactosbc-lambda-prod
+	@git tag -fa phactsbc-lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
+	@git push --force origin refs/tags/phactsbc-lambda-prod:refs/tags/phactsbc-lambda-prod
 
 tag-etstosbc-lambda-prod:
 	@echo "Deploying etsToSbc lambda function code to prod AWS Lambda"
