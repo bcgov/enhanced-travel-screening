@@ -39,7 +39,7 @@ jobs:
           echo ${GITHUB_SHA} > commit_hash.txt
           zip -r lambdaFunc.zip .
           aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNC1 }} --zip-file fileb://${PWD}/lambdaFunc.zip | tail -n 0
-          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC1 }} --layers ${LAYER_ARN}
+          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC1 }} --layers ${LAYER_ARN} | tail -n 0
 
       - name: Zip lambda function 2 folder and ship to AWS Lambda
         working-directory: ./server/lambda/${{ env.LAMBDA_FUNC2 }}
@@ -47,7 +47,7 @@ jobs:
           echo ${GITHUB_SHA} > commit_hash.txt
           zip -r lambdaFunc.zip .
           aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNC2 }} --zip-file fileb://${PWD}/lambdaFunc.zip | tail -n 0
-          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC2 }} --layers ${LAYER_ARN}
+          aws lambda update-function-configuration --function-name ${{ env.LAMBDA_FUNC2 }} --layers ${LAYER_ARN} | tail -n 0
 
 
 
