@@ -158,16 +158,16 @@ Find supplementary reference on the link below:
 
 ### Lambda functions
 
-This application uses AWS Lambda functions to facilitate memory-intensive tasks. The server/lambda folder must contain everything that is necessary for the lambda function to work, since it will be shipped to AWS using its own .yml workflow.
+This application uses AWS Lambda functions to facilitate memory-intensive tasks. The server/lambda folder must contain everything that is necessary for the lambda functions to work, since it will be shipped to AWS using its own .yml workflow. There is also a common lambda layer (server/lambda/layer) being shared across lambda functions.
 
-To run the lambda locally:
+To run a lambda locally:
 - Prerequisite: Install and configure the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-- Navigate to the lambda folder `cd server/lambda` and run `npm i` to install dependencies
-- Back at the project root `cd ../..`, start the application with `make run-local`
-- Run `make run-local-lambda`
+- Navigate to the lambda folder `cd server/lambda/layer/common/nodejs/` and run `npm i` to install dependencies
+- Back at the project root `cd ../../../../..`, start the application with `make run-local`
+- Run the desired lambda function command from the [Makefile](makefile), which will be in the format `make run-local-lambda-*`
 - Wait for output.json to appear in the project root directory
 
-To trigger the workflow and deploy to AWS:
+To trigger the workflow to deploy all lambda functions to AWS:
 - Run `make tag-lambda-prod`
 
 ## License
