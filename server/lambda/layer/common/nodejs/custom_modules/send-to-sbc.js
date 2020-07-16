@@ -1,6 +1,6 @@
 const dayjs = require('dayjs');
 const PromisePool = require('es6-promise-pool');
-const { postServiceItem } = require('./service-bc');
+const { postServiceItem } = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection) => {
   const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(2, 'day')]
