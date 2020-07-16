@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 const PromisePool = require('es6-promise-pool');
 const { dbClient, collections } = require('../db');
-const { postServiceItem } = require('./service-bc');
+const { postServiceItem } = require('../lambda/layer/common/nodejs/custom_modules/service-bc.js');
 
 const getUnsuccessfulSbcTransactions = async (collection, blacklist) => {
   const dateRange = [dayjs().subtract(300, 'day'), dayjs().subtract(-300, 'day')]

@@ -79,6 +79,14 @@ function* makeSbcTransactionIterator(collection, data) {
   }
 }
 
+const sendEtsToSBC = async (etsCollection) => {
+  const data = await getUnsuccessfulSbcTransactions(etsCollection);
+  const sbcTransactionIterator = makeSbcTransactionIterator(etsCollection, data);
+  const pool = new PromisePool(sbcTransactionIterator, 10);
+  await pool.start();
+  return `Attempted to send ${data.length} items to SBC`;
+};
+
 const sendPhacToSBC = async (phacCollection) => {
   let data = await getUnsuccessfulSbcTransactions(phacCollection);
   data = data.map(phacToSbc);
@@ -88,4 +96,4 @@ const sendPhacToSBC = async (phacCollection) => {
   return `Attempted to send ${data.length} items to SBC`;
 };
 
-module.exports = sendPhacToSBC;
+module.exports = { sendPhacToSBC, sendEtsToSBC };

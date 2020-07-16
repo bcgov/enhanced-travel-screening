@@ -1,9 +1,7 @@
-const fs = require('fs');
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 const { MongoClient } = require('mongodb');
-const markDuplicates = require('./mark-duplicates');
-const sendPhacToSBC = require('./sbc-phac');
-
-/* eslint-disable no-console */
+const fs = require('fs');
 
 const dbConnectionOptions = (server) => ({
   useNewUrlParser: true,
@@ -20,17 +18,4 @@ const dbConnectionAndCollections = async (collections) => {
   return { connection, collections: collections.map((c) => db.collection(c)) };
 };
 
-exports.handler = async () => {
-  const { connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
-  const [etsCollection, phacCollection] = collections;
-  try {
-    const duplicates = await markDuplicates(etsCollection, phacCollection);
-    console.log(duplicates);
-    const transactions = await sendPhacToSBC(phacCollection);
-    console.log(transactions);
-  } catch (error) {
-    console.error(`Failed to mark duplicates or post to SBC ${error}`);
-  } finally {
-    connection.close();
-  }
-};
+module.exports = dbConnectionAndCollections;

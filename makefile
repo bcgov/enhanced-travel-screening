@@ -40,8 +40,11 @@ run-local-db:
 run-e2e-test:
 	@npm test --prefix server
 
-run-local-lambda:
+run-local-lambda-phacToSbc:
 	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
+
+run-local-lambda-etsToSbc:
+	@aws lambda invoke --endpoint http://localhost:9002 --no-sign-request --function-name index.handler --payload '{}' output.json
 
 close-local:
 	@echo "Stopping local app container"
@@ -103,6 +106,6 @@ tag-prod:
 	@git push --force origin refs/tags/prod:refs/tags/prod
 
 tag-lambda-prod:
-	@echo "Deploying lambda function code to prod AWS Lambda"
+	@echo "Deploying lambda functions code to prod AWS Lambda"
 	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
 	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
