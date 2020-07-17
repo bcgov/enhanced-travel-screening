@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-const { sendEtsToSBC } = require('custom_modules/sbc-phac-ets');
+const { sendEtsToSBC } = require('custom_modules/send-to-sbc');
 const dbConnectionAndCollections = require('custom_modules/db');
 
 /* eslint-disable no-console */
