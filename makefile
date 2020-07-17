@@ -41,10 +41,10 @@ run-e2e-test:
 	@npm test --prefix server
 
 run-local-lambda-phacToSbc:
-	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --payload '{}' output.json
+	@aws lambda invoke --endpoint http://localhost:9001 --no-sign-request --function-name index.handler --cli-binary-format raw-in-base64-out --payload '{}' output.json
 
 run-local-lambda-etsToSbc:
-	@aws lambda invoke --endpoint http://localhost:9002 --no-sign-request --function-name index.handler --payload '{}' output.json
+	@aws lambda invoke --endpoint http://localhost:9002 --no-sign-request --function-name index.handler --cli-binary-format raw-in-base64-out --payload '{}' output.json
 
 close-local:
 	@echo "Stopping local app container"
