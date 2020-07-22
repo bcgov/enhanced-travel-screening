@@ -2,11 +2,11 @@ const dayjs = require('dayjs');
 const PromisePool = require('es6-promise-pool');
 const { postServiceItem } = require('./service-bc-api');
 
-const getUnsuccessfulSbcTransactions = async (collection) => {
+const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(2, 'day')]
     .map((d) => d.startOf('day').toDate());
   const query = [
-    { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: '$arrival_date', timezone: '-0700' } } } },
+    { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: arrivalKey, timezone: '-0700' } } } },
     {
       $match: {
         $and: [
@@ -80,7 +80,7 @@ function* makeSbcTransactionIterator(collection, data) {
 }
 
 const sendEtsToSBC = async (etsCollection) => {
-  const data = await getUnsuccessfulSbcTransactions(etsCollection);
+  const data = await getUnsuccessfulSbcTransactions(etsCollection, '$arrival.date');
   const sbcTransactionIterator = makeSbcTransactionIterator(etsCollection, data);
   const pool = new PromisePool(sbcTransactionIterator, 10);
   await pool.start();
@@ -88,7 +88,7 @@ const sendEtsToSBC = async (etsCollection) => {
 };
 
 const sendPhacToSBC = async (phacCollection) => {
-  let data = await getUnsuccessfulSbcTransactions(phacCollection);
+  let data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
   data = data.map(phacToSbc);
   const sbcTransactionIterator = makeSbcTransactionIterator(phacCollection, data);
   const pool = new PromisePool(sbcTransactionIterator, 10);
