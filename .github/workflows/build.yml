@@ -66,3 +66,4 @@ jobs:
         with:
           target: ${{ env.DEV_URL }}
           cmd_options: '-I'
+          fail_action: true
