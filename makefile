@@ -63,6 +63,15 @@ local-server-tests:
 get-latest-env-name:
 	@aws elasticbeanstalk describe-environments | jq -cr '.Environments | .[] | select(.Status == "Ready" and (.EnvironmentName | test("^$(ENV_PREFIX)-$(ENV_SUFFIX)(-[0-9]+)?$$"))) | .EnvironmentName' | sort | tail -n 1
 
+get-dest-env-load-balancer-name:
+	@aws elasticbeanstalk describe-environment-resources --environment-name $(DESTINATION_ENV) | jq -cr '.EnvironmentResources | .LoadBalancers | .[] | .Name' | sort | tail -n 1
+
+create-secure-tls-policy:
+	@aws elb create-load-balancer-policy --load-balancer-name $(ENV_LOAD_BALANCER) --policy-name TLS-1-2 --policy-type-name SSLNegotiationPolicyType --policy-attributes AttributeName=Reference-Security-Policy,AttributeValue=ELBSecurityPolicy-TLS-1-2-2017-01
+
+set-secure-tls-policy:
+	@aws elb set-load-balancer-policies-of-listener --load-balancer-name $(ENV_LOAD_BALANCER) --load-balancer-port 443 --policy-names TLS-1-2
+
 create-new-env-name:
 	@echo $(ENV_PREFIX)-$(ENV_SUFFIX)-$(shell date '+%Y%m%d%H%M')
 
