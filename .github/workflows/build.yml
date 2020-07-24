@@ -8,9 +8,9 @@ on:
 env:
   ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
-  PROJECT: enhanced-travel-screening
-  REGION: ca-central-1
-  DEV_URL: https://dev.covid-ets.bcgov.freshworks.club/
+  PROJECT: ${{ secrets.PROJECT }}
+  REGION: ${{ secrets.REGION }}
+  DEV_URL: ${{ secrets.DEV_URL }}
 
 jobs:
   audit:
