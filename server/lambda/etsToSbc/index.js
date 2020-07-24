@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
 const { sendEtsToSBC } = require('custom_modules/send-to-sbc');
+const postToSlack = require('custom_modules/post-to-slack');
 const dbConnectionAndCollections = require('custom_modules/db');
 
 /* eslint-disable no-console */
@@ -11,6 +12,7 @@ exports.handler = async () => {
   try {
     const transactions = await sendEtsToSBC(etsCollection);
     console.log(transactions);
+    await postToSlack(transactions);
   } catch (error) {
     console.error(`Failed to post to SBC ${error}`);
   } finally {
