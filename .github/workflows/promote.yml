@@ -47,5 +47,11 @@ jobs:
           pip install awsebcli
           eb clone ${{ env.SOURCE_ENV }} --clone_name ${{ env.DESTINATION_ENV }} --exact --verbose
 
+      - name: Secure New Load Balancer
+        run: |
+          export ENV_LOAD_BALANCER=$(make get-dest-env-load-balancer-name)
+          make create-secure-tls-policy
+          make set-secure-tls-policy
+
       - name: Create Artifact and Deploy to EB
         run: make promote-image
