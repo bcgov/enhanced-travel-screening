@@ -6,7 +6,7 @@ on:
       - lambda-prod
 
 env:
-  REGION: ca-central-1
+  REGION: ${{ secrets.REGION }}
   LAMBDA_FUNC1: etsToSbc
   LAMBDA_FUNC2: phacToSbc
   LAMBDA_LAYER: common

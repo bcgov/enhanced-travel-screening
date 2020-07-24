@@ -8,8 +8,9 @@ on:
 env:
   ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
-  PROJECT: enhanced-travel-screening
-  REGION: ca-central-1
+  PROJECT: ${{ secrets.PROJECT }}
+  REGION: ${{ secrets.REGION }}
+  DEV_URL: ${{ secrets.DEV_URL }}
 
 jobs:
   audit:
@@ -59,3 +60,9 @@ jobs:
 
       - name: Create Artifact and Deploy to EB
         run: make promote-image
+
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.3.0
+        with:
+          target: ${{ env.DEV_URL }}
+          cmd_options: '-I'
