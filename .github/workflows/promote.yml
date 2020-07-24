@@ -49,7 +49,7 @@ jobs:
 
       - name: Secure New Load Balancer
         run: |
-          echo ::set-env name=ENV_LOAD_BALANCER::$(make get-dest-env-load-balancer-name)
+          export ENV_LOAD_BALANCER=$(make get-dest-env-load-balancer-name)
           make create-secure-tls-policy
           make set-secure-tls-policy
 
