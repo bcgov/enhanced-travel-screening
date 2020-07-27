@@ -8,6 +8,7 @@ const markDuplicates = require('./mark-duplicates');
 /* eslint-disable no-console */
 
 exports.handler = async () => {
+  const start = new Date().getTime();
   const { connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
   const [etsCollection, phacCollection] = collections;
   try {
@@ -15,7 +16,7 @@ exports.handler = async () => {
     console.log(duplicates);
     const transactions = await sendPhacToSBC(phacCollection);
     console.log(transactions);
-    await postToSlack(`${duplicates}\n${transactions}`);
+    await postToSlack('PHAC to Service BC', start, duplicates, transactions);
   } catch (error) {
     console.error(`Failed to mark duplicates or post to SBC ${error}`);
   } finally {
