@@ -12,6 +12,8 @@ paths:
   /phac/submission:
     post:
       summary: Submission from PHAC, secured by JWT for PHAC users only
+      security:
+        - bearerAuth: []
       requestBody:
         description: Form data
         content:
@@ -28,8 +30,43 @@ paths:
                 $ref: '#/components/schemas/PhacResponse'
         400:
           description: Invalid input
+  /login:
+    post:
+      summary: Login using username and password, receive JWT
+      requestBody:
+        description: Login data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        400:
+          description: Invalid input
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT   
   schemas:
+    Login:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
     Phac:
       required:
       - covid_id
