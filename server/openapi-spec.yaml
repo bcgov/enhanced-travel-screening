@@ -9,15 +9,15 @@ info:
 servers:
 - url: https://travelscreening.gov.bc.ca/api/v1
 paths:
-  /form:
+  /phac/submission:
     post:
-      summary: Submit a new form on behalf of a traveller
+      summary: Submission from PHAC, secured by JWT for PHAC users only
       requestBody:
         description: Form data
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Form'
+              $ref: '#/components/schemas/Phac'
         required: true
       responses:
         200:
@@ -25,142 +25,37 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/PhacResponse'
         400:
           description: Invalid input
 components:
   schemas:
-    Form:
+    Phac:
       required:
-      - ableToIsolate
-      - accomodations
-      - additionalTravellers
-      - address
-      - arrival
-      - certified
-      - city
-      - dob
-      - firstName
-      - includeAdditionalTravellers
-      - isolationPlan
-      - lastName
-      - province
-      - supplies
-      - telephone
-      - transportation
+      - covid_id
+      properties:
+        covid_id:
+          type: string
+      additionalProperties:
+        anyOf:
+        - type: string
+        - type: number
+        - type: integer
+        - type: boolean
+        - type: array
+          items: {}
+        - type: object
+        nullable: false
+    PhacResponse:
       type: object
       properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        telephone:
-          type: string
-        email:
-          type: string
-          pattern: ^.+@.+\..+$
-        address:
-          type: string
-        city:
-          type: string
-        province:
-          type: string
-          enum:
-          - Alberta
-          - British Columbia
-          - Manitoba
-          - New Brunswick
-          - Newfoundland and Labrador
-          - Nova Scotia
-          - Ontario
-          - Prince Edward Island
-          - Québec
-          - Saskatchewan
-          - Nunavut
-          - Northwest Territories
-          - Yukon
-          - Other
-        postalCode:
-          type: string
-        dob:
-          type: string
-          format: date
-          pattern: ^\d{4}\/\d{2}\/\d{2}$
-        includeAdditionalTravellers:
-          type: boolean
-        additionalTravellers:
-          type: array
-          description: Must be empty if includeAdditionalTravellers is false
-          minItems: 0
-          maxItems: 10
-          items:
-            type: object
-            required:
-            - dob
-            - firstName
-            - lastName
-            properties:
-              firstName:
-                type: string
-              lastName:
-                type: string
-              dob:
-                type: string
-                format: date
-                pattern: ^\d{4}\/\d{2}\/\d{2}$
-        arrival:
+        successful:
           type: object
-          required:
-          - by
-          - date
-          - from
-          properties:
-            date:
-              type: string
-              format: date
-              pattern: ^\d{4}\/\d{2}\/\d{2}$
-            by:
-              type: string
-            from:
-              type: string
-            flight:
-              type: string
-        accomodations:
-          type: boolean
-        isolationPlan:
-          type: object
-          description: Must be null if accomodations is false
-          nullable: true
-          required:
-          - address
-          - city
-          - type
-          properties:
-            city:
-              type: string
-            address:
-              type: string
-            type:
-              type: string
-        supplies:
-          type: boolean
-        ableToIsolate:
-          type: boolean
-        transportation:
+        duplicates:
           type: array
-          uniqueItems: true
           items:
             type: string
-            enum:
-            - taxi
-            - personal
-            - public
-        certified:
-          type: boolean
-    Response:
-      type: object
-      properties:
-        id:
-          type: string
-        isolationPlanStatus:
-          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
