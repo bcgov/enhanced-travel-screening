@@ -1,5 +1,5 @@
 const dayjs = require('dayjs');
-const PromisePool = require('es6-promise-pool');
+const asyncPool = require('tiny-async-pool');
 const { postServiceItem } = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
@@ -73,27 +73,29 @@ const phacToSbc = (phacItem) => {
   return sbcItem;
 };
 
-function* makeSbcTransactionIterator(collection, data) {
-  for (const d of data) { // eslint-disable-line no-restricted-syntax
-    yield postToSbcAndUpdateDb(collection, d);
-  }
-}
+const makeTransactionIterator = (collection) => (d) => postToSbcAndUpdateDb(collection, d);
+
+const executeTransactionPool = async (data, collection) => {
+  const concurrency = 10; // How many requests running in parallel
+  const iterator = makeTransactionIterator(collection);
+  const results = await asyncPool(concurrency, data, iterator);
+  const output = [
+    `Sent ${results.length} items to SBC`,
+    `${results.filter((i) => i.status === 'success').length} success(es)`,
+    `${results.filter((i) => i.status === 'fail').length} failure(s)`,
+  ];
+  return output.join('\n');
+};
 
 const sendEtsToSBC = async (etsCollection) => {
   const data = await getUnsuccessfulSbcTransactions(etsCollection, '$arrival.date');
-  const sbcTransactionIterator = makeSbcTransactionIterator(etsCollection, data);
-  const pool = new PromisePool(sbcTransactionIterator, 10);
-  await pool.start();
-  return `Attempted to send ${data.length} items to SBC`;
+  return executeTransactionPool(data, etsCollection);
 };
 
 const sendPhacToSBC = async (phacCollection) => {
   let data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
   data = data.map(phacToSbc);
-  const sbcTransactionIterator = makeSbcTransactionIterator(phacCollection, data);
-  const pool = new PromisePool(sbcTransactionIterator, 10);
-  await pool.start();
-  return `Attempted to send ${data.length} items to SBC`;
+  return executeTransactionPool(data, phacCollection);
 };
 
 module.exports = { sendPhacToSBC, sendEtsToSBC };

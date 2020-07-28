@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 /**
  * Flatten nested collection
  *
@@ -126,7 +124,7 @@ const createEtsKeys = (ets) => {
  * @param db
  */
 const markDuplicates = async (etsCollection, phacCollection) => {
-  console.log('Loading collections from database');
+  const logs = ['Loading collections from database'];
 
   const phac = await phacCollection.aggregate([
     {
@@ -146,7 +144,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
       },
     },
   ]).toArray();
-  console.log(`Loaded ${phac.length} PHAC entries requiring processing`);
+  logs.push(`Loaded ${phac.length} PHAC entries requiring processing`);
 
   const ets = await etsCollection.aggregate([
     {
@@ -252,15 +250,13 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   }
 
   // Report summary of results
-  console.log(`Found ${Object.entries(duplicates).length} total duplicates`);
-  console.log(`--- ${Object.values(duplicates).filter((i) => i.some((j) => /^CVR-/.test(j))).length} duplicates within PHAC collection`);
-  console.log(`--- ${Object.values(duplicates).filter((i) => i.some((j) => /^[A-F0-9]{8}$/.test(j))).length} duplicates within ETS collection`);
+  logs.push(
+    `Found ${Object.entries(duplicates).length} total duplicates`,
+    `${internalPhacDuplicateCount} duplicates within ETS collection`,
+    `${phacToEtsDuplicateCount} duplicates within PHAC collection`,
+  );
 
-  return {
-    totalDuplicates: Object.entries(duplicates).length,
-    internalPhacDuplicateCount,
-    phacToEtsDuplicateCount,
-  };
+  return logs.join('\n');
 };
 
 module.exports = markDuplicates;
