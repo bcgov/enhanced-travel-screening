@@ -9,6 +9,42 @@ info:
 servers:
 - url: https://travelscreening.gov.bc.ca/api/v1
 paths:
+  /phac/submission:
+    post:
+      summary: Submission from PHAC, secured by JWT for PHAC users only
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Form data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Phac'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhacResponse'
+  /login:
+    post:
+      summary: Login using username and password, receive JWT
+      requestBody:
+        description: Login data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
   /form:
     post:
       summary: Submit a new form on behalf of a traveller
@@ -25,11 +61,167 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
-        400:
-          description: Invalid input
+                $ref: '#/components/schemas/FormResponse'
+  /form/{id}:
+    patch:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the traveller's form
+      summary: Edit existing form with determination and notes
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Determination data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Determination'
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeterminationResponse'
+  /last-name/{lname}:
+    get:
+      parameters:
+        - in: path
+          name: lname
+          schema:
+            type: string
+          required: true
+          description: Traveller's last name (partial match)
+      summary: Get travellers by last name (partial match)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsResponse'
+  /validate:
+    get:
+      summary: Validate JWT
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: OK
+  /version:
+    get:
+      summary: Version hash
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionResponse'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
   schemas:
+    Determination:
+      required:
+      - determination
+      - notes
+      properties:
+        determination:
+          type: string
+        notes:
+          type: string
+    DeterminationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    VersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+    FormsResponse:
+      type: object
+      properties:
+        travellers:
+          type: array
+          items:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              telephone:
+                type: string
+              email:
+                type: string
+              address:
+                type: string
+              city:
+                type: string
+              province:
+                type: string
+              postalCode:
+                type: string
+              dob:
+                type: string
+              includeAdditionalTravellers:
+                type: boolean
+              additionalTravellers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    firstName:
+                      type: string
+                    lastName:
+                      type: string
+                    dob:
+                      type: string
+              arrival:
+                type: object
+                properties:
+                  date:
+                    type: string
+                  by:
+                    type: string
+                  from:
+                    type: string
+                  flight:
+                    type: string
+              accomodations:
+                type: boolean
+              isolationPlan:
+                type: object
+                properties:
+                  city:
+                    type: string
+                  address:
+                    type: string
+                  type:
+                    type: string
+              supplies:
+                type: boolean
+              ableToIsolate:
+                type: boolean
+              transportation:
+                type: array
+                items:
+                  type: string
+              certified:
+                type: boolean
     Form:
       required:
       - ableToIsolate
@@ -157,10 +349,50 @@ components:
             - public
         certified:
           type: boolean
-    Response:
+    FormResponse:
       type: object
       properties:
         id:
           type: string
         isolationPlanStatus:
           type: boolean
+    Login:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    Phac:
+      required:
+      - covid_id
+      properties:
+        covid_id:
+          type: string
+      additionalProperties:
+        anyOf:
+        - type: string
+        - type: number
+        - type: integer
+        - type: boolean
+        - type: array
+          items: {}
+        - type: object
+        nullable: false
+    PhacResponse:
+      type: object
+      properties:
+        successful:
+          type: object
+        duplicates:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
