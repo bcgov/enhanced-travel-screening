@@ -72,6 +72,8 @@ paths:
           required: true
           description: ID of the traveller's form
       summary: Edit existing form with determination and notes
+      security:
+        - bearerAuth: []
       requestBody:
         description: Determination data
         content:
