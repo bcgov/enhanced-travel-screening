@@ -106,7 +106,6 @@ app.post(`${apiBaseUrl}/phac/submission`,
     try {
       await phacCollection.insertMany(phacItems, { ordered: false });
       results.successful = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
-      messages.push(`Successfully processed ${phacItems.length} items`);
     } catch (error) {
       try {
         const { writeErrors } = error.result.result;
@@ -124,7 +123,11 @@ app.post(`${apiBaseUrl}/phac/submission`,
         messages.push(`Error processing PHAC submission: ${err}`);
       }
     }
-    await postToSlack('PHAC Submission', start, ...messages, JSON.stringify(results));
+    try {
+      await postToSlack('PHAC Submission', start, ...messages, JSON.stringify(results));
+    } catch (error) {
+      logger.error(`Unable to post to Slack: ${error}`);
+    }
     return res.json(results);
   }));
 
