@@ -21,24 +21,28 @@ const formatTime = (start) => {
 };
 
 const formatMessage = (title, time, message) => {
-  const link = generateStreamLink();
-  return `{ "blocks": [
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Lambda Job: *${title}*\nFunction Name: ${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}\nElapsed Time: ${time}\n\nFull output included below."
+  const escapedMessge = typeof message === 'string' ? message : JSON.stringify(message);
+  const payload = {
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Lambda Job: *${title}*\nFunction Name: ${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}\nElapsed Time: ${time}\n\nFull output included below.`,
       },
-      ${link == null ? '' : `"accessory": {
-        "type": "button",
-        "text": { "type": "plain_text", "text": "View CW Logs" },
-        "action_id": "view_logs",
-        "url": "${link}"
-      }`}
     },
-    { "type": "divider" },
-    { "type": "section", "text": { "type": "plain_text", "text": "${message}" } }
-  ] }`;
+    { type: 'divider' },
+    { type: 'section', text: { type: 'plain_text', text: escapedMessge } }],
+  };
+  const link = generateStreamLink();
+  if (link != null) {
+    payload.blocks[0].accessory = {
+      type: 'button',
+      text: { type: 'plain_text', text: 'View CW Logs' },
+      action_id: 'view_logs',
+      url: link,
+    };
+  }
+  return payload;
 };
 
 const postToSlack = async (title, start, ...messages) => {
