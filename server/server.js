@@ -124,7 +124,10 @@ app.post(`${apiBaseUrl}/phac/submission`,
       }
     }
     try {
-      await postToSlack('PHAC Submission', start, ...messages, JSON.stringify(results));
+      await postToSlack('PHAC Submission', start, ...messages,
+        `Successful: ${Object.keys(results.successful).length}`,
+        `Duplicates: ${results.duplicates.length}`,
+        `Errors: ${results.errors.length}`);
     } catch (error) {
       logger.error(`Unable to post to Slack: ${error}`);
     }

@@ -17,7 +17,12 @@ const generateStreamLink = () => {
 const formatTime = (start) => {
   if (!start) return 'N/A';
   const elapsed = (new Date().getTime() - start) / 1000;
-  return `${Math.floor(elapsed / 60)}m${Math.round(elapsed % 60)}s`;
+  return `${Math.floor(elapsed / 60)}m${(elapsed % 60).toFixed(3)}s`;
+};
+
+const formatFunctionName = () => {
+  if (!process.env.AWS_LAMBDA_FUNCTION_NAME || !process.env.AWS_LAMBDA_FUNCTION_VERSION) return 'N/A';
+  return `${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}`;
 };
 
 const formatMessage = (title, time, message) => {
@@ -27,7 +32,7 @@ const formatMessage = (title, time, message) => {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Lambda Job: *${title}*\nFunction Name: ${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}\nElapsed Time: ${time}\n\nFull output included below.`,
+        text: `Lambda Job: *${title}*\nLambda Function Name: ${formatFunctionName()}\nElapsed Time: ${time}\n\nFull output included below.`,
       },
     },
     { type: 'divider' },
@@ -47,11 +52,7 @@ const formatMessage = (title, time, message) => {
 
 const postToSlack = async (title, start, ...messages) => {
   if (!/^https:\/\/hooks\.slack\.com/.test(process.env.SLACK_ENDPOINT)) throw Error('No valid Slack endpoint specified');
-  const message = messages.join('\n');
-  const payload = formatMessage(title, formatTime(start), message);
-  console.log(message);
-  console.log(payload);
-  console.log(process.env.SLACK_ENDPOINT);
+  const payload = formatMessage(title, formatTime(start), messages.join('\n'));
   await axios.post(process.env.SLACK_ENDPOINT, payload, {
     headers: { 'Content-Type': 'application/json' },
   });
