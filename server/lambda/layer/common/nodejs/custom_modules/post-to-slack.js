@@ -33,7 +33,7 @@ const formatMessage = (title, time, message) => {
         "type": "button",
         "text": { "type": "plain_text", "text": "View CW Logs" },
         "action_id": "view_logs",
-        "url": "${generateStreamLink()}"
+        "url": "${link}"
       }`}
     },
     { "type": "divider" },
@@ -43,7 +43,12 @@ const formatMessage = (title, time, message) => {
 
 const postToSlack = async (title, start, ...messages) => {
   if (!/^https:\/\/hooks\.slack\.com/.test(process.env.SLACK_ENDPOINT)) throw Error('No valid Slack endpoint specified');
-  await axios.post(process.env.SLACK_ENDPOINT, formatMessage(title, formatTime(start), messages.join('\n')), {
+  const message = messages.join('\n');
+  const payload = formatMessage(title, formatTime(start), message);
+  console.log(message);
+  console.log(payload);
+  console.log(process.env.SLACK_ENDPOINT);
+  await axios.post(process.env.SLACK_ENDPOINT, payload, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
