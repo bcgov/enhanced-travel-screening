@@ -5,6 +5,7 @@ const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
 const { postServiceItem } = require('./lambda/layer/common/nodejs/custom_modules/service-bc-api.js');
+const postToSlack = require('./lambda/layer/common/nodejs/custom_modules/post-to-slack.js');
 const deriveTravellerKey = require('./utils/derive-traveller-key.js');
 const {
   validate, FormSchema, DeterminationSchema, PhacSchema,
@@ -100,6 +101,8 @@ app.post(`${apiBaseUrl}/phac/submission`,
     })));
 
     const results = { successful: {}, duplicates: [], errors: [] };
+    const start = new Date().getTime();
+    const messages = [`Processing PHAC submission of ${phacItems.length} items`];
     try {
       await phacCollection.insertMany(phacItems, { ordered: false });
       results.successful = phacItems.reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
@@ -115,11 +118,19 @@ app.post(`${apiBaseUrl}/phac/submission`,
         results.successful = phacItems.filter((_, i) => (
           !writeErrors.map((e) => e.err.index).includes(i)
         )).reduce((a, v) => ({ ...a, [v.covid_id]: v.id }), {});
-      } catch (_) {
+      } catch (err) {
         results.errors = phacItems.map((i) => i.covid_id);
+        messages.push(`Error processing PHAC submission: ${err}`);
       }
     }
-
+    try {
+      await postToSlack('PHAC Submission', start, ...messages,
+        `Successful: ${Object.keys(results.successful).length}`,
+        `Duplicates: ${results.duplicates.length}`,
+        `Errors: ${results.errors.length}`);
+    } catch (error) {
+      logger.error(`Unable to post to Slack: ${error}`);
+    }
     return res.json(results);
   }));
 

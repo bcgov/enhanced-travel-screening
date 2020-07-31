@@ -17,33 +17,43 @@ const generateStreamLink = () => {
 const formatTime = (start) => {
   if (!start) return 'N/A';
   const elapsed = (new Date().getTime() - start) / 1000;
-  return `${Math.floor(elapsed / 60)}m${Math.round(elapsed % 60)}s`;
+  return `${Math.floor(elapsed / 60)}m${(elapsed % 60).toFixed(3)}s`;
+};
+
+const formatFunctionName = () => {
+  if (!process.env.AWS_LAMBDA_FUNCTION_NAME || !process.env.AWS_LAMBDA_FUNCTION_VERSION) return 'N/A';
+  return `${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}`;
 };
 
 const formatMessage = (title, time, message) => {
-  const link = generateStreamLink();
-  return `{ "blocks": [
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Lambda Job: *${title}*\nFunction Name: ${process.env.AWS_LAMBDA_FUNCTION_NAME}:${process.env.AWS_LAMBDA_FUNCTION_VERSION}\nElapsed Time: ${time}\n\nFull output included below."
+  const escapedMessge = typeof message === 'string' ? message : JSON.stringify(message);
+  const payload = {
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Job Title: *${title}*\nLambda Function Name: ${formatFunctionName()}\nElapsed Time: ${time}\n\nFull output included below.`,
       },
-      ${link == null ? '' : `"accessory": {
-        "type": "button",
-        "text": { "type": "plain_text", "text": "View CW Logs" },
-        "action_id": "view_logs",
-        "url": "${generateStreamLink()}"
-      }`}
     },
-    { "type": "divider" },
-    { "type": "section", "text": { "type": "plain_text", "text": "${message}" } }
-  ] }`;
+    { type: 'divider' },
+    { type: 'section', text: { type: 'plain_text', text: escapedMessge } }],
+  };
+  const link = generateStreamLink();
+  if (link != null) {
+    payload.blocks[0].accessory = {
+      type: 'button',
+      text: { type: 'plain_text', text: 'View CW Logs' },
+      action_id: 'view_logs',
+      url: link,
+    };
+  }
+  return payload;
 };
 
 const postToSlack = async (title, start, ...messages) => {
   if (!/^https:\/\/hooks\.slack\.com/.test(process.env.SLACK_ENDPOINT)) throw Error('No valid Slack endpoint specified');
-  await axios.post(process.env.SLACK_ENDPOINT, formatMessage(title, formatTime(start), messages.join('\n')), {
+  const payload = formatMessage(title, formatTime(start), messages.join('\n'));
+  await axios.post(process.env.SLACK_ENDPOINT, payload, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
