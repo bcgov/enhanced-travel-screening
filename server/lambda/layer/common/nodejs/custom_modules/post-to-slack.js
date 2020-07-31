@@ -32,7 +32,7 @@ const formatMessage = (title, time, message) => {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Lambda Job: *${title}*\nLambda Function Name: ${formatFunctionName()}\nElapsed Time: ${time}\n\nFull output included below.`,
+        text: `Job Title: *${title}*\nLambda Function Name: ${formatFunctionName()}\nElapsed Time: ${time}\n\nFull output included below.`,
       },
     },
     { type: 'divider' },
