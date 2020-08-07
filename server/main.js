@@ -34,7 +34,8 @@ process.on('SIGTERM', () => { // Quit properly on docker stop
 (async () => { // Start server
   try {
     await dbClient.connect();
-    server = app.listen(port, async () => {
+    const host = process.env.SERVER_HOST || '127.0.0.1';
+    server = app.listen(port, host, async () => {
       logger.info(`Listening on port ${port}`);
     });
   } catch (err) {
