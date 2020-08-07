@@ -2,8 +2,6 @@ const app = require('./server.js');
 const logger = require('./logger.js');
 const { dbClient } = require('./db');
 
-const port = 80;
-
 /** @type {http.Server|undefined} */
 let server;
 
@@ -34,6 +32,7 @@ process.on('SIGTERM', () => { // Quit properly on docker stop
 (async () => { // Start server
   try {
     await dbClient.connect();
+    const port = process.env.SERVER_PORT || 8080;
     const host = process.env.SERVER_HOST || '127.0.0.1';
     server = app.listen(port, host, async () => {
       logger.info(`Listening on port ${port}`);
