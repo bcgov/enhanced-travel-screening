@@ -18,7 +18,7 @@ ENV NODE_ENV production
 ENV VERSION $VERSION
 
 # Run server
-RUN apk add --no-cache git
+RUN apk add --no-cache git curl
 COPY --from=client /client/build /client/build/.
 WORKDIR /server
 COPY server/package*.json ./
