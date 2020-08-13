@@ -1,3 +1,5 @@
+const dayjs = require('dayjs');
+
 /**
  * Flatten nested collection
  *
@@ -125,15 +127,20 @@ const createEtsKeys = (ets) => {
  */
 const markDuplicates = async (etsCollection, phacCollection) => {
   const logs = ['Loading collections from database'];
-
+  const cutoffDate = dayjs().subtract(13, 'day').startOf('day').toDate();
   const phac = await phacCollection.aggregate([
+    { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: '$arrival_date', timezone: '-0700' } } } },
     {
       $match: {
-        'serviceBCTransactions.status': { $ne: 'success' },
+        $and: [
+          { 'serviceBCTransactions.status': { $ne: 'success' } },
+          { parsed_arrival_date: { $gte: cutoffDate } },
+        ],
       },
     }, {
       $project: {
         _id: 0,
+        parsed_arrival_date: 0,
         covid_id: 1,
         arrival_date: 1,
         home_phone: 1,
