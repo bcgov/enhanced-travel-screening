@@ -252,8 +252,8 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   // Report summary of results
   logs.push(
     `Found ${Object.entries(duplicates).length} total duplicates`,
-    `${internalPhacDuplicateCount} duplicates within ETS collection`,
-    `${phacToEtsDuplicateCount} duplicates within PHAC collection`,
+    `${phacToEtsDuplicateCount} duplicates within ETS collection`,
+    `${internalPhacDuplicateCount} duplicates within PHAC collection`,
   );
 
   return logs.join('\n');
