@@ -6,6 +6,6 @@
     "dayjs": "1.8.28",
     "mongodb": "3.5.6",
     "node-cache": "5.1.1",
-    "tiny-async-pool": "^1.1.0"
+    "tiny-async-pool": "1.1.0"
   }
 }
