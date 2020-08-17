@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { readFileSync } = require('fs');
 const { join } = require('path');
+const MockDate = require('mockdate');
 const app = require('../server');
 const { dbClient, collections, TEST_DB } = require('../db');
 const { startDB, closeDB } = require('./util/db');
@@ -60,6 +61,14 @@ describe('Test phac-servicebc queries and endpoints', () => {
     return formsCollection.insertMany(formattedEtsData);
   }
 
+  beforeEach(() => {
+    MockDate.set('2020-05-17');
+  });
+
+  afterEach(() => {
+    MockDate.reset();
+  });
+
   beforeAll(async () => {
     await startDB();
     server = app.listen();
@@ -103,7 +112,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const etsCollection = dbClient.db.collection(collections.FORMS);
     const phacCollection = dbClient.db.collection(collections.PHAC);
     const duplicates = await markDuplicates(etsCollection, phacCollection);
-    expect(duplicates).toMatch(/^7 duplicates within ETS collection/gm);
+    expect(duplicates).toMatch(/^5 duplicates within ETS collection/gm);
     expect(duplicates).toMatch(/^1 duplicates within PHAC collection/gm);
     const transactions = await sendPhacToSBC(phacCollection);
     expect(transactions).toMatch(/^0 success\(es\)/gm);

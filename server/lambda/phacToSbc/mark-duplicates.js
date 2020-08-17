@@ -140,7 +140,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
     }, {
       $project: {
         _id: 0,
-        parsed_arrival_date: 0,
+        parsed_arrival_date: 1,
         covid_id: 1,
         arrival_date: 1,
         home_phone: 1,
