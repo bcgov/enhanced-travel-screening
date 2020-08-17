@@ -5,6 +5,8 @@ const app = require('../server');
 const { dbClient, collections, TEST_DB } = require('../db');
 const { startDB, closeDB } = require('./util/db');
 const { fromCsvString } = require('./util/csv');
+const markDuplicates = require('../lambda/phacToSbc/mark-duplicates');
+const { sendPhacToSBC, sendEtsToSBC } = require('../lambda/layer/common/nodejs/custom_modules/send-to-sbc');
 
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);
@@ -94,6 +96,26 @@ describe('Test phac-servicebc queries and endpoints', () => {
   it('Submit PHAC data to PHAC endpoint, receive 200', async () => {
     const resPhacForms = await sendPhacForms();
     expect(resPhacForms.statusCode).toEqual(200);
+  });
+
+  it('Test PHAC to ServiceBC function, match logs', async () => {
+    dbClient.useDB(TEST_DB);
+    const etsCollection = dbClient.db.collection(collections.FORMS);
+    const phacCollection = dbClient.db.collection(collections.PHAC);
+    const duplicates = await markDuplicates(etsCollection, phacCollection);
+    expect(duplicates).toMatch(/^7 duplicates within ETS collection/gm);
+    expect(duplicates).toMatch(/^1 duplicates within PHAC collection/gm);
+    const transactions = await sendPhacToSBC(phacCollection);
+    expect(transactions).toMatch(/^0 success\(es\)/gm);
+    expect(transactions).toMatch(/^0 failure\(s\)/gm);
+  });
+
+  it('Test ETS to ServiceBC function, match logs', async () => {
+    dbClient.useDB(TEST_DB);
+    const etsCollection = dbClient.db.collection(collections.FORMS);
+    const transactions = await sendEtsToSBC(etsCollection);
+    expect(transactions).toMatch(/^0 success\(es\)/gm);
+    expect(transactions).toMatch(/^0 failure\(s\)/gm);
   });
 
   afterAll(() => {
