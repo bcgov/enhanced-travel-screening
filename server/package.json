@@ -11,7 +11,7 @@
     "test": "NODE_ENV=test jest --runInBand"
   },
   "dependencies": {
-    "aws-sdk": "2.734.0",
+    "aws-sdk": "2.735.0",
     "axios": "0.19.2",
     "body-parser": "1.19.0",
     "crypto": "1.0.1",
