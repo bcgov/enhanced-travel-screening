@@ -3,7 +3,7 @@ const asyncPool = require('tiny-async-pool');
 const { postServiceItem } = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
-  const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(2, 'day')]
+  const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(1, 'day')]
     .map((d) => d.startOf('day').toDate());
   const query = [
     { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: arrivalKey, timezone: '-0700' } } } },
