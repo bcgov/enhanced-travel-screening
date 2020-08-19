@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
@@ -17,6 +18,7 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
+app.use(helmet());
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
