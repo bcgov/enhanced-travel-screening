@@ -4,10 +4,10 @@
   "dependencies": {
     "axios": "0.19.2",
     "custom_modules": "file:./custom_modules",
-    "dayjs": "1.8.28",
+    "dayjs": "1.8.33",
     "es6-promise-pool": "2.5.0",
-    "mongodb": "3.5.6",
-    "node-cache": "5.1.1",
+    "mongodb": "3.6.0",
+    "node-cache": "5.1.2",
     "tiny-async-pool": "1.1.0"
   }
 }

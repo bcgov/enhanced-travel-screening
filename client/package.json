@@ -15,15 +15,15 @@
     "@material-ui/lab": "4.0.0-alpha.49",
     "@material-ui/pickers": "3.2.10",
     "classnames": "2.2.6",
-    "formik": "2.1.4",
-    "moment": "2.24.0",
+    "formik": "2.1.5",
+    "moment": "2.27.0",
     "react": "16.13.1",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.1",
-    "react-router-dom": "5.1.2",
-    "yup": "0.28.3"
+    "react-router-dom": "5.2.0",
+    "yup": "0.29.3"
   },
   "devDependencies": {
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.3"
   }
 }
