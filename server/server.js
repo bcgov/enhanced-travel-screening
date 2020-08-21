@@ -21,7 +21,17 @@ const app = express();
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      styleSrc: ["'self'"]
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      blockAllMixedContent: [],
+      fontSrc: ["'self'"],
+      frameAncestors: ["'self'"],
+      imgSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'"],
+      upgradeInsecureRequests: []
     },
   })
 );
