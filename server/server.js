@@ -1,5 +1,4 @@
 const express = require('express');
-const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
@@ -18,23 +17,7 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      blockAllMixedContent: [],
-      fontSrc: ["'self'"],
-      frameAncestors: ["'self'"],
-      imgSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      scriptSrc: ["'self'"],
-      scriptSrcAttr: ["'none'"],
-      styleSrc: ["'self'"],
-      upgradeInsecureRequests: []
-    },
-  })
-);
+app.use(helmet());
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
