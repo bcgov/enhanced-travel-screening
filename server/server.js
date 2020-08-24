@@ -29,7 +29,7 @@ app.use(helmet({
       'frame-ancestors': ["'self'"],
       'img-src': ["'self'", 'data:'],
       'object-src': ["'none'"],
-      'script-src': ["'self'", "'unsafe-inline'", 'https://*.apps.gov.bc.ca'],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://*.gov.bc.ca'],
       'script-src-attr': ["'none'"],
       'style-src': ["'self'", 'https:', "'unsafe-inline'"],
       'upgrade-insecure-requests': [],
