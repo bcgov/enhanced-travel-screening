@@ -19,7 +19,9 @@ const apiBaseUrl = '/api/v1';
 const app = express();
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    scriptSrc: ['\'self\'', '*.gov.bc.ca'],
+  },
 }));
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
