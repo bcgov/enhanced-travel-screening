@@ -22,6 +22,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       'default-src': ["'self'"],
+      'connect-src': ["'self'", 'https://*.apps.gov.bc.ca'],
       'base-uri': ["'self'"],
       'block-all-mixed-content': [],
       'font-src': ["'self'", 'https:', 'data:'],
