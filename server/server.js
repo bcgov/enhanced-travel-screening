@@ -18,11 +18,9 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(helmet(
-  helmet({
-    contentSecurityPolicy: false,
-  }),
-));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
