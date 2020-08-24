@@ -21,7 +21,10 @@ const app = express();
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
+      defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", 'https://*.apps.gov.bc.ca'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   },
 }));
