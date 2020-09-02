@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { randomBytes } = require('crypto');
@@ -17,6 +18,24 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      'default-src': ["'self'"],
+      'connect-src': ["'self'", 'https://*.apps.gov.bc.ca'],
+      'base-uri': ["'self'"],
+      'block-all-mixed-content': [],
+      'font-src': ["'self'", 'https:', 'data:'],
+      'frame-ancestors': ["'self'"],
+      'img-src': ["'self'", 'data:'],
+      'object-src': ["'none'"],
+      'script-src': ["'self'", 'https://*.gov.bc.ca'],
+      'script-src-attr': ["'none'"],
+      'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+      'upgrade-insecure-requests': [],
+    },
+  },
+}));
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '1Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));

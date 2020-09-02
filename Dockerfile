@@ -7,7 +7,7 @@ WORKDIR /client
 COPY client/package*.json ./
 RUN npm set progress=false && npm ci --no-cache
 COPY client/. .
-RUN npm run build
+RUN INLINE_RUNTIME_CHUNK=false npm run build
 
 # Server
 FROM node:12-alpine AS server
