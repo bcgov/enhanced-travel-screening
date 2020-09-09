@@ -37,7 +37,7 @@ app.use(helmet({
   },
 }));
 app.use(requireHttps);
-app.use(bodyParser.json({ limit: '1Mb' }));
+app.use(bodyParser.json({ limit: '10Mb' }));
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Remove empty strings
