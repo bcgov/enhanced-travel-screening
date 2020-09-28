@@ -89,6 +89,9 @@ const executeTransactionPool = async (data, collection) => {
 
 const sendEtsToSBC = async (etsCollection) => {
   const data = await getUnsuccessfulSbcTransactions(etsCollection, '$arrival.date');
+  if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
+    return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`
+  }
   return executeTransactionPool(data, etsCollection);
 };
 
