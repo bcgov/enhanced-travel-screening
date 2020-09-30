@@ -97,6 +97,9 @@ const sendEtsToSBC = async (etsCollection) => {
 
 const sendPhacToSBC = async (phacCollection) => {
   let data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
+  if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
+    return `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`
+  }
   data = data.map(phacToSbc);
   return executeTransactionPool(data, phacCollection);
 };
