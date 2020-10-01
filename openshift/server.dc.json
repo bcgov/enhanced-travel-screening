@@ -1,0 +1,145 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "labels": {
+    "app": "${APP_NAME}",
+    "template": "${APP_NAME}-server"
+  },
+  "parameters": [
+    {
+      "name": "NAMESPACE",
+      "description": "The OpenShift namespace in which to deploy the server",
+      "required": true
+    },
+    {
+      "name": "APP_NAME",
+      "description": "App name that OpenShift objects will be prefixed with",
+      "required": true
+    },
+    {
+      "name": "IMAGE_TAG",
+      "description": "ImageStream tag for build and deploy",
+      "required": true
+    },
+    {
+      "name": "SERVER_PORT",
+      "description": "Port the server will be exposed on",
+      "value": "5000",
+      "required": true
+    },
+    {
+      "name": "DB_PORT",
+      "description": "Port used to connect the server to the database",
+      "value": "27017",
+      "required": true
+    }
+  ],
+  "objects": [
+    {
+      "apiVersion": "v1",
+      "kind": "Route",
+      "metadata": {
+        "name": "${APP_NAME}-server"
+      },
+      "spec": {
+        "host": "",
+        "to": {
+          "kind": "Service",
+          "name": "${APP_NAME}-server"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}-server"
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "activeDeadlineSeconds": 21600
+        },
+        "triggers": [
+          {
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${APP_NAME}-server"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "${APP_NAME}-server:${IMAGE_TAG}",
+                "namespace": "${NAMESPACE}"
+              }
+            },
+            "type": "ImageChange"
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${APP_NAME}-server"
+        },
+        "template": {
+          "metadata": {
+            "name": "${APP_NAME}-server",
+            "labels": {
+              "name": "${APP_NAME}-server"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "${APP_NAME}-server",
+                "image": " ",
+                "ports": [
+                  {
+                    "containerPort": "${{SERVER_PORT}}",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "2Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "512Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "imagePullPolicy": "IfNotPresent"
+              }
+            ],
+            "restartPolicy": "Always",
+            "dnsPolicy": "ClusterFirst"
+          }
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APP_NAME}-server"
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": "${{SERVER_PORT}}",
+            "targetPort": "${{SERVER_PORT}}"
+          }
+        ],
+        "selector": {
+          "name": "${APP_NAME}-server"
+        }
+      }
+    }
+  ]
+}
