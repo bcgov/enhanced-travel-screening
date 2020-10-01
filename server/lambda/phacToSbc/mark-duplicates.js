@@ -239,7 +239,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
     }
 
     // If we found a duplicate in either collection, update the record
-    if (duplicates[covidId]) {
+    if (duplicates[covidId] && process.env.DB_WRITE_SERVICE_DISABLED !== 'true') {
       await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
         { covid_id: covidId },
         {
@@ -257,6 +257,10 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   }
 
   // Report summary of results
+  if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
+    logs.push('DB_WRITE_SERVICE_DISABLED is true. Skipped writing of duplicateIds on serviceBCTransactions.');
+  }
+  
   logs.push(
     `Found ${Object.entries(duplicates).length} total duplicates`,
     `${phacToEtsDuplicateCount} duplicates within ETS collection`,
