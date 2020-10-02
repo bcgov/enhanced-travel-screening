@@ -1,2 +1,0 @@
-ping localhost &
-sleep infinity
