@@ -42,7 +42,7 @@ const cleanJoinArray = (a) => a
   .filter((i) => i !== '')
   .join(', ');
 
-const phacToSbc = (phacItem) => {
+const phacToSbc = (phacItem) => { // eslint-disable-line no-unused-vars
   const oldKeys = [
     'first_name', 'last_name', 'date_of_birth', 'address_1', 'postal_code', 'home_phone', 'mobile_phone', 'other_phone', 'arrival_date',
     'destination_type', 'email_address', 'province_territory', 'port_of_entry', 'land_port_of_entry', 'other_port_of_entry',
@@ -75,7 +75,7 @@ const phacToSbc = (phacItem) => {
 
 const makeTransactionIterator = (collection) => (d) => postToSbcAndUpdateDb(collection, d);
 
-const executeTransactionPool = async (data, collection) => {
+const executeTransactionPool = async (data, collection) => { // eslint-disable-line no-unused-vars
   const concurrency = 10; // How many requests running in parallel
   const iterator = makeTransactionIterator(collection);
   const results = await asyncPool(concurrency, data, iterator);
@@ -92,16 +92,18 @@ const sendEtsToSBC = async (etsCollection) => {
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`;
   }
-  return executeTransactionPool(data, etsCollection);
+  return 'This should not happen';
+  // return executeTransactionPool(data, etsCollection);
 };
 
 const sendPhacToSBC = async (phacCollection) => {
-  let data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
+  const data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
   }
-  data = data.map(phacToSbc);
-  return executeTransactionPool(data, phacCollection);
+  return 'This should not happen';
+  // data = data.map(phacToSbc);
+  // return executeTransactionPool(data, phacCollection);
 };
 
 module.exports = { sendPhacToSBC, sendEtsToSBC };

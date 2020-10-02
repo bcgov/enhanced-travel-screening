@@ -130,6 +130,8 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+          - name: DB_WRITE_SERVICE_DISABLED
+            value: "true"
           name: ${APP_NAME}-job
           image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
           command: [node, jobs/mark-duplicates.js]

@@ -1,5 +1,5 @@
 const dayjs = require('dayjs');
-// const { sendPhacToSBC } = require('./common/send-to-sbc');
+const { sendPhacToSBC } = require('./common/send-to-sbc');
 const postToSlack = require('./common/post-to-slack');
 const dbConnectionAndCollections = require('./common/db');
 
@@ -128,7 +128,7 @@ const createEtsKeys = (ets) => {
  *
  * @param db
  */
-const _ = async (etsCollection, phacCollection) => { // eslint-disable-line no-unused-vars
+const markDuplicates = async (etsCollection, phacCollection) => {
   const logs = ['Loading collections from database'];
   const cutoffDate = dayjs().subtract(13, 'day').startOf('day').toDate();
   const phac = await phacCollection.aggregate([
@@ -243,19 +243,20 @@ const _ = async (etsCollection, phacCollection) => { // eslint-disable-line no-u
 
     // If we found a duplicate in either collection, update the record
     if (duplicates[covidId] && process.env.DB_WRITE_SERVICE_DISABLED !== 'true') {
-      await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
-        { covid_id: covidId },
-        {
-          $push: {
-            serviceBCTransactions: {
-              status: 'success',
-              duplicateIds: duplicates[covidId],
-              processedAt: new Date().toISOString(),
-            },
-          },
-          $set: { updatedAt: new Date().toISOString() },
-        },
-      );
+      // await phacCollection.updateOne( // eslint-disable-line no-await-in-loop
+      //   { covid_id: covidId },
+      //   {
+      //     $push: {
+      //       serviceBCTransactions: {
+      //         status: 'success',
+      //         duplicateIds: duplicates[covidId],
+      //         processedAt: new Date().toISOString(),
+      //       },
+      //     },
+      //     $set: { updatedAt: new Date().toISOString() },
+      //   },
+      // );
+      logs.push(`This should not happen. DB_WRITE_SERVICE_DISABLED=${process.env.DB_WRITE_SERVICE_DISABLED}`);
     }
   }
 
@@ -278,14 +279,11 @@ const _ = async (etsCollection, phacCollection) => { // eslint-disable-line no-u
   const { connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
   const [etsCollection, phacCollection] = collections;
   try {
-    // const duplicates = await markDuplicates(etsCollection, phacCollection);
-    // console.log(duplicates);
-    // const transactions = await sendPhacToSBC(phacCollection);
-    // console.log(transactions);
-    // await postToSlack('PHAC to Service BC', start, duplicates, transactions);
-    const etsCount = await etsCollection.countDocuments({});
-    const phacCount = await phacCollection.countDocuments({});
-    await postToSlack('TEST FROM OCP', start, `Found ${etsCount} items in ETS collection`, `Found ${phacCount} items in PHAC collection`);
+    const duplicates = await markDuplicates(etsCollection, phacCollection);
+    console.log(duplicates);
+    const transactions = await sendPhacToSBC(phacCollection);
+    console.log(transactions);
+    await postToSlack('PHAC to Service BC (OCP)', start, duplicates, transactions);
   } catch (error) {
     console.error(`Failed to mark duplicates or post to SBC ${error}`);
   } finally {
