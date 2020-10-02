@@ -131,4 +131,5 @@ server-create:
 
 job-create:
 	@oc project $(OS_NAMESPACE)
+	@oc delete job $(APP_NAME)-job --ignore-not-found
 	@oc process -f openshift/test.job.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) SSH_USERNAME=$(AWS_SSH_USERNAME) SSH_KEY=$(AWS_SSH_KEY) SSH_HOST=$(AWS_SSH_HOST) DB_SERVER=$(AWS_DB_SERVER) DB_USER=$(AWS_DB_USER) DB_PASSWORD=$(AWS_DB_PASSWORD) DB_NAME=$(AWS_DB_NAME) | oc apply -f -

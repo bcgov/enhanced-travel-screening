@@ -3,9 +3,9 @@ const { MongoClient } = require('mongodb');
 
 const dbConnectionAndCollections = async (collections) => {
   await tunnel({
-    username: process.env.AWS_SSH_USERNAME,
-    privateKey: Buffer.from(process.env.AWS_SSH_KEY, 'base64'),
-    host: process.env.AWS_SSH_HOST,
+    username: process.env.SSH_USERNAME,
+    privateKey: Buffer.from(process.env.SSH_KEY, 'base64'),
+    host: process.env.SSH_HOST,
     dstHost: process.env.DB_SERVER,
     dstPort: process.env.DB_PORT,
     localPort: process.env.DB_PORT,
