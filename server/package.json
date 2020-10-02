@@ -25,6 +25,7 @@
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
+    "tunnel-ssh": "4.1.4",
     "winston": "3.3.3",
     "winston-cloudwatch": "2.3.2",
     "yup": "0.29.3"

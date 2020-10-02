@@ -1,0 +1,113 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${APP_NAME}
+parameters:
+- name: NAMESPACE
+  description: The OpenShift namespace in which to deploy the server
+  required: true
+- name: APP_NAME
+  description: App name that OpenShift objects will be prefixed with
+  required: true
+- name: IMAGE_REGISTRY
+  description: Image registry from which to pull the image run by the job
+  value: docker-registry.default.svc:5000
+  required: true
+- name: SSH_USERNAME
+  description: Username required to create SSH tunnel to AWS bastion host
+  required: true
+- name: SSH_KEY
+  description: Key required to create SSH tunnel to AWS bastion host
+  required: true
+- name: SSH_HOST
+  description: Address of the AWS bastion host
+  required: true
+- name: DB_SERVER
+  description: Address of MongoDB or DocumentDB instance
+  required: true
+- name: DB_PORT
+  description: Port used to connect to database
+  value: "27017"
+  required: true
+- name: DB_USER
+  description: Username used to connect to database
+  required: true
+- name: DB_PASSWORD
+  description: Password used to connect to database
+  required: true
+- name: DB_NAME
+  description: Name of the database to which the app connects
+  required: true
+objects:
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: ${APP_NAME}-job
+    labels:
+      name: ${APP_NAME}-job
+  stringData:
+    ssh-username: ${SSH_USERNAME}
+    ssh-key: ${SSH_KEY}
+    ssh-host: ${SSH_HOST}
+    db-server: ${DB_SERVER}
+    db-port: ${DB_PORT}
+    db-user: ${DB_USER}
+    db-password: ${DB_PASSWORD}
+    db-name: ${DB_NAME}
+- kind: Job
+  apiVersion: batch/v1
+  metadata:
+    name: ${APP_NAME}-job
+  spec:
+    parallelism: 1
+    completions: 1
+    activeDeadlineSeconds: 1800
+    backoffLimit: 6
+    template:
+      spec:
+        containers:
+        - env:
+          - name: SSH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: ssh-username
+                name: ${APP_NAME}-job
+          - name: SSH_KEY
+            valueFrom:
+              secretKeyRef:
+                key: ssh-key
+                name: ${APP_NAME}-job
+          - name: SSH_HOST
+            valueFrom:
+              secretKeyRef:
+                key: ssh-host
+                name: ${APP_NAME}-job
+          - name: DB_SERVER
+            valueFrom:
+              secretKeyRef:
+                key: db-server
+                name: ${APP_NAME}-job
+          - name: DB_PORT
+            valueFrom:
+              secretKeyRef:
+                key: db-port
+                name: ${APP_NAME}-job
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: db-user
+                name: ${APP_NAME}-job
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: db-password
+                name: ${APP_NAME}-job
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: db-name
+                name: ${APP_NAME}-job
+          name: ${APP_NAME}-job
+          image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
+          command: [node, jobs/test.js]
+        restartPolicy: OnFailure

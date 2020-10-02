@@ -1,0 +1,54 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${APP_NAME}
+parameters:
+- name: NAMESPACE
+  description: The OpenShift namespace in which to deploy the server
+  required: true
+- name: APP_NAME
+  description: App name that OpenShift objects will be prefixed with
+  required: true
+- name: REPO
+  description: URL of boilerplate repository
+  value: https://github.com/bcgov/enhanced-travel-screening.git
+  required: true
+- name: BRANCH
+  description: Branch of the boilerplate repository that should be built
+  value: master
+  required: true
+- name: IMAGE_TAG
+  description: ImageStream tag for build and deploy
+  value: latest
+  required: true
+objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP_NAME}-server
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${APP_NAME}-server
+  spec:
+    completionDeadlineSeconds: 600
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    runPolicy: SerialLatestOnly
+    source:
+      type: Git
+      git:
+        uri: ${REPO}
+        ref: origin/${BRANCH}
+    strategy:
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APP_NAME}-server:${IMAGE_TAG}
+        namespace: ${NAMESPACE}
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi

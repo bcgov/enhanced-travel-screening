@@ -10,6 +10,10 @@ export ENV_PREFIX?=ets
 export ENV_SUFFIX?=dev
 export LAMBDA_FUNC?=phacToSbc
 export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
+export APP_NAME:=ets
+export OS_NAMESPACE_PREFIX:=rupaog
+export OS_NAMESPACE_SUFFIX?=dev
+export OS_NAMESPACE=$(OS_NAMESPACE_PREFIX)-$(OS_NAMESPACE_SUFFIX)
 .DEFAULT_GOAL:=print-status
 
 print-status:
@@ -118,3 +122,13 @@ tag-lambda-prod:
 	@echo "Deploying lambda functions code to prod AWS Lambda"
 	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
 	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
+
+# OpenShift Aliases
+
+server-create:
+	@oc project $(OS_NAMESPACE)
+	@oc process -f openshift/server.bc.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) | oc apply -f -
+
+job-create:
+	@oc project $(OS_NAMESPACE)
+	@oc process -f openshift/test.job.yml -p NAMESPACE=$(OS_NAMESPACE) APP_NAME=$(APP_NAME) SSH_USERNAME=$(AWS_SSH_USERNAME) SSH_KEY=$(AWS_SSH_KEY) SSH_HOST=$(AWS_SSH_HOST) DB_SERVER=$(AWS_DB_SERVER) DB_USER=$(AWS_DB_USER) DB_PASSWORD=$(AWS_DB_PASSWORD) DB_NAME=$(AWS_DB_NAME) | oc apply -f -
