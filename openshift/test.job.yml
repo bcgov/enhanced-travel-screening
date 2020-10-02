@@ -41,6 +41,15 @@ parameters:
 - name: SLACK_ENDPOINT
   description: Slack webhook endpoint
   required: true
+- name: SBC_USER
+  description: Username for Service BC API
+  required: true
+- name: SBC_PASSWORD
+  description: Password for Service BC API
+  required: true
+- name: SBC_SECRET
+  description: Secret for Service BC API
+  required: true
 - name: CLUSTER
   description: Path to OCP cluster
   value: https://console.pathfinder.gov.bc.ca:8443
