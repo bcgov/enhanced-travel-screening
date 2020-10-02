@@ -1,6 +1,6 @@
 const dayjs = require('dayjs');
 const asyncPool = require('tiny-async-pool');
-const { postServiceItem } = require('./service-bc-api');
+const postServiceItem = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(1, 'day')]
