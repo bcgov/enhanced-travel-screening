@@ -1,5 +1,5 @@
 // const { sendPhacToSBC } = require('./common/send-to-sbc');
-// const markDuplicates = require('./common/post-to-slack');
+const markDuplicates = require('./common/post-to-slack');
 // const postToSlack = require('./common/post-to-slack');
 const dbConnectionAndCollections = require('./common/db');
 
@@ -8,8 +8,8 @@ const dbConnectionAndCollections = require('./common/db');
   const { tunnel, connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
   const [etsCollection, phacCollection] = collections;
   try {
-    // const duplicates = await markDuplicates(etsCollection, phacCollection);
-    // console.log(duplicates);
+    const duplicates = await markDuplicates(etsCollection, phacCollection);
+    console.log(duplicates);
     // const transactions = await sendPhacToSBC(phacCollection);
     // console.log(transactions);
     // await postToSlack('PHAC to Service BC (OCP)', start, duplicates, transactions);
