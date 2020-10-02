@@ -1,5 +1,5 @@
 // const { sendPhacToSBC } = require('./common/send-to-sbc');
-const markDuplicates = require('./common/post-to-slack');
+const markDuplicates = require('./common/mark-duplicates');
 // const postToSlack = require('./common/post-to-slack');
 const dbConnectionAndCollections = require('./common/db');
 
