@@ -7,11 +7,11 @@ const submitURL = `https://${process.env.DB_NAME === 'ets-prod' ? '' : 'test-'}s
 const appCache = new NodeCache();
 
 const auth = {
-  username: process.env.BCS_USER,
-  password: process.env.BCS_PW,
+  username: process.env.SBC_USER,
+  password: process.env.SBC_PASSWORD,
   grant_type: 'password',
   client_id: 'camunda-identity-service',
-  client_secret: process.env.BCS_CLI_SECRET,
+  client_secret: process.env.SBC_SECRET,
 };
 
 const getToken = async () => {

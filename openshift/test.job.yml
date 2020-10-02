@@ -62,6 +62,9 @@ objects:
     db-password: ${DB_PASSWORD}
     db-name: ${DB_NAME}
     slack-endpoint: ${SLACK_ENDPOINT}
+    sbc-user: ${SBC_USER}
+    sbc-password: ${SBC_PASSWORD}
+    sbc-secret: ${SBC_SECRET}
 - kind: Job
   apiVersion: batch/v1
   metadata:
@@ -119,6 +122,21 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: slack-endpoint
+                name: ${APP_NAME}-job
+          - name: SBC_USER
+            valueFrom:
+              secretKeyRef:
+                key: sbc-user
+                name: ${APP_NAME}-job
+          - name: SBC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: sbc-password
+                name: ${APP_NAME}-job
+          - name: SBC_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: sbc-secret
                 name: ${APP_NAME}-job
           - name: CLUSTER
             value: ${CLUSTER}
