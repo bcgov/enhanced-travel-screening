@@ -13,7 +13,7 @@ const tunnelOptions = {
 };
 
 const dbConnectionAndCollections = async (collections) => {
-  await tunnel(tunnelOptions);
+  const tnl = await tunnel(tunnelOptions);
   const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@localhost:${process.env.DB_PORT}`;
   const options = {
     useNewUrlParser: true,
@@ -25,7 +25,7 @@ const dbConnectionAndCollections = async (collections) => {
   };
   const connection = await MongoClient.connect(uri, options);
   const db = connection.db(process.env.DB_NAME);
-  return { connection, collections: collections.map((c) => db.collection(c)) };
+  return { tunnel: tnl, connection, collections: collections.map((c) => db.collection(c)) };
 };
 
 module.exports = dbConnectionAndCollections;

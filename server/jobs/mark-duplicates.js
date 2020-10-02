@@ -276,7 +276,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
 
 (async () => {
   const start = new Date().getTime();
-  const { connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
+  const { tunnel, connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
   const [etsCollection, phacCollection] = collections;
   try {
     const duplicates = await markDuplicates(etsCollection, phacCollection);
@@ -288,5 +288,6 @@ const markDuplicates = async (etsCollection, phacCollection) => {
     console.error(`Failed to mark duplicates or post to SBC ${error}`);
   } finally {
     connection.close();
+    tunnel.close();
   }
 })();
