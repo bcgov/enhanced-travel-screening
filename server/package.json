@@ -25,6 +25,7 @@
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
+    "tiny-async-pool": "1.1.0",
     "tunnel-ssh": "4.1.4",
     "winston": "3.3.3",
     "winston-cloudwatch": "2.3.2",
@@ -42,8 +43,7 @@
     "lint-staged": "10.2.11",
     "mockdate": "3.0.2",
     "nodemon": "2.0.4",
-    "supertest": "4.0.2",
-    "tiny-async-pool": "1.1.0"
+    "supertest": "4.0.2"
   },
   "jest": {
     "testEnvironment": "node",

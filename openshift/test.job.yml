@@ -38,6 +38,13 @@ parameters:
 - name: DB_NAME
   description: Name of the database to which the app connects
   required: true
+- name: SLACK_ENDPOINT
+  description: Slack webhook endpoint
+  required: true
+- name: CLUSTER
+  description: Path to OCP cluster
+  value: https://console.pathfinder.gov.bc.ca:8443
+  required: true
 objects:
 - kind: Secret
   apiVersion: v1
@@ -54,6 +61,7 @@ objects:
     db-user: ${DB_USER}
     db-password: ${DB_PASSWORD}
     db-name: ${DB_NAME}
+    slack-endpoint: ${SLACK_ENDPOINT}
 - kind: Job
   apiVersion: batch/v1
   metadata:
@@ -107,7 +115,22 @@ objects:
               secretKeyRef:
                 key: db-name
                 name: ${APP_NAME}-job
+          - name: SLACK_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: slack-endpoint
+                name: ${APP_NAME}-job
+          - name: CLUSTER
+            value: ${CLUSTER}
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           name: ${APP_NAME}-job
           image: ${IMAGE_REGISTRY}/${NAMESPACE}/${APP_NAME}-server
-          command: [node, jobs/test.js]
+          command: [node, jobs/mark-duplicates.js]
         restartPolicy: OnFailure
