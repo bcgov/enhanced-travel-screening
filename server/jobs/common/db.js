@@ -20,6 +20,8 @@ const dbConnectionAndCollections = async (collections) => {
     useUnifiedTopology: true,
     ssl: true, // Using SSH tunnel through bastion host
     sslValidate: false, // Using SSH tunnel through bastion host
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 30000,
   };
   const connection = await MongoClient.connect(uri, options);
   const db = connection.db(process.env.DB_NAME);
