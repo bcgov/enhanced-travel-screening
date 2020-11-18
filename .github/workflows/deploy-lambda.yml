@@ -31,7 +31,7 @@ jobs:
         run: |
           npm install --prefix nodejs
           zip -r lambdaLayer.zip .
-          echo ::set-env name=LAYER_ARN::$(aws lambda publish-layer-version --compatible-runtimes nodejs12.x --layer-name ${{ env.LAMBDA_LAYER }} --zip-file fileb://${PWD}/lambdaLayer.zip | jq '.LayerVersionArn' -r)
+          echo "LAYER_ARN=$(aws lambda publish-layer-version --compatible-runtimes nodejs12.x --layer-name ${{ env.LAMBDA_LAYER }} --zip-file fileb://${PWD}/lambdaLayer.zip | jq '.LayerVersionArn' -r)" >> $GITHUB_ENV
 
       - name: Zip lambda function 1 folder and ship to AWS Lambda
         working-directory: ./server/lambda/${{ env.LAMBDA_FUNC1 }}

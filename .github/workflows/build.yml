@@ -49,8 +49,8 @@ jobs:
       - name: Extract Tag, Set Source and Destination Env
         run: |
           export ENV_SUFFIX=${GITHUB_REF#refs/*/}
-          echo ::set-env name=ENV_SUFFIX::$ENV_SUFFIX
-          echo ::set-env name=DESTINATION_ENV::$(make get-latest-env-name)
+          echo "ENV_SUFFIX=$ENV_SUFFIX" >> $GITHUB_ENV
+          echo "DESTINATION_ENV=$(make get-latest-env-name)" >> $GITHUB_ENV
 
       - name: Build Image
         run: make build-image
