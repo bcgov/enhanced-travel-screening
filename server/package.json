@@ -34,7 +34,7 @@
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jest": "23.20.0",
-    "fast-csv": "4.3.1",
+    "fast-csv": "4.3.6",
     "flat": "5.0.2",
     "husky": "4.2.5",
     "jest": "26.4.0",
