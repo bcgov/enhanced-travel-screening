@@ -2,7 +2,7 @@
   "name": "ets-layer",
   "version": "1.0.0",
   "dependencies": {
-    "axios": "0.19.2",
+    "axios": "^0.21.1",
     "custom_modules": "file:./custom_modules",
     "dayjs": "1.8.33",
     "es6-promise-pool": "2.5.0",
