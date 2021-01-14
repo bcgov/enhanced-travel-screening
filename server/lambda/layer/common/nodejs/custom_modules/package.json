@@ -2,7 +2,7 @@
   "name": "custom_modules",
   "version": "1.0.0",
   "dependencies": {
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "dayjs": "1.8.33",
     "mongodb": "3.6.1",
     "node-cache": "5.1.2",
