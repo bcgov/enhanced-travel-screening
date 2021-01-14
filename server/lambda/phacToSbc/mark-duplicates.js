@@ -260,7 +260,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     logs.push('DB_WRITE_SERVICE_DISABLED is true. Skipped writing of duplicateIds on serviceBCTransactions.');
   }
-  
+
   logs.push(
     `Found ${Object.entries(duplicates).length} total duplicates`,
     `${phacToEtsDuplicateCount} duplicates within ETS collection`,
