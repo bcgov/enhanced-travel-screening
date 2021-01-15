@@ -19,6 +19,8 @@ This is a digital service built in partnership with the Ministry of Health and S
 
 ## Project Status
 
+[![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
 This application has been released and is in active feature development.
 
 ## Features
