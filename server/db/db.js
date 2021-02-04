@@ -75,10 +75,8 @@ class DBClient {
 
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
 
-    const uri = process.env.USE_GHA_MONGO === 'true' ?
-      'mongodb://localhost/test'
-      :
-      `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`;
+    const uri = process.env.USE_GHA_MONGO === 'true'
+      ? 'mongodb://localhost/test' : `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`;
 
     /** @type {MongoClientOptions} */
     const options = {
