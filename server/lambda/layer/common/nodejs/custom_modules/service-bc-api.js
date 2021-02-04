@@ -2,7 +2,7 @@ const axios = require('axios');
 const qs = require('querystring');
 const NodeCache = require('node-cache');
 
-const tokenUrl = `https://${process.env.DB_NAME === 'ets-prod' ? 'sso' : 'sso-test'}.pathfinder.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token`;
+const tokenUrl = `https://${process.env.DB_NAME === 'ets-prod' ? '' : 'test.'}oidc.gov.bc.ca/auth/realms/vtkayq4c/protocol/openid-connect/token`;
 const submitURL = `https://${process.env.DB_NAME === 'ets-prod' ? 'serviceflow.servicebc' : 'test-serviceflow.apps.silver.devops'}.gov.bc.ca/camunda/engine-rest/process-definition/key/covid_travel_plan_gateway/start`;
 const appCache = new NodeCache();
 
