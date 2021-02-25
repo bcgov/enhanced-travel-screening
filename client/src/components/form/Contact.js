@@ -89,6 +89,7 @@ const Contact = () => {
           </Typography>
 
           <hr />
+
           <Box mt={2} mb={2}>
             <Typography variant="body2" gutterBottom>
               <b>Telephone for the Deaf</b>
@@ -99,6 +100,7 @@ const Contact = () => {
               text={<Link href="tel:+711">Across B.C. Dial 711</Link>}
             />
           </Box>
+
           <hr />
 
           <Typography variant="body2" paragraph>
@@ -111,15 +113,21 @@ const Contact = () => {
 
           <ul className={classes.list}>
             <li>翻譯服務</li>
-            <li>翻译服务 </li>
+            <li>翻译服务</li>
             <li>ਅਨੁਵਾਦਸਰਵਿਸਿਜ</li>
-            <li> خدمات  ت  رج  م  ه؟</li>
-            <li>Services de traduction </li>
+            <li>خدمات  ت  رج  م  ه؟</li>
+            <li>Services de traduction</li>
             <li>Servicios de traducción</li>
           </ul>
 
           <Typography variant="body2" paragraph>
             <b>Service is available 7:30 am to 8 pm Pacific Time</b>
+          </Typography>
+
+          <hr />
+
+          <Typography variant="body2" paragraph>
+            For a privacy-related matter only, please call a privacy officer at <Link href="tel:+12364783850">236-478-3850</Link>. For all other inquires or if you need assistance completing this form, please see above.
           </Typography>
 
           <Button
