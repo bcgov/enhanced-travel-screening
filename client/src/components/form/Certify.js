@@ -35,26 +35,13 @@ const Certify = ({ submitLoading, submitError }) => {
 
         {/** Disclaimer */}
         <Grid item xs={12}>
-          <Typography variant="body1" gutterBottom>
-            <b>Collection Notice</b>
-          </Typography>
           <Typography variant="body2" paragraph>
             Your personal information as well as those of your household is collected by the Ministry
             of Health under the authority of sections 26(a), (c), (e) and s.27(1)(a)(iii) of the
             Freedom of Information and Protection of Privacy Act, the Public Health Act and the
             federal Quarantine Act, for the purposes of reducing the spread of COVID-19. Personal
             information may be shared with personnel providing support services and follow-up during
-            self-isolation. Should you have any questions or concerns about the collection of your
-            personal information please contact:
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Title: Ministry of Health, Chief Privacy Officer
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Address: 3rd floor – 1483 Douglas Street Victoria BC V8W 9P1
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Telephone: 236-478-1666
+            self-isolation.
           </Typography>
         </Grid>
 
