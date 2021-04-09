@@ -23,6 +23,11 @@ const validateDateString = (s) => {
   return typeof date === 'number' && !Number.isNaN(date);
 };
 
+const validatePastDateString = (s) => {
+    if (!validateDateString(s)) return false;
+    return Date.parse(s) <= new Date();
+};
+
 const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
@@ -49,7 +54,7 @@ export const FormSchema = yup.object().noUnknown().shape({
   province: yup.string().required('Province is required').oneOf(provinces, 'Invalid province'),
   // postalCode: yup.string().required().matches(/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/),
   postalCode: yup.string().nullable(),
-  dob: yup.string().required('Date of birth is required').test('is-date', 'Not a valid date', validateDateString),
+  dob: yup.string().required('Date of birth is required').test('is-date', 'Not a valid date', validatePastDateString),
 
   // Travel information
   includeAdditionalTravellers: yup.boolean().typeError('Must specify additional travellers').required('Must specify additional travellers'),
@@ -59,7 +64,7 @@ export const FormSchema = yup.object().noUnknown().shape({
       yup.object().noUnknown('Unknown key for additional traveller information').shape({
         firstName: yup.string().required('First name is required'),
         lastName: yup.string().required('Last name is required'),
-        dob: yup.string().required('Date of birth is required').test('is-date', ' Not a valid date', validateDateString),
+        dob: yup.string().required('Date of birth is required').test('is-date', ' Not a valid date', validatePastDateString),
       }),
     ).test('is-length', 'Number of additional travellers must be between 1 and 10', (v) => v.length >= 1 && v.length <= 10),
     otherwise: yup.array().test('is-empty', 'Additional travellers must be empty', (v) => v && v.length === 0),
