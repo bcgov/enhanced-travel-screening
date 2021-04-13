@@ -25,8 +25,8 @@ const validateDateString = (s) => {
 
 const validatePastDateString = (s) => {
     if (!validateDateString(s)) return false;
-    // return false if more than 100 years in the past
-    if (new Date() - Date.parse(s) > 3.154e12) return false;
+    // return false if before 1900
+    if (Date.parse(s) - new Date('1900-01-01') < 0) return false;
 
     // return false if ahead of current date
     return Date.parse(s) <= new Date();
