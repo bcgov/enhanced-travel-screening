@@ -25,6 +25,8 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   return items;
 };
 
+// Following NoSQL recommendation, in this case, we want to store
+// BC Services transactional data on the record itself
 const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
   { id },
   { $push: { serviceBCTransactions: transaction }, $set: { updatedAt: new Date().toISOString() } },

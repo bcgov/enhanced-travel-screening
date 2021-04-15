@@ -90,15 +90,7 @@ app.post(`${apiBaseUrl}/form`,
       updatedAt: currentIsoDate,
     };
 
-    // Post to ServicesBC and cache status of the submission
-    const serviceResponse = await postServiceItem(formItem);
-
-    await formsCollection.insertOne({
-      ...formItem,
-      // Following NoSQL recommendation, in this case, we want to store
-      // BC Services transactional data on the form itself
-      serviceBCTransactions: [serviceResponse],
-    });
+    await formsCollection.insertOne(formItem);
 
     return res.json({ id, isolationPlanStatus });
   }));
