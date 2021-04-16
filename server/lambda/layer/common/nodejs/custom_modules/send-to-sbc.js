@@ -3,7 +3,7 @@ const asyncPool = require('tiny-async-pool');
 const { postServiceItem } = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
-  const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(1, 'day')]
+  const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(3, 'day')]
     .map((d) => d.startOf('day').toDate());
   const query = [
     { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: arrivalKey, timezone: '-0700' } } } },
@@ -25,6 +25,8 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   return items;
 };
 
+// Following NoSQL recommendation, in this case, we want to store
+// BC Services transactional data on the record itself
 const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
   { id },
   { $push: { serviceBCTransactions: transaction }, $set: { updatedAt: new Date().toISOString() } },

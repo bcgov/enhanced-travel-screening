@@ -44,6 +44,7 @@ const PrimaryContactInformation = ({ isDisabled }) => {
             component={RenderDateField}
             label="* Date of birth (yyyy/mm/dd)"
             openTo="year"
+            minDate="1900-01-01"
             disableFuture
             disabled={isDisabled}
           />
