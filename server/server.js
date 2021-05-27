@@ -1,11 +1,8 @@
 const express = require('express');
-const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const path = require('path');
 const { randomBytes } = require('crypto');
 const { passport } = require('./auth.js');
 const requireHttps = require('./require-https.js');
-const { postServiceItem } = require('./lambda/layer/common/nodejs/custom_modules/service-bc-api.js');
 const postToSlack = require('./lambda/layer/common/nodejs/custom_modules/post-to-slack.js');
 const deriveTravellerKey = require('./utils/derive-traveller-key.js');
 const {
@@ -18,27 +15,8 @@ const logger = require('./logger.js');
 const apiBaseUrl = '/api/v1';
 const app = express();
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      'default-src': ["'self'"],
-      'connect-src': ["'self'", 'https://*.apps.gov.bc.ca'],
-      'base-uri': ["'self'"],
-      'block-all-mixed-content': [],
-      'font-src': ["'self'", 'https:', 'data:'],
-      'frame-ancestors': ["'self'"],
-      'img-src': ["'self'", 'data:'],
-      'object-src': ["'none'"],
-      'script-src': ["'self'", 'https://*.gov.bc.ca'],
-      'script-src-attr': ["'none'"],
-      'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-      'upgrade-insecure-requests': [],
-    },
-  },
-}));
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '10Mb' }));
-app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Remove empty strings
 const scrubObject = (obj) => {
@@ -218,11 +196,6 @@ app.get(`${apiBaseUrl}/validate`,
 // Version number
 app.get(`${apiBaseUrl}/version`,
   (req, res) => res.json({ version: process.env.VERSION }));
-
-// Client app
-if (process.env.NODE_ENV === 'production') {
-  app.get('/*', (req, res) => res.sendFile(path.join(__dirname, '../client/build/index.html')));
-}
 
 app.use(errorHandler);
 

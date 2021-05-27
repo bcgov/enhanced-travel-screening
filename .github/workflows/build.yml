@@ -50,16 +50,16 @@ jobs:
         run: |
           export ENV_SUFFIX=${GITHUB_REF#refs/*/}
           echo "ENV_SUFFIX=$ENV_SUFFIX" >> $GITHUB_ENV
-          echo "DESTINATION_ENV=$(make get-latest-env-name)" >> $GITHUB_ENV
+          echo "DESTINATION_ENV=$(make get-latest-env-name -f makefile.old)" >> $GITHUB_ENV
 
       - name: Build Image
-        run: make build-image
+        run: make build-image -f makefile.old
 
       - name: Push Image
-        run: make push-image
+        run: make push-image -f makefile.old
 
       - name: Create Artifact and Deploy to EB
-        run: make promote-image
+        run: make promote-image -f makefile.old
 
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.3.0

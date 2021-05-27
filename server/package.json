@@ -11,12 +11,11 @@
     "test": "NODE_ENV=test jest --runInBand"
   },
   "dependencies": {
-    "aws-sdk": "2.735.0",
+    "aws-serverless-express": "^3.4.0",
     "axios": "0.21.1",
     "body-parser": "1.19.0",
     "crypto": "1.0.1",
     "dayjs": "1.8.33",
-    "es6-promise-pool": "2.5.0",
     "express": "4.17.1",
     "helmet": "4.1.0",
     "jsonwebtoken": "8.5.1",

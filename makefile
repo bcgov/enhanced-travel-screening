@@ -1,29 +1,135 @@
 #!make
 
--include .env
+ENV_NAME ?= dev
+export AWS_REGION ?= ca-central-1
 
-export $(shell sed 's/=.*//' .env)
+
+TERRAFORM_DIR = terraform/$(ENV_NAME)
+PROJECT_CODE = $(LZ2_PROJECT)-$(ENV_NAME)
+
+
+export PROJECT_NAME = ets
+export LZ2_PROJECT = klwrig
+
+# Git Stuff 
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
-export IMAGE_TAG=${COMMIT_SHA}
-export PROJECT:=enhanced-travel-screening
-export ENV_PREFIX?=ets
-export ENV_SUFFIX?=dev
-export LAMBDA_FUNC?=phacToSbc
-export VERSION_LABEL:=$(ENV_PREFIX)-$(ENV_SUFFIX)-$(IMAGE_TAG)
-.DEFAULT_GOAL:=print-status
+export REPO_LOCATION=$(shell git rev-parse --show-toplevel)
 
-print-status:
-	@echo "Current Settings:"
-	@echo "ACCOUNT ID: $(ACCOUNT_ID)"
-	@echo "S3 BUCKET: $(S3_BUCKET)"
-	@echo "PROJECT: $(PROJECT)"
-	@echo "REGION: $(REGION)"
-	@echo "PROFILE: $(PROFILE)"
-	@echo "COMMIT_SHA: $(COMMIT_SHA)"
-	@echo "IMAGE_TAG: $(IMAGE_TAG)"
-	@echo "VERSION_LABEL: $(VERSION_LABEL)"
+define TFVARS_DATA
+project_name = "$(PROJECT_NAME)"
+target_env = "$(ENV_NAME)"
+project_code = "$(PROJECT_CODE)"
+git_version = "ETS-$(COMMIT_SHA)"
+api_zip = "build/server.zip"
+ets_to_sbc_zip = "build/etsToSbc.zip"
+phac_to_sbc_zip = "build/phacToSbc.zip"
+endef
+export TFVARS_DATA
 
-# Local Development
+define TF_BACKEND_CFG
+workspaces { name = "$(LZ2_PROJECT)-$(ENV_NAME)" }
+hostname     = "app.terraform.io"
+organization = "bcgov"
+endef
+export TF_BACKEND_CFG
+
+# ============================================================= #
+# Terraform automation
+# ============================================================= #
+
+write-config-tf:
+	@echo "$$TFVARS_DATA" > $(TERRAFORM_DIR)/.auto.tfvars
+	@echo "$$TF_BACKEND_CFG" > $(TERRAFORM_DIR)/backend.hcl
+
+init: write-config-tf
+	# Initializing the terraform environment
+	@terraform -chdir=$(TERRAFORM_DIR) init -input=false \
+		-reconfigure \
+		-backend-config=backend.hcl
+
+plan: init
+	# Creating all AWS infrastructure.
+	@terraform -chdir=$(TERRAFORM_DIR) plan
+
+apply: init
+	# Creating all AWS infrastructure.
+	@terraform -chdir=$(TERRAFORM_DIR) apply -auto-approve -input=false
+
+
+force-unlock: init
+	terraform -chdir=$(TERRAFORM_DIR) force-unlock $(LOCK_ID)
+
+destroy: init
+	terraform -chdir=$(TERRAFORM_DIR) destroy
+
+all: build-client build-lambdas init apply
+
+# ============================================================= #
+# Builds 
+# ============================================================= #
+
+build-client:
+	rm -rf ./terraform/build/client || true
+	npm install --prefix client
+	npm run --prefix client build
+	mkdir -p ./terraform/build
+	mv ./client/build ./terraform/build/client
+
+build-lambdas:
+	
+	@echo -e "\n\n\n============================="
+	@echo "Cleaning up previous builds"
+	@echo "============================="
+	rm -rf ./terraform/build/server || true
+	mkdir -p ./terraform/build
+	
+	
+	@echo -e "\n\n\n============================="
+	@echo "Install Node Modules in all packages"
+	@echo "============================="
+	npm install --production --prefix server
+	npm install --production --prefix server/lambda/layer/common/nodejs/custom_modules
+	npm install --production --prefix server/lambda/layer/common/nodejs
+
+	@echo -e "\n\n\n============================="
+	@echo "Copy backend to temp folder to start build"
+	@echo "============================="
+	cp -r ./server ./terraform/build/server
+
+	@echo -e "\n\n\n============================="
+	@echo "Optimize node modules size"
+	@echo "============================="
+	npx modclean -n default:safe,default:caution -er -D terraform/build/server
+
+	curl -s https://gobinaries.com/tj/node-prune |  PREFIX=. sh
+	./node-prune terraform/build/server
+	rm node-prune
+	
+	@echo -e "\n\n\n============================="
+	@echo "Build Main Server lambda"
+	@echo "============================="
+	cd $(REPO_LOCATION)/terraform/build/server && zip -rq $(REPO_LOCATION)/terraform/build/server.zip *
+
+	@echo -e "\n\n\n============================="
+	@echo "Copy Node Modules, Remove custom_modules symlink, Copy custom_modules aaannnd ZIP"
+	@echo "============================="
+
+	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/node_modules $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc
+	@rm $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc/node_modules/custom_modules
+	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc/node_modules/custom_modules
+	cd $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc && zip -rq $(REPO_LOCATION)/terraform/build/phacToSbc.zip *
+
+	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/node_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc
+	@rm $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
+	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
+	cd $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc && zip -rq $(REPO_LOCATION)/terraform/build/etsToSbc.zip *
+
+	rm -rf $(REPO_LOCATION)/terraform/$(ENV_NAME)/build/ && cp -r $(REPO_LOCATION)/terraform/build/ $(REPO_LOCATION)/terraform/$(ENV_NAME)/build/
+
+
+# ============================================================= #
+# Local Development - TODO: Update to work here. 
+# ============================================================= #
 
 build-local:
 	@echo "Building local app image"
@@ -52,69 +158,8 @@ close-local:
 
 local-db-seed:
 	@echo "Seeding local DB container"
-	@docker exec -it $(PROJECT)-server npm run db:seed
+	@docker exec -it $(PROJECT_NAME)-server npm run db:seed
 
 local-server-tests:
 	@echo "Running tests in local app container"
-	@docker exec -it $(PROJECT)-server npm test
-
-# Pipeline
-
-get-latest-env-name:
-	@aws elasticbeanstalk describe-environments | jq -cr '.Environments | .[] | select(.Status == "Ready" and (.EnvironmentName | test("^$(ENV_PREFIX)-$(ENV_SUFFIX)(-[0-9]+)?$$"))) | .EnvironmentName' | sort | tail -n 1
-
-get-dest-env-load-balancer-name:
-	@aws elasticbeanstalk describe-environment-resources --environment-name $(DESTINATION_ENV) | jq -cr '.EnvironmentResources | .LoadBalancers | .[] | .Name' | sort | tail -n 1
-
-create-secure-tls-policy:
-	@aws elb create-load-balancer-policy --load-balancer-name $(ENV_LOAD_BALANCER) --policy-name TLS-1-2 --policy-type-name SSLNegotiationPolicyType --policy-attributes AttributeName=Reference-Security-Policy,AttributeValue=ELBSecurityPolicy-TLS-1-2-2017-01
-
-set-secure-tls-policy:
-	@aws elb set-load-balancer-policies-of-listener --load-balancer-name $(ENV_LOAD_BALANCER) --load-balancer-port 443 --policy-names TLS-1-2
-
-create-new-env-name:
-	@echo $(ENV_PREFIX)-$(ENV_SUFFIX)-$(shell date '+%Y%m%d%H%M')
-
-build-image:
-	@echo "Building image $(PROJECT):$(IMAGE_TAG)"
-	@docker build -t $(PROJECT):$(IMAGE_TAG) --build-arg VERSION=$(IMAGE_TAG) .
-
-push-image:
-	@echo "Pushing image $(PROJECT):$(IMAGE_TAG) to ECR"
-	@aws ecr get-login-password | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker tag $(PROJECT):$(IMAGE_TAG) $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)
-
-validate-image:
-	@echo "Ensuring $(PROJECT):$(IMAGE_TAG) is in container registry"
-	@aws ecr describe-images --repository-name=$(PROJECT) --image-ids=imageTag=$(IMAGE_TAG)
-
-promote-image:
-	@echo "Creating deployment artifact for commit $(IMAGE_TAG) and promoting image to $(ENV_SUFFIX)"
-	@echo '{"AWSEBDockerrunVersion": 2, "containerDefinitions": [{ "essential": true, "name": "application", "image": "$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(PROJECT):$(IMAGE_TAG)", "memory": 256, "portMappings": [{ "containerPort": 80, "hostPort": 80 }] }] }' > Dockerrun.aws.json
-	@zip -r $(VERSION_LABEL).zip  Dockerrun.aws.json
-	@aws s3 cp $(VERSION_LABEL).zip s3://$(S3_BUCKET)/$(PROJECT)/$(VERSION_LABEL).zip
-	@aws elasticbeanstalk create-application-version --application-name $(PROJECT) --version-label $(VERSION_LABEL) --source-bundle S3Bucket="$(S3_BUCKET)",S3Key="$(PROJECT)/$(VERSION_LABEL).zip" || :
-	@aws elasticbeanstalk update-environment --application-name $(PROJECT) --environment-name $(DESTINATION_ENV) --version-label $(VERSION_LABEL)
-
-# Git Tagging Aliases
-
-tag-dev:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to dev env"
-	@git tag -fa dev -m "Deploying $(PROJECT):$(IMAGE_TAG) to dev env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/dev:refs/tags/dev
-
-tag-staging:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to staging env"
-	@git tag -fa staging -m "Deploying $(PROJECT):$(IMAGE_TAG) to staging env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/staging:refs/tags/staging
-
-tag-prod:
-	@echo "Deploying $(PROJECT):$(IMAGE_TAG) to prod env"
-	@git tag -fa prod -m "Deploying $(PROJECT):$(IMAGE_TAG) to prod env" $(IMAGE_TAG)
-	@git push --force origin refs/tags/prod:refs/tags/prod
-
-tag-lambda-prod:
-	@echo "Deploying lambda functions code to prod AWS Lambda"
-	@git tag -fa lambda-prod -m "Deploying lambda function code to prod AWS Lambda" $(IMAGE_TAG)
-	@git push --force origin refs/tags/lambda-prod:refs/tags/lambda-prod
+	@docker exec -it $(PROJECT_NAME)-server npm test
