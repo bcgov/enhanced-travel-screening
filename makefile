@@ -1,16 +1,17 @@
 #!make
 
 ENV_NAME ?= dev
-
-
-PROJECT_NAME = ets
-LZ2_PROJECT = klwrig
-TERRAFORM_DIR = terraform/$(ENV_NAME)
-
-PROJECT_CODE = $(LZ2_PROJECT)-$(ENV_NAME)
-NAMESPACE = $(PROJECT_CODE)-$(ENV_NAME)
-
 export AWS_REGION ?= ca-central-1
+
+
+TERRAFORM_DIR = terraform/$(ENV_NAME)
+PROJECT_CODE = $(LZ2_PROJECT)-$(ENV_NAME)
+
+
+export PROJECT_NAME = ets
+export LZ2_PROJECT = klwrig
+
+# Git Stuff 
 export COMMIT_SHA?=$(shell git rev-parse --short=7 HEAD)
 export REPO_LOCATION=$(shell git rev-parse --show-toplevel)
 
@@ -58,7 +59,7 @@ apply: init
 force-unlock: init
 	terraform -chdir=$(TERRAFORM_DIR) force-unlock $(LOCK_ID)
 
-destroy: init-tf
+destroy: init
 	terraform -chdir=$(TERRAFORM_DIR) destroy
 
 all: build-client build-lambdas init apply
