@@ -11,12 +11,17 @@ resource "aws_lambda_function" "etsToSbc" {
 
   environment {
     variables = {
-      DB_SERVER   = "dummy"
-      DB_PORT     = "dummy"
-      DB_USER     = "dummy"
-      DB_PASSWORD = "dummy"
-      DB_NAME     = "dummy"
-      VERSION     = var.git_version
+      SBC_USER                  = var.sbc_user
+      SBC_PW                    = var.sbc_pw
+      SBC_CLI_SECRET            = var.sbc_cli_secret
+      SLACK_ENDPOINT            = var.slack_endpoint
+      DB_SERVER                 = var.db_server
+      DB_PORT                   = var.db_port
+      DB_USER                   = var.db_user
+      DB_PASSWORD               = var.db_password
+      DB_NAME                   = var.db_name
+      VERSION                   = var.git_version
+      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
     }
   }
 }
@@ -42,12 +47,17 @@ resource "aws_lambda_function" "phacToSbc" {
 
   environment {
     variables = {
-      DB_SERVER   = "dummy"
-      DB_PORT     = "dummy"
-      DB_USER     = "dummy"
-      DB_PASSWORD = "dummy"
-      DB_NAME     = "dummy"
-      VERSION     = var.git_version
+      SBC_USER                  = var.sbc_user
+      SBC_PW                    = var.sbc_pw
+      SBC_CLI_SECRET            = var.sbc_cli_secret
+      SLACK_ENDPOINT            = var.slack_endpoint
+      DB_SERVER                 = var.db_server
+      DB_PORT                   = var.db_port
+      DB_USER                   = var.db_user
+      DB_PASSWORD               = var.db_password
+      DB_NAME                   = var.db_name
+      VERSION                   = var.git_version
+      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
     }
   }
 }
