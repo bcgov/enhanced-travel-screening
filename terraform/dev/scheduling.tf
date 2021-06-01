@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "every_day_morning" {
   name                = "every-day-morning"
   description         = "Fires every day at 8:45"
-  schedule_expression = "cron(45 8 * * *)"
+  schedule_expression = "cron(45 8 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "call_phacToSbc_every_day_morning" {
@@ -19,7 +19,7 @@ resource "aws_cloudwatch_event_target" "call_etsToSbc_every_day_morning" {
 resource "aws_cloudwatch_event_rule" "every_day_midnight" {
   name                = "every-day-midnight"
   description         = "Fires every day at midnight"
-  schedule_expression = "cron(0 0 * * *)"
+  schedule_expression = "cron(0 0 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "call_phacToSbc_every_day_midnight" {
