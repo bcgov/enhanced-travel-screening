@@ -26,12 +26,20 @@ resource "aws_lambda_function" "etsToSbc" {
   }
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_morning" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.etsToSbc.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day.arn
+  source_arn    = aws_cloudwatch_event_rule.every_day_morning.arn
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_midnight" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.etsToSbc.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.every_day_midnight.arn
 }
 
 resource "aws_lambda_function" "phacToSbc" {
@@ -62,28 +70,18 @@ resource "aws_lambda_function" "phacToSbc" {
   }
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_morning" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.phacToSbc.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day.arn
+  source_arn    = aws_cloudwatch_event_rule.every_day_morning.arn
 }
 
-resource "aws_cloudwatch_event_target" "call_etsToSbc_every_day" {
-  rule      = aws_cloudwatch_event_rule.every_day.name
-  target_id = "lambda"
-  arn       = aws_lambda_function.etsToSbc.arn
-}
-
-resource "aws_cloudwatch_event_target" "call_phacToSbc_every_day" {
-  rule      = aws_cloudwatch_event_rule.every_day.name
-  target_id = "lambda"
-  arn       = aws_lambda_function.phacToSbc.arn
-}
-
-resource "aws_cloudwatch_event_rule" "every_day" {
-  name                = "every-day"
-  description         = "Fires every day"
-  schedule_expression = "rate(1 day)"
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_midnight" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.phacToSbc.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.every_day_midnight.arn
 }
