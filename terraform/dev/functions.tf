@@ -27,7 +27,7 @@ resource "aws_lambda_function" "etsToSbc" {
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_morning" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch_Morning"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.etsToSbc.function_name
   principal     = "events.amazonaws.com"
@@ -35,7 +35,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_morning" {
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_midnight" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch_Midnight"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.etsToSbc.function_name
   principal     = "events.amazonaws.com"
@@ -71,7 +71,7 @@ resource "aws_lambda_function" "phacToSbc" {
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_morning" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch_Morning"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.phacToSbc.function_name
   principal     = "events.amazonaws.com"
@@ -79,7 +79,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_morning" {
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_midnight" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromCloudWatch_Midnight"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.phacToSbc.function_name
   principal     = "events.amazonaws.com"
