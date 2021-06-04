@@ -2,7 +2,7 @@ resource "aws_docdb_cluster" "db_cluster" {
   cluster_identifier              = local.namespace
   engine                          = "docdb"
   master_username                 = "root"
-  master_password                 = "etsoperations123"
+  master_password                 = "etsoperations123" # TODO use ssm parameter store
   backup_retention_period         = 5
   preferred_backup_window         = "10:00-12:00"
   skip_final_snapshot             = false
