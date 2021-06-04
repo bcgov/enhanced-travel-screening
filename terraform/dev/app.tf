@@ -91,6 +91,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 }
 
+# to be removed after service account creation and pipeline setup. 
 resource "null_resource" "update_cf_app" {
   provisioner "local-exec" {
     command = <<EOF

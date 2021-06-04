@@ -62,13 +62,13 @@ resource "aws_apigatewayv2_stage" "api" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    destination_arn = aws_cloudwatch_log_group.api_gateway_logs.arn
     format          = local.api_gateway_log_format
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_gateway" {
-  name = "${local.api_name}/gateway"
+resource "aws_cloudwatch_log_group" "api_gateway_logs" {
+  name = "${local.api_name}/gateway_logs"
 }
 
 resource "aws_lambda_permission" "api_allow_gateway" {
@@ -80,4 +80,8 @@ resource "aws_lambda_permission" "api_allow_gateway" {
 
 output "api_gateway_url" {
   value = aws_apigatewayv2_stage.api.invoke_url
+}
+
+output "sg" {
+  value = module.network.aws_security_groups.data
 }
