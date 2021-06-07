@@ -21,3 +21,8 @@ yarn-error.log*
 .eslintcache
 output.json
 terraform/build
+
+# VPN
+
+easy-rsa
+*.ovpn
