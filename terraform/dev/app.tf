@@ -59,10 +59,10 @@ resource "aws_cloudfront_distribution" "app" {
     target_origin_id       = local.s3_origin_id
     cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
     viewer_protocol_policy = "redirect-to-https"
-    # lambda_function_association {
-    #   event_type = "origin-response"
-    #   lambda_arn = "${aws_lambda_function.cf_origin_response.arn}:${aws_lambda_function.cf_origin_response.version}"
-    # }
+    lambda_function_association {
+      event_type = "origin-response"
+      lambda_arn = "${aws_lambda_function.cf_origin_response.arn}:${aws_lambda_function.cf_origin_response.version}"
+    }
   }
 
   ordered_cache_behavior {
@@ -136,4 +136,32 @@ resource "aws_s3_bucket_policy" "app" {
 
 output "public_url" {
   value = aws_cloudfront_distribution.app.domain_name
+}
+
+data "archive_file" "cf_origin_response" {
+    type          = "zip"
+    source_file   = "cforigin/index.js"
+    output_path   = "cf_origin_response.zip"
+}
+
+resource "aws_lambda_function" "cf_origin_response" {
+  provider      = aws.us-east-1      
+  filename      = "cf_origin_response.zip"
+  function_name = "${local.namespace}-cf-origin-response"
+  handler       = "index.handler"
+  runtime       = "nodejs12.x"
+  timeout       = "6"
+  role          = aws_iam_role.lambda.arn
+  source_code_hash = data.archive_file.cf_origin_response.output_base64sha256
+  # Publish true is required to version the lambda - If not provided will result in $LATEST being appended as the version in the ARN
+  publish = true
+}
+
+# Allow Lambda@Edge to invoke this Lambda function
+resource "aws_lambda_permission" "lambda_at_edge_cf_origin_response" {
+  provider      = aws.us-east-1 # Lambda@Edge functions must be in same region as CloudFront
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.cf_origin_response.arn
+  principal     = "apigateway.amazonaws.com"
 }
