@@ -19,8 +19,8 @@ PKI_DIR=${REPO_LOCATION}/easy-rsa/easyrsa3
 
 # ./easyrsa init-pki
 # ./easyrsa build-ca nopass
-# ./easyrsa build-server-full server.name-vpn.comapny.com nopass
-# ./easyrsa build-client-full client.name-vpn.company.com nopass
+# ./easyrsa build-server-full server.env-name-vpn.comapny.com nopass
+# ./easyrsa build-client-full client.env-name-vpn.company.com nopass
 
 
 VPN_SERVER="server.${VPN_DOMAIN}"
@@ -45,10 +45,12 @@ aws ssm put-parameter \
     --region ${REGION} \
     --name /vpn/${ENV}/crt/ca \
     --value "$(cat ${PKI_DIR}/pki/ca.crt | base64)" \
-    --type SecureString
+    --type SecureString \
+    --overwrite
 
 aws ssm put-parameter \
     --region ${REGION} \
     --name /vpn/${ENV}/key/ca \
     --value "$(cat ${PKI_DIR}/pki/private/ca.key | base64)" \
-    --type SecureString
+    --type SecureString \
+    --overwrite
