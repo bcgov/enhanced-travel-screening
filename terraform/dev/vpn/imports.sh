@@ -9,8 +9,6 @@ VPN_DOMAIN=${3?"VPN Domain Name Missing !"}
 REPO_LOCATION=$(git rev-parse --show-toplevel)
 PKI_DIR=${REPO_LOCATION}/easy-rsa/easyrsa3
 
-REGION="us-east-1"
-
 # Resources: 
 # https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authentication.html
 # https://cwong47.gitlab.io/technology-terraform-aws-client-vpn/
@@ -26,7 +24,7 @@ REGION="us-east-1"
 
 
 VPN_SERVER="server.${VPN_DOMAIN}"
-VPN_CLIENT="client.${VPN_DOMAIN}"
+VPN_CLIENT="client.${VPN_DOMAIN}"           
 
 
 aws acm import-certificate \
