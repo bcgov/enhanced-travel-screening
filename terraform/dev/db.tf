@@ -23,6 +23,7 @@ resource "aws_docdb_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_docdb_cluster_instance" "cluster_instances" {
+  # count              = var.target_env == "dev" ? 1 : 2
   count              = 2
   identifier         = "${local.namespace}-docdb-instance-${count.index + 1}"
   cluster_identifier = aws_docdb_cluster.db_cluster.id

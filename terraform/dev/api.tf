@@ -81,7 +81,3 @@ resource "aws_lambda_permission" "api_allow_gateway" {
 output "api_gateway_url" {
   value = aws_apigatewayv2_stage.api.invoke_url
 }
-
-output "sg" {
-  value = module.network.aws_security_groups.data
-}

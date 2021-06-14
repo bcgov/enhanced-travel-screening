@@ -38,6 +38,12 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn_endpoint" {
     enabled              = true
     cloudwatch_log_group = aws_cloudwatch_log_group.vpn.name
   }
+
+  lifecycle {
+    ignore_changes = [
+      connection_log_options
+    ]
+  }
 }
 
 resource "aws_security_group" "vpn_access" {
@@ -57,13 +63,9 @@ resource "aws_security_group" "vpn_access" {
   }
 }
 
+# to be replaced with AWS plugin / alternative 
 resource "null_resource" "client_vpn_security_group" {
   depends_on = [aws_ec2_client_vpn_endpoint.client_vpn_endpoint]
-  #  provisioner "local-exec" {
-  #    when = create
-  #    command = "aws ec2 apply-security-groups-to-client-vpn-target-network --client-vpn-endpoint-id ${aws_ec2_client_vpn_endpoint.client_vpn_endpoint.id} --vpc-id ${aws_security_group.vpn_access.vpc_id} --security-group-ids ${aws_security_group.vpn_access.id} --region ${var.region}"
-  #  }
-
   provisioner "local-exec" {
     command = <<EOF
       aws_credentials=$( aws sts assume-role --role-arn arn:aws:iam::${local.account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role --role-session-name tf-provisioner) &&
