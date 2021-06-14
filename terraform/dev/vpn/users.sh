@@ -46,10 +46,15 @@ tput setaf 2; echo ">> create and import crt/key for $client ..."; tput setaf 9
 ./easyrsa build-client-full ${client_full} nopass
 
 tput setaf 2; echo ">> generate vpn client config file ..."; tput setaf 9
+
+# route only VPC CIDR through VPN
+echo "route-nopull"                 >> $outfile
+echo "route 10.12.0.0 255.255.0.0"  >> $outfile
+
 aws ec2 export-client-vpn-client-configuration \
     --client-vpn-endpoint-id $vpn_endpoint_id \
     --region ${REGION} \
-    --output text >| $outfile
+    --output text >> $outfile
 
 sed -i~ "s/^remote /remote ${client}./" $outfile
 echo "<cert>"                      >> $outfile
