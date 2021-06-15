@@ -11,17 +11,18 @@ resource "aws_lambda_function" "etsToSbc" {
 
   environment {
     variables = {
-      SBC_USER                  = var.sbc_user
-      SBC_PW                    = var.sbc_pw
-      SBC_CLI_SECRET            = var.sbc_cli_secret
-      SLACK_ENDPOINT            = var.slack_endpoint
-      DB_SERVER                 = var.db_server
-      DB_PORT                   = var.db_port
-      DB_USER                   = var.db_user
-      DB_PASSWORD               = var.db_password
-      DB_NAME                   = var.db_name
+      SBC_USER                  = "phoct"
+      SBC_PW                    = "yIL5432*971K" # ssm
+      SBC_CLI_SECRET            = "831d77fa-64dc-4f80-8eb8-960a2220aa59" # ssm
+      SLACK_ENDPOINT            = "https://hooks.slack.com/services/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"
+
+      DB_SERVER                 = aws_docdb_cluster.db_cluster.endpoint
+      DB_PORT                   = "27017"
+      DB_USER                   = "root"
+      DB_PASSWORD               = data.aws_ssm_parameter.database_password.value
+      DB_NAME                   = "ets-${var.target_env}"
       VERSION                   = var.git_version
-      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
+      DB_WRITE_SERVICE_DISABLED = "false"
     }
   }
 }
@@ -55,17 +56,18 @@ resource "aws_lambda_function" "phacToSbc" {
 
   environment {
     variables = {
-      SBC_USER                  = var.sbc_user
-      SBC_PW                    = var.sbc_pw
-      SBC_CLI_SECRET            = var.sbc_cli_secret
-      SLACK_ENDPOINT            = var.slack_endpoint
-      DB_SERVER                 = var.db_server
-      DB_PORT                   = var.db_port
-      DB_USER                   = var.db_user
-      DB_PASSWORD               = var.db_password
-      DB_NAME                   = var.db_name
+      SBC_USER                  = "phoct"
+      SBC_PW                    = "yIL5432*971K" # ssm
+      SBC_CLI_SECRET            = "831d77fa-64dc-4f80-8eb8-960a2220aa59" # ssm
+      SLACK_ENDPOINT            = "https://hooks.slack.com/services/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"
+
+      DB_SERVER                 = aws_docdb_cluster.db_cluster.endpoint
+      DB_PORT                   = "27017"
+      DB_USER                   = "root"
+      DB_PASSWORD               = data.aws_ssm_parameter.database_password.value
+      DB_NAME                   = "ets-${var.target_env}"
       VERSION                   = var.git_version
-      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
+      DB_WRITE_SERVICE_DISABLED = "false"
     }
   }
 }

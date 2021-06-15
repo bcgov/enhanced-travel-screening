@@ -2,18 +2,18 @@ resource "aws_docdb_cluster" "db_cluster" {
   cluster_identifier              = local.namespace
   engine                          = "docdb"
   master_username                 = "root"
-  master_password                 = "etsoperations123" # TODO use ssm parameter store
+  master_password                 = data.aws_ssm_parameter.database_password.value
   backup_retention_period         = 5
   preferred_backup_window         = "10:00-12:00"
   skip_final_snapshot             = false
   final_snapshot_identifier       = "${var.target_env}finalbackup"
-  apply_immediately               = false
+  apply_immediately               = true
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.db_param_group.name
   deletion_protection             = false
   enabled_cloudwatch_logs_exports = ["audit", "profiler"]
   storage_encrypted               = true
   db_subnet_group_name            = aws_docdb_subnet_group.db_subnet_group.id
-  vpc_security_group_ids          = [module.network.aws_security_groups.data.id, module.network.aws_security_groups.app.id]
+  vpc_security_group_ids          = [module.network.aws_security_groups.data.id, module.network.aws_security_groups.app.id, aws_security_group.vpn_access.id, aws_security_group.lambda_access.id]
 }
 
 
@@ -43,4 +43,8 @@ resource "aws_docdb_cluster_parameter_group" "db_param_group" {
     value        = "enabled"
     apply_method = "pending-reboot"
   }
+}
+
+output "database_url" {
+  value = aws_docdb_cluster.db_cluster.endpoint
 }
