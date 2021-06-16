@@ -141,22 +141,31 @@ For local development, a MongoDB 3.6 container is being used.
 
 ### Shelling into the Database [Development/Production]
 
-Because the database clusters are not exposed to the web, we need to create a SSH tunnel to bridge a connection with the database. To do that, we need to use a bastion host inside the same VPC but exposed to the web.
+All access to the bastion host must be done via AWS IAM. To do so via the terminal, [AWS SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) is used. This allows for shell access while using MFA. The following script can be used to authenticate via SSM. Note that execution privileges may need to be granted to the script (`chmod +x ssm.sh`). Additionally, an [AWS CLI profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) should be configured to work with the AWS lease. The included script uses a profile name of `covid`.
 
-```bash
-ssh -i "~/.ssh/ets-bastion-host.pem" -L 27017:DOCUMENT_DB_CLUSTER_URL:27017 ec2-user@BASTION_HOST_URL -N
+```sh
+#!/bin/sh
+
+echo "Please enter your MFA code"
+read TOKEN
+
+PROFILE="covid"
+DEVICE=`aws --profile "$PROFILE" iam list-mfa-devices | jq -r '.MFADevices[0].SerialNumber'`
+CREDS=`aws --profile "$PROFILE" sts get-session-token --serial-number $DEVICE --token-code $TOKEN`
+
+export AWS_ACCESS_KEY_ID=`echo "$CREDS" | jq -r '.Credentials.AccessKeyId'`
+export AWS_SECRET_ACCESS_KEY=`echo "$CREDS" | jq -r '.Credentials.SecretAccessKey'`
+export AWS_SESSION_TOKEN=`echo "$CREDS" | jq -r '.Credentials.SessionToken'`
+export AWS_DEFAULT_REGION="ca-central-1"
 ```
 
-- Replace DOCUMENT_DB_CLUSTER_URL with the url the document db cluster.
-- Replace BASTION_HOST_URL with the IP address or url of the bastion host.
-- Now you can connect to the database using mongo shell or any mongo client as if the server was running from your localhost.
-- Keep in mind, our DocumentDB clusters have TLS enabled and will require a public key to connect. You can downloaded it [here](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem).
+SSM relies on setting environment variables. As such, the above script should be invoked using `source ssm.sh`. Invocation via `source` allows the scrip to export environment variables.
 
+Next, the certificate for the bastion host must be downloaded. This is available from LastPass. In the command below, this file is saved as `~/.ssh/ets-bastion-host2.pem`.
 
-You can find the cluster URLS, credentials, and certificates in our AWS services including KMS.
+Once authenticated with SSM, run `ssh -i ~/.ssh/ets-bastion-host2.pem -L 27017:ets-dev.cluster-cyk1pye3ihk7.ca-central-1.docdb.amazonaws.com:27017 ec2-user@i-0d7ed042e3b6479e7 -N`. It may benefit the reader to add this to `~/.zshrc` as an alias. Note that for prod, the database ARN will differ.
 
-Find supplementary reference on the link below:
-- https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
+Finally, the database can be accessed via localhost as a proxy. Point your Mongo client to `localhost:27017` with the credentials used in AWS. SSL must be set to unvalidated/insecure.
 
 ### Lambda functions
 
