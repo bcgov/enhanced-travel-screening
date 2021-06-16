@@ -33,22 +33,25 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      BCS_CLI_SECRET            = "e63df438-4776-4f81-b1f7-5e6847870c56"
-      BCS_PW                    = "p3wU*B^3z694"
-      BCS_USER                  = "phoct"
+      NODE_ENV = var.target_env
+      VERSION  = var.git_version
+
+      DB_SERVER = aws_docdb_cluster.db_cluster.endpoint
+
+      SBC_USER                  = "phoct"
       DB_AWS_TLS_ENABLED        = "true"
       DB_NAME                   = "ets-${var.target_env}"
-      DB_PASSWORD               = data.aws_ssm_parameter.database_password.value
-      DB_SERVER                 = aws_docdb_cluster.db_cluster.endpoint
       DB_PORT                   = "27017"
       DB_USER                   = "root"
-      VERSION                   = var.git_version
       DB_WRITE_SERVICE_DISABLED = "false"
       ENABLE_PHAC_CRONJOB       = "true"
-      JWT_SECRET                = "a10ed69838e65cf075b54fa8a15d2e3156b1d83f9df38f1c478a273590463de2"
-      NODE_ENV                  = var.target_env
-      PASSWORD_SALT             = "16adfae0b3afab932b65282a73721765"
-      VERSION                   = var.git_version
+
+      DB_PASSWORD    = data.aws_ssm_parameter.database_password.value
+      SBC_CLI_SECRET = data.aws_ssm_parameter.sbc_cli_secret.value
+      SBC_PW         = data.aws_ssm_parameter.sbc_password.value
+      JWT_SECRET     = data.aws_ssm_parameter.jwt_secret.value
+      PASSWORD_SALT  = data.aws_ssm_parameter.password_salt.value
+      SLACK_ENDPOINT = data.aws_ssm_parameter.slack_endpoint.value
     }
   }
 }
