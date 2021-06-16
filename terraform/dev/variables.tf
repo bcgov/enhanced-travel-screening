@@ -35,8 +35,8 @@ variable "region" {
 locals {
   namespace  = var.project_code
   account_id = data.aws_caller_identity.current.account_id
-  app_name   = "${var.project_name}-${var.target_env}-app"
-  api_name = "${var.project_name}-${var.target_env}-server"
-  ets_to_sbc = "${var.project_name}-${var.target_env}-ets-sbc"
-  phac_to_sbc = "${var.project_name}-${var.target_env}-phac-sbc"
+  app_name   = "${var.project_name}-app-${var.target_env}"
+  api_name = "${var.project_name}-server-${var.target_env}"
+  ets_to_sbc = "${var.project_name}-ets-sbc-${var.target_env}"
+  phac_to_sbc = "${var.project_name}-phac-sbc-${var.target_env}"
 }

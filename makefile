@@ -57,16 +57,16 @@ init: write-config-tf
 		-reconfigure \
 		-backend-config=backend.hcl
 
-plan: init
+plan: write-config-tf
 	# Creating all AWS infrastructure.
 	@terraform -chdir=$(TERRAFORM_DIR) plan
 
-apply: init
+apply: write-config-tf
 	# Creating all AWS infrastructure.
 	@terraform -chdir=$(TERRAFORM_DIR) apply -auto-approve -input=false
 
 
-force-unlock: init
+force-unlock: write-config-tf
 	terraform -chdir=$(TERRAFORM_DIR) force-unlock $(LOCK_ID)
 
 destroy: init

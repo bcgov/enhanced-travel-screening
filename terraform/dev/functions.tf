@@ -9,19 +9,27 @@ resource "aws_lambda_function" "etsToSbc" {
   memory_size      = 1024
   timeout          = 10
 
+  vpc_config {
+    security_group_ids = [aws_security_group.lambda_access.id]
+    subnet_ids         = module.network.aws_subnet_ids.app.ids
+  }
   environment {
     variables = {
-      SBC_USER                  = var.sbc_user
-      SBC_PW                    = var.sbc_pw
-      SBC_CLI_SECRET            = var.sbc_cli_secret
-      SLACK_ENDPOINT            = var.slack_endpoint
-      DB_SERVER                 = var.db_server
-      DB_PORT                   = var.db_port
-      DB_USER                   = var.db_user
-      DB_PASSWORD               = var.db_password
-      DB_NAME                   = var.db_name
-      VERSION                   = var.git_version
-      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
+      NODE_ENV = var.target_env
+      VERSION  = var.git_version
+
+      DB_SERVER = aws_docdb_cluster.db_cluster.endpoint
+
+      SBC_USER                  = "phoct"
+      DB_PORT                   = "27017"
+      DB_USER                   = "root"
+      DB_NAME                   = "ets-${var.target_env}"
+      DB_WRITE_SERVICE_DISABLED = "false"
+
+      DB_PASSWORD    = data.aws_ssm_parameter.database_password.value
+      SBC_CLI_SECRET = data.aws_ssm_parameter.sbc_cli_secret.value
+      SBC_PW         = data.aws_ssm_parameter.sbc_password.value
+      SLACK_ENDPOINT = data.aws_ssm_parameter.slack_endpoint.value
     }
   }
 }
@@ -53,19 +61,27 @@ resource "aws_lambda_function" "phacToSbc" {
   memory_size      = 1024
   timeout          = 10
 
+  vpc_config {
+    security_group_ids = [aws_security_group.lambda_access.id]
+    subnet_ids         = module.network.aws_subnet_ids.app.ids
+  }
   environment {
     variables = {
-      SBC_USER                  = var.sbc_user
-      SBC_PW                    = var.sbc_pw
-      SBC_CLI_SECRET            = var.sbc_cli_secret
-      SLACK_ENDPOINT            = var.slack_endpoint
-      DB_SERVER                 = var.db_server
-      DB_PORT                   = var.db_port
-      DB_USER                   = var.db_user
-      DB_PASSWORD               = var.db_password
-      DB_NAME                   = var.db_name
-      VERSION                   = var.git_version
-      DB_WRITE_SERVICE_DISABLED = var.db_write_service_disabled
+      NODE_ENV = var.target_env
+      VERSION  = var.git_version
+
+      DB_SERVER = aws_docdb_cluster.db_cluster.endpoint
+
+      SBC_USER                  = "phoct"
+      DB_PORT                   = "27017"
+      DB_USER                   = "root"
+      DB_NAME                   = "ets-${var.target_env}"
+      DB_WRITE_SERVICE_DISABLED = "false"
+
+      DB_PASSWORD    = data.aws_ssm_parameter.database_password.value
+      SBC_CLI_SECRET = data.aws_ssm_parameter.sbc_cli_secret.value
+      SBC_PW         = data.aws_ssm_parameter.sbc_password.value
+      SLACK_ENDPOINT = data.aws_ssm_parameter.slack_endpoint.value
     }
   }
 }
