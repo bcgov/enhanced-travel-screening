@@ -9,6 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 3
@@ -29,3 +34,11 @@ jobs:
 
       - name: Deploy
         run: aws s3 sync ./terraform/build/client s3://ets-app-dev --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E3TWYEQUV0G1VC --paths "/*"
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "v1.0.0"
+          cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
+
+      - name: Terraform
+        run: make apply
