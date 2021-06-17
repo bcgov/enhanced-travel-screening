@@ -1,5 +1,8 @@
 #!make
 
+-include .env
+export $(shell sed 's/=.*//' .env)
+
 ENV_NAME ?= dev
 export AWS_REGION ?= ca-central-1
 
@@ -138,7 +141,7 @@ build-lambdas:
 
 
 # ============================================================= #
-# Local Development - TODO: Update to work here. 
+# Local Development 
 # ============================================================= #
 
 build-local:
