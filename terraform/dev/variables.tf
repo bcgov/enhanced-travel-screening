@@ -10,20 +10,6 @@ data "aws_caller_identity" "current" {}
 variable "api_zip" {}
 variable "ets_to_sbc_zip" {}
 variable "phac_to_sbc_zip" {}
-
-variable "slack_endpoint" {}
-
-variable "db_name" {}
-variable "db_password" {}
-variable "db_port" {}
-variable "db_server" {}
-variable "db_user" {}
-variable "db_write_service_disabled" {}
-
-variable "sbc_user" {}
-variable "sbc_pw" {}
-variable "sbc_cli_secret" {}
-
 variable "azs" {
   default = ["ca-central-1a", "ca-central-1b"]
 }
