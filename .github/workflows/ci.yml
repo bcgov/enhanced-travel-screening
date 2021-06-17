@@ -17,6 +17,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
+        role-skip-session-tagging: true
         aws-access-key-id: ${{ secrets.CI_SA_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.CI_SA_AWS_SECRET_ACCESS_KEY }}
         aws-region: ca-central-1
