@@ -42,15 +42,9 @@ jobs:
 
       - name: Build Server
         run: make build-lambdas
-        env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       - name: Terraform Init
         run: make init
-        env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       - name: Terraform Apply
         run: make apply
-        env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
