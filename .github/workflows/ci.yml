@@ -2,31 +2,30 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ migration ]
+    branches: [migration]
 
 jobs:
-
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 3
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-skip-session-tagging: true
-        aws-access-key-id: ${{ secrets.CI_SA_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.CI_SA_AWS_SECRET_ACCESS_KEY }}
-        aws-region: ca-central-1
-        role-to-assume: arn:aws:iam::560234080437:role/PBMMOps-BCGOV_dev_Project_Role_CI_Role
-        role-duration-seconds: 1200
-        role-session-name: ci-deployment
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-skip-session-tagging: true
+          aws-access-key-id: ${{ secrets.CI_SA_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CI_SA_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+          role-to-assume: arn:aws:iam::560234080437:role/PBMMOps-BCGOV_dev_Project_Role_CI_Role
+          role-duration-seconds: 1200
+          role-session-name: ci-deployment
 
-    # - name: Build
-    #   run: ./scripts/build.sh dev;
+      - name: Build
+        run: make build-client
 
-    # - name: Deploy
-    #   run: ./scripts/deploy.sh dev;
+      - name: Deploy
+        run: aws --region ca-central-1 cloudfront create-invalidation --distribution-id E3TWYEQUV0G1VC --paths "/*"
