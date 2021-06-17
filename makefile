@@ -26,16 +26,6 @@ git_version = "ETS-$(COMMIT_SHA)"
 api_zip = "build/server.zip"
 ets_to_sbc_zip = "build/etsToSbc.zip"
 phac_to_sbc_zip = "build/phacToSbc.zip"
-slack_endpoint = "$(SLACK_ENDPOINT)"
-db_name = "$(DB_NAME)"
-db_password = "$(DB_PASSWORD)"
-db_port = "$(DB_PORT)"
-db_server = "$(DB_SERVER)"
-db_user = "$(DB_USER)"
-db_write_service_disabled = "$(DB_WRITE_SERVICE_DISABLED)"
-sbc_user = "$(SBC_USER)"
-sbc_pw = "$(SBC_PW)"
-sbc_cli_secret = "$(SBC_CLI_SECRET)"
 endef
 export TFVARS_DATA
 

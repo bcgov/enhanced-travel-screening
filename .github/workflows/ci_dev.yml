@@ -29,7 +29,7 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: ci-deployment
 
-      - name: Build
+      - name: Build Client
         run: make build-client
 
       - name: Deploy
@@ -40,8 +40,17 @@ jobs:
           terraform_version: "v1.0.0"
           cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
+      - name: Build Server
+        run: make build-lambdas
+        env:
+          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
+
       - name: Terraform Init
         run: make init
+        env:
+          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       - name: Terraform Apply
         run: make apply
+        env:
+          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
