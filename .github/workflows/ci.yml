@@ -28,4 +28,4 @@ jobs:
         run: make build-client
 
       - name: Deploy
-        run: aws --region ca-central-1 cloudfront create-invalidation --distribution-id E3TWYEQUV0G1VC --paths "/*"
+        run: aws s3 sync ./build/app/ s3://ets-app-dev --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E3TWYEQUV0G1VC --paths "/*"
