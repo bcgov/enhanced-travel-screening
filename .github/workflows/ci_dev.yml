@@ -40,5 +40,8 @@ jobs:
           terraform_version: "v1.0.0"
           cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
-      - name: Terraform
+      - name: Terraform Init
+        run: make init
+
+      - name: Terraform Apply
         run: make apply
