@@ -91,24 +91,6 @@ resource "aws_cloudfront_distribution" "app" {
   }
 }
 
-# to be removed after service account creation and pipeline setup. 
-resource "null_resource" "update_cf_app" {
-  provisioner "local-exec" {
-    command = <<EOF
-      aws_credentials=$( aws sts assume-role --role-arn arn:aws:iam::${local.account_id}:role/BCGOV_${var.target_env}_Automation_Admin_Role --role-session-name tf-provisioner) &&
-      export AWS_ACCESS_KEY_ID=$(echo $aws_credentials|jq '.Credentials.AccessKeyId'|tr -d '"') &&
-      export AWS_SECRET_ACCESS_KEY=$(echo $aws_credentials|jq '.Credentials.SecretAccessKey'|tr -d '"') &&
-      export AWS_SESSION_TOKEN=$(echo $aws_credentials|jq '.Credentials.SessionToken'|tr -d '"') &&
-      aws s3 sync ./build/client/ s3://${aws_s3_bucket.app.bucket} --delete && 
-      aws --region ca-central-1 cloudfront create-invalidation --distribution-id "${aws_cloudfront_distribution.app.id}"  --paths "/*"
-    EOF
-  }
-
-  triggers = {
-    git_build_version = var.git_version
-  }
-}
-
 resource "aws_s3_bucket_policy" "app" {
   bucket = aws_s3_bucket.app.id
   policy = jsonencode({
@@ -138,20 +120,24 @@ output "public_url" {
   value = aws_cloudfront_distribution.app.domain_name
 }
 
+output "distribution_id" {
+  value = aws_cloudfront_distribution.app.id
+}
+
 data "archive_file" "cf_origin_response" {
-    type          = "zip"
-    source_file   = "cforigin/index.js"
-    output_path   = "cf_origin_response.zip"
+  type        = "zip"
+  source_file = "cforigin/index.js"
+  output_path = "cf_origin_response.zip"
 }
 
 resource "aws_lambda_function" "cf_origin_response" {
-  provider      = aws.us-east-1      
-  filename      = "cf_origin_response.zip"
-  function_name = "${local.namespace}-cf-origin-response"
-  handler       = "index.handler"
-  runtime       = "nodejs12.x"
-  timeout       = "6"
-  role          = aws_iam_role.lambda.arn
+  provider         = aws.us-east-1
+  filename         = "cf_origin_response.zip"
+  function_name    = "${local.namespace}-cf-origin-response"
+  handler          = "index.handler"
+  runtime          = "nodejs12.x"
+  timeout          = "6"
+  role             = aws_iam_role.lambda.arn
   source_code_hash = data.archive_file.cf_origin_response.output_base64sha256
   # Publish true is required to version the lambda - If not provided will result in $LATEST being appended as the version in the ARN
   publish = true
