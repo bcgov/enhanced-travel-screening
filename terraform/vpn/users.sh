@@ -9,6 +9,8 @@ DOMAIN=${3?"VPN Domain Name Missing !"}
 NAME=${4?"User Name Missing !"}
 ENDPOINT=${5?"Full Endpoint - cvpn-endpoint-xxxxxxxxx !"}
 
+REPO_LOCATION=$(git rev-parse --show-toplevel)
+
 export EASYRSA_BATCH=1
 
 client="$4"
@@ -66,3 +68,5 @@ echo "</key>"                      >> $outfile
 
 tput setaf 2; echo ">> $outfile ..."; tput setaf 9
 ls -alh $outfile
+
+mv $outfile ${REPO_LOCATION}/

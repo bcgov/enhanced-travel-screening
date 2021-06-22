@@ -28,7 +28,6 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn_endpoint" {
   server_certificate_arn = data.aws_acm_certificate.server.arn
   client_cidr_block      = "10.50.0.0/22"
   split_tunnel           = false
-  dns_servers            = ["10.12.0.2"]
   authentication_options {
     type                       = "certificate-authentication"
     root_certificate_chain_arn = data.aws_acm_certificate.client.arn
@@ -43,23 +42,6 @@ resource "aws_ec2_client_vpn_endpoint" "client_vpn_endpoint" {
     ignore_changes = [
       connection_log_options
     ]
-  }
-}
-
-resource "aws_security_group" "vpn_access" {
-  name   = "shared-vpn-access"
-  vpc_id = module.network.aws_vpc.id
-  ingress {
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
