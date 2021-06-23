@@ -49,7 +49,7 @@ env-print:
 	@echo -e "\n\n"
 	@tput setaf 9
 
-write-config-tf: env-print
+write-config-tf: 
 	@echo "$$TFVARS_DATA" > $(TERRAFORM_DIR)/.auto.tfvars
 	@echo "$$TF_BACKEND_CFG" > $(TERRAFORM_DIR)/backend.hcl
 
