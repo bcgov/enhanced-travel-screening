@@ -16,7 +16,6 @@ resource "aws_lambda_function" "etsToSbc" {
   environment {
     variables = {
       NODE_ENV = var.target_env
-      VERSION  = var.git_version
 
       DB_SERVER = aws_docdb_cluster.db_cluster.endpoint
 
@@ -32,22 +31,6 @@ resource "aws_lambda_function" "etsToSbc" {
       SLACK_ENDPOINT = data.aws_ssm_parameter.slack_endpoint.value
     }
   }
-}
-
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_morning" {
-  statement_id  = "AllowExecutionFromCloudWatch_Morning"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.etsToSbc.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_morning.arn
-}
-
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_etsToSbc_midnight" {
-  statement_id  = "AllowExecutionFromCloudWatch_Midnight"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.etsToSbc.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_midnight.arn
 }
 
 resource "aws_lambda_function" "phacToSbc" {
@@ -68,7 +51,6 @@ resource "aws_lambda_function" "phacToSbc" {
   environment {
     variables = {
       NODE_ENV = var.target_env
-      VERSION  = var.git_version
 
       DB_SERVER = aws_docdb_cluster.db_cluster.endpoint
 
@@ -86,18 +68,3 @@ resource "aws_lambda_function" "phacToSbc" {
   }
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_morning" {
-  statement_id  = "AllowExecutionFromCloudWatch_Morning"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.phacToSbc.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_morning.arn
-}
-
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_phacToSbc_midnight" {
-  statement_id  = "AllowExecutionFromCloudWatch_Midnight"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.phacToSbc.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.every_day_midnight.arn
-}
