@@ -7,7 +7,7 @@ ENV_NAME ?= dev
 export AWS_REGION ?= ca-central-1
 
 
-TERRAFORM_DIR = terraform/$(ENV_NAME)
+TERRAFORM_DIR = terraform/
 PROJECT_CODE = $(LZ2_PROJECT)-$(ENV_NAME)
 
 
@@ -40,7 +40,16 @@ export TF_BACKEND_CFG
 # Terraform automation
 # ============================================================= #
 
-write-config-tf:
+env-print: 
+	@tput setaf 1; 
+	@echo -e "\n\n"
+	@echo -e "=========================================================="
+	@echo -e "!!!!! You are terraforming $(ENV_NAME) !!!!!"
+	@echo -e "=========================================================="
+	@echo -e "\n\n"
+	@tput setaf 9
+
+write-config-tf: env-print
 	@echo "$$TFVARS_DATA" > $(TERRAFORM_DIR)/.auto.tfvars
 	@echo "$$TF_BACKEND_CFG" > $(TERRAFORM_DIR)/backend.hcl
 
@@ -50,16 +59,16 @@ init: write-config-tf
 		-reconfigure \
 		-backend-config=backend.hcl
 
-plan: write-config-tf
+plan: init
 	# Creating all AWS infrastructure.
 	@terraform -chdir=$(TERRAFORM_DIR) plan
 
-apply: write-config-tf
+apply: init
 	# Creating all AWS infrastructure.
 	@terraform -chdir=$(TERRAFORM_DIR) apply -auto-approve -input=false
 
 
-force-unlock: write-config-tf
+force-unlock: init
 	terraform -chdir=$(TERRAFORM_DIR) force-unlock $(LOCK_ID)
 
 destroy: init
@@ -126,9 +135,6 @@ build-lambdas:
 	@rm $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	cd $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc && zip -rq $(REPO_LOCATION)/terraform/build/etsToSbc.zip *
-
-	rm -rf $(REPO_LOCATION)/terraform/$(ENV_NAME)/build/ && cp -r $(REPO_LOCATION)/terraform/build/ $(REPO_LOCATION)/terraform/$(ENV_NAME)/build/
-
 
 # ============================================================= #
 # Local Development 
