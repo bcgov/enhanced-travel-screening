@@ -17,7 +17,7 @@ scp -r -i ~/.ssh/ets_bastion_host.pem ec2-user@ec2-3-96-194-192.ca-central-1.com
 sudo openvpn --config dev.ovpn
 
 ### step 5 - restore to LZ2 cluster - Credentials in SSM 
-mongorestore --ssl --host klwrig-test.cluster-cdqa6qyje91a.ca-central-1.docdb.amazonaws.com:27017 --username root --password etstestdbsecure123 --sslCAFile rds-combined-ca-bundle.pem --db ets-test --drop ./dump/ets-staging
+mongorestore --ssl --host klwrig-test.cluster-cdqa6qyje91a.ca-central-1.docdb.amazonaws.com:27017 --username root --password <password> --sslCAFile rds-combined-ca-bundle.pem --db ets-test --drop ./dump/ets-staging
 
 ### step 6 count verification 
 
