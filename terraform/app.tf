@@ -23,7 +23,7 @@ resource "aws_cloudfront_origin_access_identity" "app" {
 
 resource "aws_cloudfront_distribution" "app" {
   comment = local.app_name
-  aliases = ["travelscreening.gov.bc.ca"]
+  aliases = var.target_env == "prod" ? ["travelscreening.gov.bc.ca"] : []
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3_origin_id
