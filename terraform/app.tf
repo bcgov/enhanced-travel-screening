@@ -46,10 +46,22 @@ resource "aws_cloudfront_distribution" "app" {
     }
   }
 
-  viewer_certificate {
-    acm_certificate_arn      = data.aws_acm_certificate.ets.arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2019"
+  dynamic "viewer_certificate" {
+    for_each = local.is_prod
+    content {
+      acm_certificate_arn      = data.aws_acm_certificate.ets[0].arn
+      ssl_support_method       = "sni-only"
+      minimum_protocol_version = "TLSv1.2_2019"
+    }
+  }
+
+
+  # Non prod has no dedicated url
+  dynamic "viewer_certificate" {
+    for_each = local.is_not_prod
+    content {
+      cloudfront_default_certificate = true
+    }
   }
 
   # We only need the US/Canada
@@ -79,10 +91,6 @@ resource "aws_cloudfront_distribution" "app" {
     cache_policy_id        = data.aws_cloudfront_cache_policy.disabled.id
     viewer_protocol_policy = "redirect-to-https"
   }
-
-  # viewer_certificate {
-  #   cloudfront_default_certificate = true
-  # }
 
   custom_error_response {
     error_code         = 404

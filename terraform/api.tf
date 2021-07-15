@@ -103,7 +103,8 @@ resource "aws_apigatewayv2_stage" "api" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway_logs" {
-  name = "${local.api_name}/gateway_logs"
+  name              = "${local.api_name}/gateway_logs"
+  retention_in_days = 90
 }
 
 resource "aws_lambda_permission" "api_allow_gateway" {

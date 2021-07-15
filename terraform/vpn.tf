@@ -16,8 +16,8 @@ data "aws_acm_certificate" "client" {
 
 
 resource "aws_cloudwatch_log_group" "vpn" {
-  name = "vpn/${var.target_env}"
-
+  name              = "vpn/${var.target_env}"
+  retention_in_days = 90
   lifecycle {
     prevent_destroy = true
   }

@@ -1,15 +1,18 @@
 resource "aws_route53_zone" "ets" {
-  name = "travelscreening.gov.bc.ca"
+  count = var.target_env == "prod" ? 1 : 0
+  name  = "travelscreening.gov.bc.ca"
 }
 
 data "aws_acm_certificate" "ets" {
+  count    = var.target_env == "prod" ? 1 : 0
   domain   = "travelscreening.gov.bc.ca"
   statuses = ["ISSUED"]
   provider = aws.us-east-1
 }
 
 resource "aws_route53_record" "www" {
-  zone_id = aws_route53_zone.ets.zone_id
+  count   = var.target_env == "prod" ? 1 : 0
+  zone_id = aws_route53_zone.ets[0].zone_id
   name    = "travelscreening.gov.bc.ca"
   type    = "A"
 
