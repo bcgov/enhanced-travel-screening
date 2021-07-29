@@ -6,7 +6,7 @@ resource "aws_docdb_cluster" "db_cluster" {
   backup_retention_period         = 5
   preferred_backup_window         = "10:00-12:00"
   skip_final_snapshot             = false
-  final_snapshot_identifier       = "${var.target_env}finalbackup"
+  final_snapshot_identifier       = "${var.target_env}-finalbackup"
   apply_immediately               = true
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.db_param_group.name
   deletion_protection             = false
