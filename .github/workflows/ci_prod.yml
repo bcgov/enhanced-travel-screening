@@ -13,11 +13,6 @@ jobs:
         with:
           fetch-depth: 3
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -29,12 +24,6 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: ci-deployment
 
-      # - name: Build Client
-      #   run: make build-client
-
-      # - name: Deploy
-      #   run: aws s3 sync ./terraform/build/client s3://ets-app-prod --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E2X1WI7YGUJ0M2 --paths "/*"
-
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: "v1.0.0"
@@ -43,14 +32,14 @@ jobs:
       - name: Build Server
         run: make build-lambdas
         env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
+          ENV_NAME: prod
 
       - name: Terraform Init
         run: make init
         env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
+          ENV_NAME: prod
 
       - name: Terraform Apply
         run: make apply
         env:
-          ENV_NAME: ${{ steps.extract_branch.outputs.branch }}
+          ENV_NAME: prod
