@@ -50,10 +50,6 @@ app.post(`${apiBaseUrl}/form`,
     await dbClient.connect();
     const scrubbed = scrubObject(req.body);
     await validate(FormSchema, scrubbed); // Validate submitted form against schema
-
-    console.log(dbClient);
-    console.log(dbClient.db);
-    console.log(dbClient.printConfig());
     const formsCollection = dbClient.db.collection(collections.FORMS);
     const id = await generateUniqueHexId(formsCollection);
 
