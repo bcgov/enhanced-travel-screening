@@ -2,13 +2,11 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [migration]
+    branches: [dev]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      ENV_NAME: prod
     timeout-minutes: 30
     steps:
 
