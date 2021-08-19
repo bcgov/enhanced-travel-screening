@@ -7,17 +7,14 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      ENV_NAME: test
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 3
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
