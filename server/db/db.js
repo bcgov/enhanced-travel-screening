@@ -60,7 +60,7 @@ class DBClient {
    * @memberof DB
    */
   async connect() {
-    if (this._connection) return;
+    if (this._connection) return this._connection;
 
     const {
       dbServer,
@@ -102,6 +102,7 @@ class DBClient {
     try {
       this._connection = await MongoClient.connect(uri, options);
       this.db = this._connection.db(dbName);
+      return this._connection;
     } catch (err) {
       logger.error(`Failed to connect to database: ${err}`);
       throw new Error('DBError');

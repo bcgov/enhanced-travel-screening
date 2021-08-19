@@ -35,6 +35,7 @@ const getUser = async (username) => {
 passport.use('login', new LocalStrategy(
   async (username, password, done) => {
     try {
+      await dbClient.connect();
       const user = await getUser(username);
       if (user && user.salt && user.password !== hashPassword(password, user.salt)) {
         return done(null, false); // Incorrect password

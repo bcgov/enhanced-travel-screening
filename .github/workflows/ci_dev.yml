@@ -1,0 +1,50 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [migration]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-skip-session-tagging: true
+          aws-access-key-id: ${{ secrets.CI_SA_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CI_SA_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+          role-to-assume: arn:aws:iam::560234080437:role/PBMMOps-BCGOV_dev_Project_Role_CI_Role
+          role-duration-seconds: 1200
+          role-session-name: ci-deployment
+
+      # - name: Build Client
+      #   run: make build-client
+
+      # - name: Deploy
+      #   run: aws s3 sync ./terraform/build/client s3://ets-app-dev --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E3TWYEQUV0G1VC --paths "/*"
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "v1.0.0"
+          cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
+
+      - name: Build Server
+        run: make build-lambdas
+
+      - name: Terraform Init
+        run: make init
+
+      - name: Terraform Apply
+        run: make apply

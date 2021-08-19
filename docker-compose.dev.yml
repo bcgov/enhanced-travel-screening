@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
   client:
-    image: ${PROJECT}-client
-    container_name: ${PROJECT}-client
+    image: ${PROJECT_NAME}-client
+    container_name: ${PROJECT_NAME}-client
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -18,8 +18,8 @@ services:
       - ets-dev
 
   server:
-    image: ${PROJECT}-server
-    container_name: ${PROJECT}-server
+    image: ${PROJECT_NAME}-server
+    container_name: ${PROJECT_NAME}-server
     build:
       context: ./server
       dockerfile: Dockerfile.dev
@@ -44,7 +44,7 @@ services:
       - ets-dev
   
   lambda-phacToSbc:
-    container_name: ${PROJECT}-lambda-phacToSbc
+    container_name: ${PROJECT_NAME}-lambda-phacToSbc
     image: lambci/lambda:nodejs12.x
     ports:
       - "9001:9001"
@@ -67,7 +67,7 @@ services:
       - ets-dev
 
   lambda-etsToSbc:
-    container_name: ${PROJECT}-lambda-etsToSbc
+    container_name: ${PROJECT_NAME}-lambda-etsToSbc
     image: lambci/lambda:nodejs12.x
     expose:
       - "9002"
@@ -92,7 +92,7 @@ services:
       - ets-dev
 
   mongodb:
-    container_name: ${PROJECT}-mongodb
+    container_name: ${PROJECT_NAME}-mongodb
     image: mongo:3.6-xenial
     restart: always
     ports:
