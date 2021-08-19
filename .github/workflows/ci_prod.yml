@@ -24,11 +24,11 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: ci-deployment
 
-      - name: Build Client
-        run: make build-client
+      # - name: Build Client
+      #   run: make build-client
 
-      - name: Deploy
-        run: aws s3 sync ./terraform/build/client s3://ets-app-prod --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E2X1WI7YGUJ0M2 --paths "/*"
+      # - name: Deploy
+      #   run: aws s3 sync ./terraform/build/client s3://ets-app-prod --delete && aws --region ca-central-1 cloudfront create-invalidation --distribution-id E2X1WI7YGUJ0M2 --paths "/*"
 
       - uses: hashicorp/setup-terraform@v1
         with:
