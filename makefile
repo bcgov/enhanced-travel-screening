@@ -172,3 +172,18 @@ local-db-seed:
 local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(PROJECT_NAME)-server npm test
+
+
+mongo-tunnel:
+	session-manager-plugin
+	rm ssh-keypair ssh-keypair.pub || true
+	ssh-keygen -t rsa -f ssh-keypair -N ''
+	aws ec2-instance-connect send-ssh-public-key --instance-id i-06cb904f117e27759 --availability-zone ca-central-1b --instance-os-user ssm-user --ssh-public-key file://ssh-keypair.pub
+	ssh -i ssh-keypair ssm-user@i-06cb904f117e27759 -L 27017:klwrig-prod-docdb-instance-1.cryja6iqmqap.ca-central-1.docdb.amazonaws.com:27017 -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+
+mongo-tunnel2:
+	session-manager-plugin
+	rm ssh-keypair ssh-keypair.pub || true
+	ssh-keygen -t rsa -f ssh-keypair -N ''
+	aws ec2-instance-connect send-ssh-public-key --instance-id i-06cb904f117e27759 --availability-zone ca-central-1b --instance-os-user ssm-user --ssh-public-key file://ssh-keypair.pub
+	ssh -i ssh-keypair ssm-user@i-06cb904f117e27759 -L 27017:klwrig-prod-docdb-instance-1.cryja6iqmqap.ca-central-1.docdb.amazonaws.com:27017 -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
