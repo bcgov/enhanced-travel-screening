@@ -7,7 +7,6 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
     dayjs().subtract(13, "day"),
     dayjs().subtract(3, "day"),
   ].map((d) => d.startOf("day").toDate());
-  // serviceBCTransactions.status != success && ((prioritized_traveler == true && parsed_arrival_date in range [d1, today]) || parsed_arrival_date in [d1, d2])
   const query = [
     {
       $addFields: {
@@ -21,23 +20,30 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
         $and: [
           {
             "serviceBCTransactions.status": { $ne: "success" },
+          },
+          {
             $and: [
               {
                 $or: [
                   {
                     $and: [
-                      { prioritized_traveler: true },
+                      {
+                        prioritized_traveler: "Yes",
+                      },
                       {
                         parsed_arrival_date: {
                           $gte: dateRange[0],
-                          $lte: dayjs().startOf("day").toDate(),
+                          $lt: dayjs().startOf("day").toDate(),
                         },
                       },
                     ],
                   },
                   {
-                    parsed_arrival_date: { $gte: dateRange[0], $lte: dateRange[1] }
-                  }
+                    parsed_arrival_date: {
+                      $gte: dateRange[0],
+                      $lt: dateRange[1],
+                    },
+                  },
                 ],
               },
             ],
