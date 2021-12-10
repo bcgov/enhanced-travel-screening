@@ -28,3 +28,6 @@ easy-rsa
 *.ovpn
 rds-combined-ca-bundle.pem
 dump/*
+
+ssh-keypair
+ssh-keypair.pub

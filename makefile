@@ -172,3 +172,11 @@ local-db-seed:
 local-server-tests:
 	@echo "Running tests in local app container"
 	@docker exec -it $(PROJECT_NAME)-server npm test
+
+
+mongo-tunnel:
+	session-manager-plugin
+	rm ssh-keypair ssh-keypair.pub || true
+	ssh-keygen -t rsa -f ssh-keypair -N ''
+	aws ec2-instance-connect send-ssh-public-key --instance-id $(INSTANCE_ID) --availability-zone ca-central-1b --instance-os-user ssm-user --ssh-public-key file://ssh-keypair.pub
+	ssh -i ssh-keypair ssm-user@$(INSTANCE_ID) -L 27017:$(REMOTE_DB_HOST):27017 -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
