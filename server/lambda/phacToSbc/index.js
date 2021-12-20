@@ -17,7 +17,6 @@ exports.handler = async () => {
     console.log(`FINISHED: Marking duplicates ${new Date().toISOString()}`);
     // markDuplicates output is the below log
     console.log(duplicates);
-
     console.log(`STARTING: Send to SBC ${new Date().toISOString()}`);
     const transactions = await sendPhacToSBC(phacCollection);
     console.log(transactions);
