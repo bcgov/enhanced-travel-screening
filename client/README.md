@@ -1,3 +1,20 @@
+# ARCHIVED
+
+The ETS frontend - `client` package is considered as archived and not in active development anymore.
+
+The landing page is updated to reflect a redirect message as follows: 
+
+```
+Please visit
+
+https://www2.gov.bc.ca/gov/content/covid-19/travel/current
+
+for more information
+```
+
+---
+
+
 This project was bootstrapped with [Create React Login](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
