@@ -3,9 +3,7 @@ name: Test application (e2e)
 on:
   pull_request:
     branches:
-      - dev
-      - test
-      - master
+      - '*'
 
 jobs:
   test:
