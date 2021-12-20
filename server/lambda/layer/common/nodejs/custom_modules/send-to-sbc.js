@@ -78,8 +78,12 @@ const updateSbcTransactions = async (collection, id, transaction) =>
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
   const transaction = await postServiceItem(submission);
+  if (transaction.status === "fail") {
+    console.log(`POST TO SBC: failed for`);
+    console.log(transaction);
+  }
   await updateSbcTransactions(collection, submission.id, transaction);
-  return { id: submission.id, status: transaction.status };
+  return { id: submission.id, status: transaction.status, transaction };
 };
 
 const cleanJoinArray = (a) =>
