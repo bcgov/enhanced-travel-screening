@@ -1,20 +1,17 @@
-const dayjs = require("dayjs");
-const asyncPool = require("tiny-async-pool");
-const { postServiceItem } = require("./service-bc-api");
-
-const  FAIL = 'fail',
-const SUCCESS = 'success'
+const dayjs = require('dayjs');
+const asyncPool = require('tiny-async-pool');
+const { postServiceItem } = require('./service-bc-api');
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   const dateRange = [
-    dayjs().subtract(13, "day"),
-    dayjs().subtract(3, "day"),
-  ].map((d) => d.startOf("day").toDate());
+    dayjs().subtract(13, 'day'),
+    dayjs().subtract(3, 'day'),
+  ].map((d) => d.startOf('day').toDate());
   const query = [
     {
       $addFields: {
         parsed_arrival_date: {
-          $dateFromString: { dateString: arrivalKey, timezone: "-0700" },
+          $dateFromString: { dateString: arrivalKey, timezone: '-0700' },
         },
       },
     },
@@ -22,7 +19,7 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
       $match: {
         $and: [
           {
-            "serviceBCTransactions.status": { $ne: "success" },
+            'serviceBCTransactions.status': { $ne: 'success' },
           },
           {
             $and: [
@@ -31,12 +28,12 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
                   {
                     $and: [
                       {
-                        prioritized_traveler: "Yes",
+                        prioritized_traveler: 'Yes',
                       },
                       {
                         parsed_arrival_date: {
                           $gte: dateRange[0],
-                          $lt: dayjs().startOf("day").toDate(),
+                          $lt: dayjs().startOf('day').toDate(),
                         },
                       },
                     ],
@@ -70,50 +67,47 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
 
 // Following NoSQL recommendation, in this case, we want to store
 // BC Services transactional data on the record itself
-const updateSbcTransactions = async (collection, id, transaction) =>
-  collection.updateOne(
-    { id },
-    {
-      $push: { serviceBCTransactions: transaction },
-      $set: { updatedAt: new Date().toISOString() },
-    }
-  );
+const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
+  { id },
+  {
+    $push: { serviceBCTransactions: transaction },
+    $set: { updatedAt: new Date().toISOString() },
+  },
+);
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
   const transaction = await postServiceItem(submission);
-  if(transaction.status === FAIL)
-  {
-    console.log(`POST TO SBC: failed for`)
-    console.log(transaction)
+  if (transaction.status === 'fail') {
+    console.log('POST TO SBC: failed for');
+    console.log(transaction);
   }
   await updateSbcTransactions(collection, submission.id, transaction);
   return { id: submission.id, status: transaction.status, transaction };
 };
 
-const cleanJoinArray = (a) =>
-  a
-    .filter((i) => ["string", "number"].includes(typeof i))
-    .map((i) => String(i).trim())
-    .filter((i) => i !== "")
-    .join(", ");
+const cleanJoinArray = (a) => a
+  .filter((i) => ['string', 'number'].includes(typeof i))
+  .map((i) => String(i).trim())
+  .filter((i) => i !== '')
+  .join(', ');
 
 const phacToSbc = (phacItem) => {
   const oldKeys = [
-    "first_name",
-    "last_name",
-    "date_of_birth",
-    "address_1",
-    "postal_code",
-    "home_phone",
-    "mobile_phone",
-    "other_phone",
-    "arrival_date",
-    "destination_type",
-    "email_address",
-    "province_territory",
-    "port_of_entry",
-    "land_port_of_entry",
-    "other_port_of_entry",
+    'first_name',
+    'last_name',
+    'date_of_birth',
+    'address_1',
+    'postal_code',
+    'home_phone',
+    'mobile_phone',
+    'other_phone',
+    'arrival_date',
+    'destination_type',
+    'email_address',
+    'province_territory',
+    'port_of_entry',
+    'land_port_of_entry',
+    'other_port_of_entry',
   ];
   const telephone = cleanJoinArray([
     phacItem.home_phone,
@@ -147,8 +141,7 @@ const phacToSbc = (phacItem) => {
   return sbcItem;
 };
 
-const makeTransactionIterator = (collection) => (d) =>
-  postToSbcAndUpdateDb(collection, d);
+const makeTransactionIterator = (collection) => (d) => postToSbcAndUpdateDb(collection, d);
 
 const executeTransactionPool = async (data, collection) => {
   const concurrency = 10; // How many requests running in parallel
@@ -156,18 +149,18 @@ const executeTransactionPool = async (data, collection) => {
   const results = await asyncPool(concurrency, data, iterator);
   const output = [
     `Sent ${results.length} items to SBC`,
-    `${results.filter((i) => i.status === "success").length} success(es)`,
-    `${results.filter((i) => i.status === "fail").length} failure(s)`,
+    `${results.filter((i) => i.status === 'success').length} success(es)`,
+    `${results.filter((i) => i.status === 'fail').length} failure(s)`,
   ];
-  return output.join("\n");
+  return output.join('\n');
 };
 
 const sendEtsToSBC = async (etsCollection) => {
   const data = await getUnsuccessfulSbcTransactions(
     etsCollection,
-    "$arrival.date"
+    '$arrival.date',
   );
-  if (process.env.DB_WRITE_SERVICE_DISABLED === "true") {
+  if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`;
   }
   return executeTransactionPool(data, etsCollection);
@@ -176,9 +169,9 @@ const sendEtsToSBC = async (etsCollection) => {
 const sendPhacToSBC = async (phacCollection) => {
   let data = await getUnsuccessfulSbcTransactions(
     phacCollection,
-    "$arrival_date"
+    '$arrival_date',
   );
-  if (process.env.DB_WRITE_SERVICE_DISABLED === "true") {
+  if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
   }
   data = data.map(phacToSbc);

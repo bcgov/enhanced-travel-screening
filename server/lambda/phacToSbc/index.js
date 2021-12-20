@@ -17,14 +17,13 @@ exports.handler = async () => {
     console.log(`FINISHED: Marking duplicates ${new Date().toISOString()}`);
     // markDuplicates output is the below log
     console.log(duplicates);
-
-    console.log(`Starting: Send to SBC ${Date.now()}`);
+    console.log(`STARTING: Send to SBC ${new Date().toISOString()}`);
     const transactions = await sendPhacToSBC(phacCollection);
     console.log(transactions);
-    console.log(`Logging to Slack ${Date.now()}`);
+    console.log(`FINISHED: Logging to Slack ${new Date().toISOString()}`);
     await postToSlack('PHAC to Service BC', start, duplicates, transactions);
   } catch (error) {
-    console.error(`Failed to mark duplicates or post to SBC ${error}`);
+    console.error(`FAILED: Marking duplicates or post to SBC ${error}`);
   } finally {
     connection.close();
   }

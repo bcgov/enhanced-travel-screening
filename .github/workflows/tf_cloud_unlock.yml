@@ -1,0 +1,29 @@
+
+# Somtimes TF plan/apply get stuck and locked up on tf cloud run. We need to release the lock, so we can retry it2
+name: Unlock TF Cloud
+
+on:
+  workflow_dispatch:
+
+env:
+  # I think it works for all workspaces with by just calling it on -dev.
+  # Could we wrong though!
+  WORKSPACE: klwrig-dev
+
+jobs:
+  deploy:
+    name: Discard latest job
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Discard latest job
+        run: >
+          curl \
+            -H "Authorization: Bearer ${{ secrets.TFC_TEAM_TOKEN }}" \
+            -X GET \
+            https://app.terraform.io/api/v2/organizations/bcgov/workspaces/${{ env.WORKSPACE }} \
+            | jq -r '.data.relationships."current-run".data.id' \
+            | xargs -I{} \
+            curl -H "Authorization: Bearer ${{ secrets.TFC_TEAM_TOKEN }}" \
+            -H "Content-Type: application/vnd.api+json" \
+            -X POST \
+            https://app.terraform.io/api/v2/runs/{}/actions/discard
