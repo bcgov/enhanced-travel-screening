@@ -180,3 +180,18 @@ mongo-tunnel:
 	ssh-keygen -t rsa -f ssh-keypair -N ''
 	aws ec2-instance-connect send-ssh-public-key --instance-id $(INSTANCE_ID) --availability-zone ca-central-1b --instance-os-user ssm-user --ssh-public-key file://ssh-keypair.pub
 	ssh -i ssh-keypair ssm-user@$(INSTANCE_ID) -L 27017:$(REMOTE_DB_HOST):27017 -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+
+# Deploy to dev with tag
+
+tag-dev:
+ifdef message
+	@git tag -fa dev -m "Deploy $(message) to DEV env"
+else
+	@echo -e '\nNo message found! - Example :: make tag-dev message=abcdefg \n'
+	@echo -e '------------------------------------------------ \n'
+	@echo -e 'Deploying with branch name \n'
+	@echo -e '------------------------------------------------ \n\n'
+
+	@git tag -fa dev -m "Deploy $(git rev-parse --abbrev-ref HEAD) to DEV env"
+endif
+	@git push --force origin refs/tags/dev:refs/tags/dev
