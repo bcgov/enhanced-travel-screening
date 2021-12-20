@@ -67,14 +67,11 @@ apply: init
 	# Creating all AWS infrastructure.
 	@terraform -chdir=$(TERRAFORM_DIR) apply -auto-approve -input=false
 
-
 force-unlock: init
 	terraform -chdir=$(TERRAFORM_DIR) force-unlock $(LOCK_ID)
 
 destroy: init
 	terraform -chdir=$(TERRAFORM_DIR) destroy
-
-all: build-client build-lambdas init apply
 
 # ============================================================= #
 # Builds 
@@ -88,7 +85,6 @@ build-client:
 	mv ./client/build ./terraform/build/client
 
 build-lambdas:
-	
 	@echo -e "\n\n\n============================="
 	@echo "Cleaning up previous builds"
 	@echo "============================="
@@ -181,7 +177,7 @@ mongo-tunnel:
 	aws ec2-instance-connect send-ssh-public-key --instance-id $(INSTANCE_ID) --availability-zone ca-central-1b --instance-os-user ssm-user --ssh-public-key file://ssh-keypair.pub
 	ssh -i ssh-keypair ssm-user@$(INSTANCE_ID) -L 27017:$(REMOTE_DB_HOST):27017 -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 
-# Deploy to dev with tag
+# Deploy with tags
 
 tag-dev:
 ifdef message
@@ -195,3 +191,30 @@ else
 	@git tag -fa dev -m "Deploy $(git rev-parse --abbrev-ref HEAD) to DEV env"
 endif
 	@git push --force origin refs/tags/dev:refs/tags/dev
+
+tag-test:
+ifdef message
+	@git tag -fa test -m "Deploy $(message) to TEST env"
+else
+	@echo -e '\nNo message found! - Example :: make tag-test message=abcdefg \n'
+	@echo -e '------------------------------------------------ \n'
+	@echo -e 'Deploying with branch name \n'
+	@echo -e '------------------------------------------------ \n\n'
+
+	@git tag -fa test -m "Deploy $(git rev-parse --abbrev-ref HEAD) to TEST env"
+endif
+	@git push --force origin refs/tags/test:refs/tags/test
+
+
+tag-prod:
+ifdef message
+	@git tag -fa prod -m "Deploy $(message) to PROD env"
+else
+	@echo -e '\nNo message found! - Example :: make tag-prod message=abcdefg \n'
+	@echo -e '------------------------------------------------ \n'
+	@echo -e 'Deploying with branch name \n'
+	@echo -e '------------------------------------------------ \n\n'
+
+	@git tag -fa prod -m "Deploy $(git rev-parse --abbrev-ref HEAD) to PROD env"
+endif
+	@git push --force origin refs/tags/prod:refs/tags/prod
