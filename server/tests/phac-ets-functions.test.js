@@ -9,6 +9,8 @@ const { fromCsvString } = require('./util/csv');
 const markDuplicates = require('../lambda/phacToSbc/mark-duplicates');
 const { sendPhacToSBC, sendEtsToSBC } = require('../lambda/layer/common/nodejs/custom_modules/send-to-sbc');
 
+jest.setTimeout(600000);
+
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);
   rows[0] = rows[0]
@@ -87,8 +89,8 @@ describe('Test phac-servicebc queries and endpoints', () => {
     password: 'password',
   };
 
-  async function sendPhacForms() {
-    let phacDataString = readFileSync(join(__dirname, './mock/phac-data.csv')).toString();
+  async function sendPhacForms(mockFile) {
+    let phacDataString = readFileSync(join(__dirname, mockFile)).toString();
     phacDataString = formatHeaders(phacDataString);
     const phacData = await fromCsvString(phacDataString);
 
@@ -103,8 +105,26 @@ describe('Test phac-servicebc queries and endpoints', () => {
   }
 
   it('Submit PHAC data to PHAC endpoint, receive 200', async () => {
-    const resPhacForms = await sendPhacForms();
+    const resPhacForms = await sendPhacForms('./mock/phac-data.csv');
     expect(resPhacForms.statusCode).toEqual(200);
+  });
+
+  it('Reject submission with invalid data of birth', async () => {
+    const result = await sendPhacForms('./mock/phac-data-invalid-dob.csv');
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual('Validation error(s): Date of birth is invalid');
+  });
+
+  it('Reject submission with invalid arrival date', async () => {
+    const result = await sendPhacForms('./mock/phac-data-invalid-arrival.csv');
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual('Validation error(s): Arrival date is invalid');
+  });
+
+  it('Reject submission with invalid phone numbers', async () => {
+    const result = await sendPhacForms('./mock/phac-data-invalid-phone.csv');
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toMatch(/Validation error\(s\): .*phone is invalid/);
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {

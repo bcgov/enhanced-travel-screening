@@ -18,7 +18,7 @@ const provinces = [
 ];
 
 const validateDateString = (s) => {
-  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  if (/^\d{4}[\\/\-.]\d{2}[\\/\-.]\d{2}$/.test(s) === false) return false;
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);
 };
@@ -36,6 +36,13 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
+const PHONE_NUMBER_PATTERN = /^((\+[1-9]{1,4}[ \\-]*)|(\([0-9]{2,3}\)[ .\\-]*)|([0-9]{2,4})[ .\\-]*)*?[0-9]{3,4}?[ .\\-]*[0-9]{3,4}?$/;
+const validatePhoneNumber = (value, optional = true) => {
+  if (optional && !value) return true;
+  if (!optional && !value) return false;
+  return PHONE_NUMBER_PATTERN.test(value);
+};
+
 const DeterminationSchema = yup.object().noUnknown().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
@@ -44,6 +51,11 @@ const DeterminationSchema = yup.object().noUnknown().shape({
 const PhacSchema = yup.array().required('Submission must contain at least one item').of(
   yup.object().shape({
     covid_id: yup.string().typeError('covid_id must be a string').required('covid_id is required'),
+    date_of_birth: yup.string().required('Date of birth is required').test('is-date', 'Date of birth is invalid', validatePastDateString),
+    arrival_date: yup.string().required('Arrival date is required').test('is-date', 'Arrival date is invalid', validateDateString),
+    home_phone: yup.string().test('is-phone-number', 'Home phone is invalid', validatePhoneNumber),
+    mobile_phone: yup.string().test('is-phone-number', 'Mobile phone is invalid', validatePhoneNumber),
+    other_phone: yup.string().test('is-phone-number', 'Other phone is invalid', validatePhoneNumber),
   }).test('no-empty-keys', 'Empty keys are not allowed', (v) => !Object.keys(v).map((k) => k.trim()).includes('')),
 );
 
