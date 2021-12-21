@@ -135,41 +135,15 @@ Keep in mind that DocumentDB does not support all MongoDB 3.6 features and APIs.
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/mongo-apis.html
 - https://docs.aws.amazon.com/documentdb/latest/developerguide/functional-differences.html
 
-For this project, there are 2 database clusters configured under private subnets inside a custom VPC; one to be used for development and staging environments and the other for the production environment.
-
 For local development, a MongoDB 3.6 container is being used.
 
-### Shelling into the Database [Development/Production]
+### Accessing the database
 
-All access to the bastion host must be done via AWS IAM. To do so via the terminal, [AWS SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) is used. This allows for shell access while using MFA. The following script can be used to authenticate via SSM. Note that execution privileges may need to be granted to the script (`chmod +x ssm.sh`). Additionally, an [AWS CLI profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) should be configured to work with the AWS lease. The included script uses a profile name of `covid`.
-
-```sh
-#!/bin/sh
-
-echo "Please enter your MFA code"
-read TOKEN
-
-PROFILE="covid"
-DEVICE=`aws --profile "$PROFILE" iam list-mfa-devices | jq -r '.MFADevices[0].SerialNumber'`
-CREDS=`aws --profile "$PROFILE" sts get-session-token --serial-number $DEVICE --token-code $TOKEN`
-
-export AWS_ACCESS_KEY_ID=`echo "$CREDS" | jq -r '.Credentials.AccessKeyId'`
-export AWS_SECRET_ACCESS_KEY=`echo "$CREDS" | jq -r '.Credentials.SecretAccessKey'`
-export AWS_SESSION_TOKEN=`echo "$CREDS" | jq -r '.Credentials.SessionToken'`
-export AWS_DEFAULT_REGION="ca-central-1"
-```
-
-SSM relies on setting environment variables. As such, the above script should be invoked using `source ssm.sh`. Invocation via `source` allows the scrip to export environment variables.
-
-Next, the certificate for the bastion host must be downloaded. This is available from LastPass. In the command below, this file is saved as `~/.ssh/ets-bastion-host2.pem`.
-
-Once authenticated with SSM, run `ssh -i ~/.ssh/ets-bastion-host2.pem -L 27017:ets-dev.cluster-cyk1pye3ihk7.ca-central-1.docdb.amazonaws.com:27017 ec2-user@i-0d7ed042e3b6479e7 -N`. It may benefit the reader to add this to `~/.zshrc` as an alias. Note that for prod, the database ARN will differ.
-
-Finally, the database can be accessed via localhost as a proxy. Point your Mongo client to `localhost:27017` with the credentials used in AWS. SSL must be set to unvalidated/insecure.
+All access to the DB is via VPN connection to the VPC. Refer [Here](./docs/connect_to_db.md)
 
 ### Lambda functions
 
-This application uses AWS Lambda functions to facilitate memory-intensive tasks. The server/lambda folder must contain everything that is necessary for the lambda functions to work, since it will be shipped to AWS using its own .yml workflow. There is also a common lambda layer (server/lambda/layer) being shared across lambda functions.
+All server side code runs on AWS Lambda. There is also a common lambda layer (server/lambda/layer) being shared across lambda functions.
 
 To run a lambda locally:
 - Prerequisite: Install and configure the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
@@ -178,8 +152,8 @@ To run a lambda locally:
 - Run the desired lambda function command from the [Makefile](makefile), which will be in the format `make run-local-lambda-*`
 - Wait for output.json to appear in the project root directory
 
-To trigger the workflow to deploy all lambda functions to AWS:
-- Run `make tag-lambda-prod`
+To trigger the workflow to deploy all lambda function to an AWS environment:
+- Example for dev env run - `make tag-dev`
 
 ## License
 
