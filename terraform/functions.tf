@@ -1,13 +1,14 @@
 resource "aws_lambda_function" "etsToSbc" {
-  description      = "etsToSbc function ${local.namespace}"
-  function_name    = local.ets_to_sbc
-  role             = aws_iam_role.lambda.arn
-  runtime          = "nodejs14.x"
-  filename         = var.ets_to_sbc_zip
-  source_code_hash = filebase64sha256(var.ets_to_sbc_zip)
-  handler          = "index.handler"
-  memory_size      = 1024
-  timeout          = 300
+  description                    = "etsToSbc function ${local.namespace}"
+  function_name                  = local.ets_to_sbc
+  role                           = aws_iam_role.lambda.arn
+  runtime                        = "nodejs14.x"
+  filename                       = var.ets_to_sbc_zip
+  source_code_hash               = filebase64sha256(var.ets_to_sbc_zip)
+  handler                        = "index.handler"
+  memory_size                    = 1024
+  timeout                        = 300
+  reserved_concurrent_executions = 1
 
   vpc_config {
     security_group_ids = [aws_security_group.lambda_access.id]
@@ -34,16 +35,16 @@ resource "aws_lambda_function" "etsToSbc" {
 }
 
 resource "aws_lambda_function" "phacToSbc" {
-  description      = "phacToSbc function ${local.namespace}"
-  function_name    = local.phac_to_sbc
-  role             = aws_iam_role.lambda.arn
-  runtime          = "nodejs14.x"
-  filename         = var.phac_to_sbc_zip
-  source_code_hash = filebase64sha256(var.phac_to_sbc_zip)
-  handler          = "index.handler"
-  memory_size      = 1024
-  timeout          = 600
-
+  description                    = "phacToSbc function ${local.namespace}"
+  function_name                  = local.phac_to_sbc
+  role                           = aws_iam_role.lambda.arn
+  runtime                        = "nodejs14.x"
+  filename                       = var.phac_to_sbc_zip
+  source_code_hash               = filebase64sha256(var.phac_to_sbc_zip)
+  handler                        = "index.handler"
+  memory_size                    = 1024
+  timeout                        = 900 # max timeout of 15 minutes
+  reserved_concurrent_executions = 1
   vpc_config {
     security_group_ids = [aws_security_group.lambda_access.id]
     subnet_ids         = module.network.aws_subnet_ids.app.ids
