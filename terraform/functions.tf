@@ -43,7 +43,7 @@ resource "aws_lambda_function" "phacToSbc" {
   source_code_hash               = filebase64sha256(var.phac_to_sbc_zip)
   handler                        = "index.handler"
   memory_size                    = 1024
-  timeout                        = 600
+  timeout                        = 900 # max timeout of 15 minutes
   reserved_concurrent_executions = 1
   vpc_config {
     security_group_ids = [aws_security_group.lambda_access.id]
