@@ -1,13 +1,15 @@
-const winston = require('winston');
+const { createLogger, format, transports } = require('winston');
 
-const logger = new winston.Logger({
-  transports: [
-    new (winston.transports.Console)({
-      timestamp: true,
-      colorize: true,
-      format: winston.format.simple(),
+const { combine, timestamp, json } = format;
+
+const logger = createLogger({
+  format: combine(
+    timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
     }),
-  ],
+    json(),
+  ),
+  transports: [new transports.Console()],
 });
 
 module.exports = logger;
