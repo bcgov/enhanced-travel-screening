@@ -9,8 +9,6 @@ const { fromCsvString } = require('./util/csv');
 const markDuplicates = require('../lambda/phacToSbc/mark-duplicates');
 const { sendPhacToSBC, sendEtsToSBC } = require('../lambda/layer/common/nodejs/custom_modules/send-to-sbc');
 
-jest.setTimeout(600000);
-
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);
   rows[0] = rows[0]
@@ -26,7 +24,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
   let server;
 
   async function feedDbEtsForms() {
-    let etsDataString = readFileSync(join(__dirname, './mock/ets-data.csv')).toString();
+    let etsDataString = readFileSync(join(__dirname, './fixtures/ets-data.csv')).toString();
     etsDataString = formatHeaders(etsDataString);
     const etsData = await fromCsvString(etsDataString);
     const currentIsoDate = new Date().toISOString();
@@ -105,26 +103,38 @@ describe('Test phac-servicebc queries and endpoints', () => {
   }
 
   it('Submit PHAC data to PHAC endpoint, receive 200', async () => {
-    const resPhacForms = await sendPhacForms('./mock/phac-data.csv');
+    const resPhacForms = await sendPhacForms('./fixtures/phac-data.csv');
     expect(resPhacForms.statusCode).toEqual(200);
   });
 
   it('Reject submission with invalid data of birth', async () => {
-    const result = await sendPhacForms('./mock/phac-data-invalid-dob.csv');
+    const result = await sendPhacForms('./fixtures/phac-data-invalid-dob.csv');
     expect(result.statusCode).toEqual(400);
     expect(result.text).toEqual('Validation error(s): Date of birth is invalid');
   });
 
   it('Reject submission with invalid arrival date', async () => {
-    const result = await sendPhacForms('./mock/phac-data-invalid-arrival.csv');
+    const result = await sendPhacForms('./fixtures/phac-data-invalid-arrival.csv');
     expect(result.statusCode).toEqual(400);
     expect(result.text).toEqual('Validation error(s): Arrival date is invalid');
   });
 
   it('Reject submission with invalid phone numbers', async () => {
-    const result = await sendPhacForms('./mock/phac-data-invalid-phone.csv');
+    const result = await sendPhacForms('./fixtures/phac-data-invalid-phone.csv');
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/Validation error\(s\): .*phone is invalid/);
+    expect(result.text).toMatch(/phone number is invalid/);
+  });
+
+  it('Reject submission with no phone numbers', async () => {
+    const result = await sendPhacForms('./fixtures/phac-data-no-phone.csv');
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toMatch(/phone number is required/);
+  });
+
+  it('Reject submission with invalid end of isolation', async () => {
+    const result = await sendPhacForms('./fixtures/phac-data-invalid-end-of-isolation.csv');
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toMatch(/later than arrival date/);
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {
