@@ -12,15 +12,15 @@ exports.handler = async () => {
   const { connection, collections } = await dbConnectionAndCollections(['ets-forms', 'ets-phac']);
   const [etsCollection, phacCollection] = collections;
   try {
-    logger.info(`STARTING: Mark duplicates ${new Date().toISOString()}`);
+    logger.info('STARTING: Mark duplicates');
     const duplicates = await markDuplicates(etsCollection, phacCollection);
-    logger.info(`FINISHED: Marking duplicates ${new Date().toISOString()}`);
+    logger.info('FINISHED: Marking duplicates');
     // markDuplicates output is the below log
     logger.info(duplicates);
-    logger.info(`STARTING: Send to SBC ${new Date().toISOString()}`);
+    logger.info('STARTING: Send to SBC');
     const transactions = await sendPhacToSBC(phacCollection);
     logger.info(transactions);
-    logger.info(`FINISHED: Logging to Slack ${new Date().toISOString()}`);
+    logger.info('FINISHED: Logging to Slack');
     await postToSlack('PHAC to Service BC', start, duplicates, transactions);
   } catch (error) {
     logger.error(`FAILED: Marking duplicates or post to SBC ${error}`);

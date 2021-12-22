@@ -74,6 +74,30 @@ const nodeEnv = process.env.NODE_ENV || 'development';
         }
       }
 
+      if (nodeEnv === 'development') {
+        console.log('Generate PHAC user');
+
+        const usersCollection = dbClient.db.collection(collections.USERS);
+        const defaultUser = await usersCollection.findOne({ username: 'phac' });
+
+        // Creates default user
+        if (!defaultUser) {
+          const salt = randomBytes(16).toString('hex');
+          console.log('Creating phac default username');
+
+          const queryResult = await usersCollection.insertOne({
+            username: 'phac',
+            password: hashPassword('phac', salt),
+            salt,
+            type: 'phac'
+          });
+
+          console.log(`Created user 'phac' with ID ${queryResult.insertedId}`);
+        } else {
+          console.log('Default phac user exists', defaultUser._id);
+        }
+      }
+
       return process.exit();
     } catch (error) {
       console.error(`Failed to create collections, indexes or default username, ${error}`);

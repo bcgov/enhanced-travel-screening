@@ -4,6 +4,7 @@ const { Strategy: LocalStrategy } = require('passport-local');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { scryptSync } = require('crypto');
 const { dbClient, collections } = require('./db');
+const logger = require('./logger');
 
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
@@ -68,9 +69,11 @@ passport.use('jwt', new JwtStrategy(strategyOpt,
 // PHAC strategy for phac endpoint only (only users with type === 'phac' can access)
 passport.use('jwt-phac', new JwtStrategy(strategyOpt,
   async (payload, done) => {
+    logger.info('Trying to authenticate User');
     if (payload.type === USER_TYPE_PHAC) {
       done(null, { id: payload.sub, type: payload.type }); // Success
     } else {
+      logger.info(`Attempted login failed ${payload.type}`);
       done(null, false); // Invalid user type
     }
   }));
