@@ -93,7 +93,8 @@ const postToSbcAndUpdateDb = async (collection, submission) => {
     };
     logger.error('POST TO SBC: failed for');
     logger.error(transaction);
-    postToSlack('POST TO SBC ERROR: ', processedAt, e.message).catch(logger.error);
+    const message = `${new Date().toISOString()}: ${e.message}`;
+    postToSlack('POST TO SBC ERROR: ', Date.now(), message).catch(logger.error);
   }
   await updateSbcTransactions(collection, submission.id, transaction);
   return { id: submission.id, status: transaction.status, transaction };
