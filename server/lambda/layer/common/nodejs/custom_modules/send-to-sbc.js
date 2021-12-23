@@ -1,6 +1,7 @@
 const dayjs = require('dayjs');
 const asyncPool = require('tiny-async-pool');
 const { postServiceItem } = require('./service-bc-api');
+const postToSlack = require('./post-to-slack');
 
 const logger = require('./logger');
 
@@ -80,10 +81,20 @@ const updateSbcTransactions = async (collection, id, transaction) => collection.
 const postToSbcAndUpdateDb = async (collection, submission) => {
   logger.info('Post to SBC Starts');
   // TODO: transaction metrics on each call, time taken etc?
-  const transaction = await postServiceItem(submission);
-  if (transaction.status === 'fail') {
+  let transaction;
+  try {
+    transaction = await postServiceItem(submission);
+  } catch (e) {
+    const processedAt = new Date().toISOString();
+    transaction = {
+      status: 'fail',
+      errorDetails: JSON.stringify(e),
+      processedAt,
+    };
     logger.error('POST TO SBC: failed for');
     logger.error(transaction);
+    const message = `${new Date().toISOString()}: ${e.message}`;
+    postToSlack('POST TO SBC ERROR: ', Date.now(), message).catch(logger.error);
   }
   await updateSbcTransactions(collection, submission.id, transaction);
   return { id: submission.id, status: transaction.status, transaction };

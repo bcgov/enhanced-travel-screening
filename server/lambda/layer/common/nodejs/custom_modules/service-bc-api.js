@@ -29,34 +29,26 @@ const getToken = async () => {
 };
 
 const postServiceItem = async (item) => {
-  try {
-    const token = await getToken();
-    const response = await axios.post(submitURL, {
-      variables: {
-        rawvariables: {
-          value: JSON.stringify(item),
-          type: 'String',
-        },
+  const token = await getToken();
+  const response = await axios.post(submitURL, {
+    variables: {
+      rawvariables: {
+        value: JSON.stringify(item),
+        type: 'String',
       },
-    }, {
-      headers: {
-        'Accept-Encoding': 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return {
-      status: 'success',
-      serviceBCId: response.data.id,
-      processedAt: new Date().toISOString(),
-    };
-  } catch (error) {
-    return {
-      status: 'fail',
-      errorDetails: JSON.stringify(error),
-      processedAt: new Date().toISOString(),
-    };
-  }
+    },
+  }, {
+    headers: {
+      'Accept-Encoding': 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return {
+    status: 'success',
+    serviceBCId: response.data.id,
+    processedAt: new Date().toISOString(),
+  };
 };
 
 module.exports = { postServiceItem };
