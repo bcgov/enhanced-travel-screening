@@ -22,8 +22,8 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "Tag to TEST"
-          SLACK_MESSAGE: "Starting Deployment :deployparrot:"
+          SLACK_TITLE: 'Tag to TEST'
+          SLACK_MESSAGE: 'Starting Deployment :deployparrot:'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -38,7 +38,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: "v1.0.0"
+          terraform_version: 'v1.0.0'
           cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
       - name: Build Server
@@ -54,5 +54,5 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: "Tag to TEST"
-          SLACK_MESSAGE: "Deployment Completed :rocket:"
+          SLACK_TITLE: 'Tag to TEST'
+          SLACK_MESSAGE: 'Deployment Completed :rocket:'
