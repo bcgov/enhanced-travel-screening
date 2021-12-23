@@ -199,6 +199,21 @@ app.get(`${apiBaseUrl}/validate`,
 app.get(`${apiBaseUrl}/version`,
   (req, res) => res.json({ version: process.env.VERSION }));
 
+app.get(`${apiBaseUrl}/error`,
+  (req, res) => {
+    logger.error('Simulated error, not to worry!');
+    res.json({});
+  });
+
+app.get(`${apiBaseUrl}/error/fail`,
+  (req, res) => {
+    logger.error('Simulated error, not to worry!');
+    if (process.env.NODE_ENV) {
+      throw new Error('uncaught intentional error!');
+    }
+    res.json({});
+  });
+
 app.use(errorHandler);
 
 module.exports = app;

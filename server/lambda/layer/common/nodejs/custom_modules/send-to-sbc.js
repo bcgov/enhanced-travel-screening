@@ -2,6 +2,8 @@ const dayjs = require('dayjs');
 const asyncPool = require('tiny-async-pool');
 const { postServiceItem } = require('./service-bc-api');
 
+const logger = require('./logger');
+
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   const dateRange = [
     dayjs().subtract(13, 'day'),
@@ -76,10 +78,12 @@ const updateSbcTransactions = async (collection, id, transaction) => collection.
 );
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
+  logger.info('Post to SBC Starts');
+  // TODO: transaction metrics on each call, time taken etc?
   const transaction = await postServiceItem(submission);
   if (transaction.status === 'fail') {
-    console.log('POST TO SBC: failed for');
-    console.log(transaction);
+    logger.error('POST TO SBC: failed for');
+    logger.error(transaction);
   }
   await updateSbcTransactions(collection, submission.id, transaction);
   return { id: submission.id, status: transaction.status, transaction };
@@ -171,8 +175,11 @@ const sendPhacToSBC = async (phacCollection) => {
     phacCollection,
     '$arrival_date',
   );
+  logger.info(`sendPhacToSBC - getUnsuccessfulSbcTransactions - ${data.length}`);
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
-    return `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
+    const message = `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
+    logger.warn(message);
+    return message;
   }
   data = data.map(phacToSbc);
   return executeTransactionPool(data, phacCollection);
