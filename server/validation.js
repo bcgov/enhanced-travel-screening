@@ -18,7 +18,7 @@ const provinces = [
 ];
 
 const validateDateString = (s) => {
-  if (/^\d{4}\/\d{2}\/\d{2}$/.test(s) === false) return false;
+  if (/^\d{4}[\\/\-.]\d{2}[\\/\-.]\d{2}$/.test(s) === false) return false;
   const date = Date.parse(s);
   return typeof date === 'number' && !Number.isNaN(date);
 };
@@ -36,6 +36,15 @@ const validateUniqueArray = (a) => (
   Array.isArray(a) && new Set(a).size === a.length
 );
 
+const PHONE_NUMBER_PATTERN = /^((\+?[1-9]{1,4}[ \\-]*)|(\([0-9]{2,3}\)[ .\\-]*)|([0-9]{2,4})[ .\\-]*)*?[0-9]{3,4}?[ .\\-]*[0-9]{3,4}?$/;
+const validatePhoneNumber = (value) => {
+  if (!value) return true;
+  if (!PHONE_NUMBER_PATTERN.test(value)) {
+    return false;
+  }
+  return true;
+};
+
 const DeterminationSchema = yup.object().noUnknown().shape({
   determination: yup.string().oneOf(['support', 'accepted']).required('Determination is required'),
   notes: yup.string().required('Notes are required'),
@@ -44,6 +53,41 @@ const DeterminationSchema = yup.object().noUnknown().shape({
 const PhacSchema = yup.array().required('Submission must contain at least one item').of(
   yup.object().shape({
     covid_id: yup.string().typeError('covid_id must be a string').required('covid_id is required'),
+    date_of_birth: yup.string().required('Date of birth is required').test('is-date', 'Date of birth is invalid', validatePastDateString),
+    arrival_date: yup.string().required('Arrival date is required').test('is-date', 'Arrival date is invalid', (value, context) => {
+      if (!validateDateString(value)) return false;
+      const { path, parent, createError } = context;
+      if (Date.parse(value) < Date.parse(parent.date_of_birth)) {
+        const message = `Arrival date should be later than date of birth: ${value} > ${parent.date_of_birth}`;
+        return createError({ path, message });
+      }
+      return true;
+    }),
+    end_of_isolation: yup.string().required('End of isolation is required').test('is-date', 'End of isolation is invalid', (value, context) => {
+      if (!validateDateString(value)) return false;
+      const { path, parent, createError } = context;
+      if (Date.parse(value) < Date.parse(parent.arrival_date)) {
+        const message = `End of isolation should be later than arrival date: ${value} < ${parent.arrival_date}`;
+        return createError({ path, message });
+      }
+      return true;
+    }),
+    home_phone: yup.string().test('is-phone-number', 'Home phone number is invalid', validatePhoneNumber),
+    mobile_phone: yup.string().test('is-phone-number', 'Mobile phone number is invalid', validatePhoneNumber),
+    other_phone: yup.string().when(['home_phone', 'mobile_phone'], {
+      is: (homePhone, mobilePhone) => !homePhone && !mobilePhone,
+      then: yup.string().test('is-phone-number', 'Other phone is invalid', (value, context) => {
+        if (!value) {
+          const { path, createError } = context;
+          const message = 'At least one phone number is required';
+          return createError({ path, message });
+        }
+        return validatePhoneNumber(value);
+      }),
+      otherwise: yup.string().test('is-phone-number', 'Other phone is invalid', validatePhoneNumber),
+    }),
+    province_territory: yup.string().required(),
+
   }).test('no-empty-keys', 'Empty keys are not allowed', (v) => !Object.keys(v).map((k) => k.trim()).includes('')),
 );
 
