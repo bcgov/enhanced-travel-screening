@@ -39,6 +39,6 @@ data "aws_iam_policy_document" "service_account" {
 }
 
 
-output "service_account_iam" {
-  value = data.aws_iam_policy_document.service_account.json
-}
+# output "service_account_iam" {
+#   value = data.aws_iam_policy_document.service_account.json
+# }
