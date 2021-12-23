@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build & Deploy (Prod)
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "Tag to PROD"
-          SLACK_MESSAGE: 'Starting Deployment :deployparrot:'
+          SLACK_MESSAGE: "Starting Deployment :deployparrot:"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -55,4 +55,4 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: "Tag to PROD"
-          SLACK_MESSAGE: 'Deployment Completed :rocket:'
+          SLACK_MESSAGE: "Deployment Completed :rocket:"
