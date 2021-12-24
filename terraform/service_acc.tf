@@ -38,6 +38,7 @@ data "aws_iam_policy_document" "service_account" {
   }
 }
 
+# uncomment when needed to update service account IAM
 
 # output "service_account_iam" {
 #   value = data.aws_iam_policy_document.service_account.json
