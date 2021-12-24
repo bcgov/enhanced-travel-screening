@@ -26,6 +26,8 @@ git_version = "ETS-$(COMMIT_SHA)"
 api_zip = "build/server.zip"
 ets_to_sbc_zip = "build/etsToSbc.zip"
 phac_to_sbc_zip = "build/phacToSbc.zip"
+slack_zip = "build/slack.zip"
+
 endef
 export TFVARS_DATA
 
@@ -132,7 +134,8 @@ build-lambdas:
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	cd $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc && zip -rq $(REPO_LOCATION)/terraform/build/etsToSbc.zip *
 
-	@cd $(REPO_LOCATION)/terraform/slack && zip -rq $(REPO_LOCATION)/terraform/slack/slack.zip *
+	@cd $(REPO_LOCATION)/slack && zip -rq $(REPO_LOCATION)/slack/slack.zip *
+	@cp -r $(REPO_LOCATION)/slack/slack.zip $(REPO_LOCATION)/terraform/build/slack.zip
 
 # ============================================================= #
 # Local Development 

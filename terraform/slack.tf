@@ -3,8 +3,8 @@ resource "aws_lambda_function" "slack" {
   function_name    = local.slack
   role             = aws_iam_role.lambda.arn
   runtime          = "nodejs14.x"
-  filename         = "slack/slack.zip"
-  source_code_hash = filebase64sha256("slack/slack.zip")
+  filename         = var.slack_zip
+  source_code_hash = filebase64sha256(var.slack_zip)
   handler          = "index.handler"
   memory_size      = 512
   timeout          = 10
