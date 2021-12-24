@@ -25,6 +25,7 @@ locals {
   api_name    = "${var.project_name}-server-${var.target_env}"
   ets_to_sbc  = "${var.project_name}-ets-sbc-${var.target_env}"
   phac_to_sbc = "${var.project_name}-phac-sbc-${var.target_env}"
+  slack = "${var.project_name}-slack-${var.target_env}"
   is_prod     = var.target_env == "prod" ? [var.target_env] : []
   is_not_prod     = var.target_env != "prod" ? [var.target_env] : []
 }

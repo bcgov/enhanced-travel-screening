@@ -1,8 +1,8 @@
 
-resource "aws_cloudwatch_log_metric_filter" "api_server_lambda_errors" {
-  name           = "ets_api_server_lambda_errors_filter"
+resource "aws_cloudwatch_log_metric_filter" "phac_sbc_lambda_errors" {
+  name           = "ets_phac_sbc_lambda_errors_filter"
   pattern        = "?ERROR ?WARN"
-  log_group_name = "/aws/lambda/ets-server-${var.target_env}"
+  log_group_name = "/aws/lambda/ets-phac-sbc-${var.target_env}"
 
   metric_transformation {
     name      = "lambda_unexpected_errors"
@@ -11,8 +11,8 @@ resource "aws_cloudwatch_log_metric_filter" "api_server_lambda_errors" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "api_server_lambda_errors" {
-  alarm_name          = "api_server_lambda_errors"
+resource "aws_cloudwatch_metric_alarm" "phac_sbc_lambda_errors" {
+  alarm_name          = "phac_sbc_lambda_errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "lambda_unexpected_errors"
@@ -27,10 +27,10 @@ resource "aws_cloudwatch_metric_alarm" "api_server_lambda_errors" {
   insufficient_data_actions = []
 }
 
-resource "aws_cloudwatch_log_metric_filter" "api_server_levels" {
-  name           = "ets_api_server_levels_filter"
+resource "aws_cloudwatch_log_metric_filter" "phac_sbc_error_levels" {
+  name           = "ets_phac_sbc_error_levels_filter"
   pattern        = "{ $.level = \"error\" }"
-  log_group_name = "/aws/lambda/ets-server-${var.target_env}"
+  log_group_name = "/aws/lambda/ets-phac-sbc-${var.target_env}"
 
   metric_transformation {
     name      = "EventCount"
@@ -39,8 +39,8 @@ resource "aws_cloudwatch_log_metric_filter" "api_server_levels" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "api_server_levels" {
-  alarm_name          = "api_server_levels"
+resource "aws_cloudwatch_metric_alarm" "phac_sbc_error_levels" {
+  alarm_name          = "phac_sbc_error_levels"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "EventCount"

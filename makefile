@@ -132,6 +132,8 @@ build-lambdas:
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	cd $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc && zip -rq $(REPO_LOCATION)/terraform/build/etsToSbc.zip *
 
+	@cd $(REPO_LOCATION)/terraform/slack && zip -rq $(REPO_LOCATION)/terraform/slack/slack.zip *
+
 # ============================================================= #
 # Local Development 
 # ============================================================= #
