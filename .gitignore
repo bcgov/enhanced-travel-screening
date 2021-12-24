@@ -32,3 +32,5 @@ vpn/gen/*
 
 ssh-keypair
 ssh-keypair.pub
+
+*.zip
