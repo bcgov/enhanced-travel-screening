@@ -178,7 +178,8 @@ const sendEtsToSBC = async (etsCollection) => {
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`;
   }
-  return executeTransactionPool(data, etsCollection);
+  const result = await executeTransactionPool(data, etsCollection);
+  return result;
 };
 
 const sendPhacToSBC = async (phacCollection) => {
@@ -192,8 +193,12 @@ const sendPhacToSBC = async (phacCollection) => {
     logger.warn(message);
     return message;
   }
+  logger.info('Preparing transaction pool');
+
   data = data.map(phacToSbc);
-  return executeTransactionPool(data, phacCollection);
+
+  const result = await executeTransactionPool(data, phacCollection);
+  return result;
 };
 
 module.exports = { sendPhacToSBC, sendEtsToSBC };
