@@ -30,7 +30,6 @@ const schema = [
       { key: 'id', options: { unique: true } },
       { key: 'lastName', options: {} },
       { key: 'createdAt', options: {} },
-      { key: 'serviceResponse.processedAt', options: {} },
     ],
   },
 ];
