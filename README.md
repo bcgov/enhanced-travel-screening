@@ -152,8 +152,16 @@ To run a lambda locally:
 - Run the desired lambda function command from the [Makefile](makefile), which will be in the format `make run-local-lambda-*`
 - Wait for output.json to appear in the project root directory
 
-To trigger the workflow to deploy all lambda function to an AWS environment:
-- Example for dev env run - `make tag-dev`
+## Deployments to AWS Environments
+
+To deploy your changes to an environment, from your feature branch, checkout that branch locally.
+
+- For DEV env, run - `make tag-dev`
+- Similar commands for test and prod is found in make file. 
+- Production deployment requires approval in the github workflow after being triggered. 
+- All deployments triggers alerts to slack with `commit id` and `github actions url`
+- `make tag-prod` on a branch, creates production release request for that branch
+  - creating a release branch with required commits can also be used to tag to production.  
 
 ## License
 
