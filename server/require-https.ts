@@ -6,4 +6,4 @@ const requireHttps = (req, res, next) => {
   return next();
 };
 
-module.exports = requireHttps;
+export default requireHttps;

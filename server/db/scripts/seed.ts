@@ -1,8 +1,9 @@
 /* eslint-disable */
-const { randomBytes } = require('crypto');
-const { hashPassword } = require('../../auth.js');
-const { dbClient } = require('../db.js');
-const { schema, collections } = require('../schema.js');
+import { randomBytes } from 'crypto';
+
+import { hashPassword } from '../../auth';
+import { dbClient } from '../db';
+import { schema, collections } from '../schema';
 
 const nodeEnv = process.env.NODE_ENV || 'development';
 
@@ -20,21 +21,27 @@ const nodeEnv = process.env.NODE_ENV || 'development';
       console.log('Existing collections are: ', collectionNames.join(', '));
 
       // Create collections if needed
-      await Promise.all(schema.map(async (schemaItem) => {
-        if (collectionNames.includes(schemaItem.collection)) return;
-        console.log(`Creating collection ${schemaItem.collection}`);
-        await dbClient.db.createCollection(schemaItem.collection);
-      }));
+      await Promise.all(
+        schema.map(async (schemaItem) => {
+          if (collectionNames.includes(schemaItem.collection)) return;
+          console.log(`Creating collection ${schemaItem.collection}`);
+          await dbClient.db.createCollection(schemaItem.collection);
+        })
+      );
 
       // Create collections indexes if needed
       for (const schemaItem of schema) {
         console.log(`Checking collection indexes for ${schemaItem.collection}`);
-        const schemaItemCollection = dbClient.db.collection(schemaItem.collection);
+        const schemaItemCollection = dbClient.db.collection(
+          schemaItem.collection
+        );
 
-        const collectionIndexes = await schemaItemCollection.listIndexes().toArray();
+        const collectionIndexes = await schemaItemCollection
+          .listIndexes()
+          .toArray();
         const collectionIndexKeys = collectionIndexes
           .map((index) => Object.keys(index.key))
-        // Flatten array
+          // Flatten array
           .reduce((a, b) => a.concat(b), []);
 
         console.log(`Existing indexes are: ${collectionIndexKeys.join(', ')}`);
@@ -45,7 +52,10 @@ const nodeEnv = process.env.NODE_ENV || 'development';
             // Create index
             // The value for the index defines whether the index should be sorted in ascending
             // order (1) or descending order (-1)
-            await schemaItemCollection.createIndex({ [index.key]: 1 }, index.options);
+            await schemaItemCollection.createIndex(
+              { [index.key]: 1 },
+              index.options
+            );
           }
         }
       }
@@ -55,7 +65,9 @@ const nodeEnv = process.env.NODE_ENV || 'development';
         console.log('Verifying user');
 
         const usersCollection = dbClient.db.collection(collections.USERS);
-        const defaultUser = await usersCollection.findOne({ username: 'username' });
+        const defaultUser = await usersCollection.findOne({
+          username: 'username',
+        });
 
         // Creates default user
         if (!defaultUser) {
@@ -68,7 +80,9 @@ const nodeEnv = process.env.NODE_ENV || 'development';
             salt,
           });
 
-          console.log(`Created user 'username' with ID ${queryResult.insertedId}`);
+          console.log(
+            `Created user 'username' with ID ${queryResult.insertedId}`
+          );
         } else {
           console.log('Default username exists', defaultUser._id);
         }
@@ -89,7 +103,7 @@ const nodeEnv = process.env.NODE_ENV || 'development';
             username: 'phac',
             password: hashPassword('phac', salt),
             salt,
-            type: 'phac'
+            type: 'phac',
           });
 
           console.log(`Created user 'phac' with ID ${queryResult.insertedId}`);
@@ -100,7 +114,9 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 
       return process.exit();
     } catch (error) {
-      console.error(`Failed to create collections, indexes or default username, ${error}`);
+      console.error(
+        `Failed to create collections, indexes or default username, ${error}`
+      );
     }
   }
 })();

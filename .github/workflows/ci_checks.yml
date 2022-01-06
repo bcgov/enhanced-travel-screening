@@ -20,7 +20,7 @@ jobs:
       - name: lint
         working-directory: ./server
         run: |
-          npm ci
+          npm install
           npm run lint
 
       - name: Start MongoDB v${{ matrix.mongodb-version }}
@@ -31,7 +31,7 @@ jobs:
       - name: NPM Test
         working-directory: ./server
         env:
-          USE_GHA_MONGO: "true"
+          USE_GHA_MONGO: 'true'
         run: |
           npm ci
           npm test

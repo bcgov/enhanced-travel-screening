@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../server');
-const { startDB, closeDB } = require('./util/db');
+import request from 'supertest';
+import app from '../server';
+import { startDB, closeDB } from './util/db';
 
 describe('Server V1 Auth Endpoints', () => {
   let server;

@@ -1,7 +1,8 @@
-const logger = require('./logger.js');
+import logger from './logger';
 
 // Middleware to log and sanitize errors
-const errorHandler = (error, req, res, next) => { // eslint-disable-line no-unused-vars
+const errorHandler = (error, req, res, next) => {
+  // eslint-disable-line no-unused-vars
   logger.error(error.message);
   switch (error.name) {
     case 'ValidationError':
@@ -14,10 +15,7 @@ const errorHandler = (error, req, res, next) => { // eslint-disable-line no-unus
 };
 
 // Wraps async request handlers to ensure next is called
-const asyncMiddleware = (f) => (
-  (req, res, next) => Promise
-    .resolve(f(req, res, next))
-    .catch((error) => next(error))
-);
+const asyncMiddleware = (f) => (req, res, next) =>
+  Promise.resolve(f(req, res, next)).catch((error) => next(error));
 
-module.exports = { errorHandler, asyncMiddleware };
+export { errorHandler, asyncMiddleware };

@@ -97,14 +97,21 @@ build-lambdas:
 	@echo -e "\n\n\n============================="
 	@echo "Install Node Modules in all packages"
 	@echo "============================="
-	npm install --production --prefix server
-	npm install --production --prefix server/lambda/layer/common/nodejs/custom_modules
-	npm install --production --prefix server/lambda/layer/common/nodejs
+	npm install --prefix server
 
 	@echo -e "\n\n\n============================="
 	@echo "Copy backend to temp folder to start build"
 	@echo "============================="
-	cp -r ./server ./terraform/build/server
+	npm run build --prefix server
+	rm -rf server/node_modules && npm install --production --prefix server
+	npm install --production --prefix server/lambda/layer/common/nodejs/custom_modules
+	npm install --production --prefix server/lambda/layer/common/nodejs
+	cp -r ./server/dist ./terraform/build/server
+	cp -r ./server/node_modules ./terraform/build/server/node_modules
+	cp -r ./server/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
+	cp -r ./server/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
+	cp -r ./server/db/certificates ./terraform/build/server/db/certificates
+	cp -r ./server/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
 
 	@echo -e "\n\n\n============================="
 	@echo "Optimize node modules size"
@@ -125,12 +132,12 @@ build-lambdas:
 	@echo "============================="
 
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/node_modules $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc
-	@rm $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc/node_modules/custom_modules
+	@rm -rf $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc/node_modules/custom_modules
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc/node_modules/custom_modules
 	cd $(REPO_LOCATION)/terraform/build/server/lambda/phacToSbc && zip -rq $(REPO_LOCATION)/terraform/build/phacToSbc.zip *
 
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/node_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc
-	@rm $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
+	@rm -rf $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	@cp -r $(REPO_LOCATION)/terraform/build/server/lambda/layer/common/nodejs/custom_modules $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc/node_modules/custom_modules
 	cd $(REPO_LOCATION)/terraform/build/server/lambda/etsToSbc && zip -rq $(REPO_LOCATION)/terraform/build/etsToSbc.zip *
 
@@ -148,6 +155,10 @@ build-local:
 run-local:
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
+
+run-local-test:
+	@echo "Running test in server container"
+	@docker-compose -f docker-compose.dev.yml run --name ets-server-test --entrypoint "npm test" server
 
 run-local-db:
 	@echo "Running local DB container"

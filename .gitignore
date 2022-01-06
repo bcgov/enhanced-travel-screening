@@ -34,3 +34,4 @@ ssh-keypair
 ssh-keypair.pub
 
 *.zip
+server/dist

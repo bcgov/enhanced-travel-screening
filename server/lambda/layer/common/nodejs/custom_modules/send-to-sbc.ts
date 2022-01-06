@@ -1,9 +1,8 @@
-const dayjs = require('dayjs');
-const asyncPool = require('tiny-async-pool');
-const { postServiceItem } = require('./service-bc-api');
-const postToSlack = require('./post-to-slack');
-
-const logger = require('./logger');
+import dayjs from 'dayjs';
+import asyncPool from 'tiny-async-pool';
+import { postServiceItem } from './service-bc-api';
+import postToSlack from './post-to-slack';
+import logger from './logger';
 
 const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
   const dateRange = [
@@ -70,13 +69,14 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
 
 // Following NoSQL recommendation, in this case, we want to store
 // BC Services transactional data on the record itself
-const updateSbcTransactions = async (collection, id, transaction) => collection.updateOne(
-  { id },
-  {
-    $push: { serviceBCTransactions: transaction },
-    $set: { updatedAt: new Date().toISOString() },
-  },
-);
+const updateSbcTransactions = async (collection, id, transaction) =>
+  collection.updateOne(
+    { id },
+    {
+      $push: { serviceBCTransactions: transaction },
+      $set: { updatedAt: new Date().toISOString() },
+    }
+  );
 
 const postToSbcAndUpdateDb = async (collection, submission) => {
   logger.info('Post to SBC Starts');
@@ -100,11 +100,12 @@ const postToSbcAndUpdateDb = async (collection, submission) => {
   return { id: submission.id, status: transaction.status, transaction };
 };
 
-const cleanJoinArray = (a) => a
-  .filter((i) => ['string', 'number'].includes(typeof i))
-  .map((i) => String(i).trim())
-  .filter((i) => i !== '')
-  .join(', ');
+const cleanJoinArray = (a) =>
+  a
+    .filter((i) => ['string', 'number'].includes(typeof i))
+    .map((i) => String(i).trim())
+    .filter((i) => i !== '')
+    .join(', ');
 
 const phacToSbc = (phacItem) => {
   const oldKeys = [
@@ -156,7 +157,8 @@ const phacToSbc = (phacItem) => {
   return sbcItem;
 };
 
-const makeTransactionIterator = (collection) => (d) => postToSbcAndUpdateDb(collection, d);
+const makeTransactionIterator = (collection) => (d) =>
+  postToSbcAndUpdateDb(collection, d);
 
 const executeTransactionPool = async (data, collection) => {
   const concurrency = 10; // How many requests running in parallel
@@ -173,7 +175,7 @@ const executeTransactionPool = async (data, collection) => {
 const sendEtsToSBC = async (etsCollection) => {
   const data = await getUnsuccessfulSbcTransactions(
     etsCollection,
-    '$arrival.date',
+    '$arrival.date'
   );
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`;
@@ -185,9 +187,11 @@ const sendEtsToSBC = async (etsCollection) => {
 const sendPhacToSBC = async (phacCollection) => {
   let data = await getUnsuccessfulSbcTransactions(
     phacCollection,
-    '$arrival_date',
+    '$arrival_date'
   );
-  logger.info(`sendPhacToSBC - getUnsuccessfulSbcTransactions - ${data.length}`);
+  logger.info(
+    `sendPhacToSBC - getUnsuccessfulSbcTransactions - ${data.length}`
+  );
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     const message = `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
     logger.warn(message);
@@ -201,4 +205,4 @@ const sendPhacToSBC = async (phacCollection) => {
   return result;
 };
 
-module.exports = { sendPhacToSBC, sendEtsToSBC };
+export { sendPhacToSBC, sendEtsToSBC };
