@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-const { MongoClient } = require('mongodb');
-const fs = require('fs');
+import { MongoClient } from 'mongodb';
+
+import fs from 'fs';
 
 const dbConnectionOptions = (server) => ({
   useNewUrlParser: true,
@@ -18,4 +19,4 @@ const dbConnectionAndCollections = async (collections) => {
   return { connection, collections: collections.map((c) => db.collection(c)) };
 };
 
-module.exports = dbConnectionAndCollections;
+export default dbConnectionAndCollections;

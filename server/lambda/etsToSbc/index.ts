@@ -1,14 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-unresolved */
-const { sendEtsToSBC } = require('custom_modules/send-to-sbc');
-const postToSlack = require('custom_modules/post-to-slack');
-const dbConnectionAndCollections = require('custom_modules/db');
+import { sendEtsToSBC } from 'custom_modules/send-to-sbc';
+
+import postToSlack from 'custom_modules/post-to-slack';
+import dbConnectionAndCollections from 'custom_modules/db';
 
 /* eslint-disable no-console */
 
-exports.handler = async () => {
+export const handler = async () => {
   const start = new Date().getTime();
-  const { connection, collections } = await dbConnectionAndCollections(['ets-forms']);
+  const { connection, collections } = await dbConnectionAndCollections([
+    'ets-forms',
+  ]);
   const [etsCollection] = collections;
   try {
     const transactions = await sendEtsToSBC(etsCollection);

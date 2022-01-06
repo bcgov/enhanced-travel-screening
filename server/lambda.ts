@@ -1,7 +1,7 @@
-const awsServerlessExpress = require('aws-serverless-express');
-const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
-const app = require('./server.js');
-const { dbClient } = require('./db');
+import awsServerlessExpress from 'aws-serverless-express';
+import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
+import app from './server';
+import { dbClient } from './db';
 
 app.use(awsServerlessExpressMiddleware.eventContext());
 const wrappedApp = awsServerlessExpress.createServer(app);
@@ -16,6 +16,6 @@ const wrappedApp = awsServerlessExpress.createServer(app);
   }
 })();
 
-exports.handler = (event, context) => {
+export const handler = (event, context) => {
   awsServerlessExpress.proxy(wrappedApp, event, context);
 };

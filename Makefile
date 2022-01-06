@@ -149,6 +149,10 @@ run-local:
 	@echo "Running local app container"
 	@docker-compose -f docker-compose.dev.yml up
 
+run-local-test:
+	@echo "Running test in server container"
+	@docker-compose -f docker-compose.dev.yml run --name ets-server-test --entrypoint "npm test" server
+
 run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb

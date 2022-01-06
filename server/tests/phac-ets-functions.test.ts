@@ -1,13 +1,13 @@
-const request = require('supertest');
-const { readFileSync } = require('fs');
-const { join } = require('path');
-const MockDate = require('mockdate');
-const app = require('../server');
-const { dbClient, collections, TEST_DB } = require('../db');
-const { startDB, closeDB } = require('./util/db');
-const { fromCsvString } = require('./util/csv');
-const markDuplicates = require('../lambda/phacToSbc/mark-duplicates');
-const { sendPhacToSBC, sendEtsToSBC } = require('../lambda/layer/common/nodejs/custom_modules/send-to-sbc');
+import request from 'supertest';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import MockDate from 'mockdate';
+import app from '../server';
+import { dbClient, collections, TEST_DB } from '../db';
+import { startDB, closeDB } from './util/db';
+import { fromCsvString } from './util/csv';
+import markDuplicates from '../lambda/phacToSbc/mark-duplicates';
+import { sendPhacToSBC, sendEtsToSBC } from '../lambda/layer/common/nodejs/custom_modules/send-to-sbc';
 
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);

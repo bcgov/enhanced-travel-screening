@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2019",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "noEmit": false,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "lib": ["esnext"],
+    "baseUrl": ".",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "exclude": ["node_modules"],
+  "include": ["**/*.ts", "**/*.test.ts"]
+}

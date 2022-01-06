@@ -16,4 +16,4 @@ const deriveTravellerKey = (item) => {
   return components.map(cleanString).join('-');
 };
 
-module.exports = deriveTravellerKey;
+export default deriveTravellerKey;

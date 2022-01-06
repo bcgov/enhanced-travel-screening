@@ -13,9 +13,7 @@ const TEST_DB = 'TEST_DB';
 const schema = [
   {
     collection: collections.USERS,
-    indexes: [
-      { key: 'username', options: { unique: true } },
-    ],
+    indexes: [{ key: 'username', options: { unique: true } }],
   },
   {
     collection: collections.PHAC,
@@ -34,8 +32,4 @@ const schema = [
   },
 ];
 
-module.exports = {
-  collections,
-  schema,
-  TEST_DB,
-};
+export { collections, schema, TEST_DB };

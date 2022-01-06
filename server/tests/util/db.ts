@@ -1,24 +1,28 @@
-const { randomBytes } = require('crypto');
-const {
-  dbClient, schema, collections, TEST_DB,
-} = require('../../db');
-const { hashPassword } = require('../../auth.js');
+import { randomBytes } from 'crypto';
+import { dbClient, schema, collections, TEST_DB } from '../../db';
+import { hashPassword } from '../../auth';
 
 async function seedDatabase() {
   // Create collections if needed
-  await Promise.all(schema.map(async (schemaItem) => {
-    await dbClient.db.createCollection(schemaItem.collection);
-  }));
+  await Promise.all(
+    schema.map(async (schemaItem) => {
+      await dbClient.db.createCollection(schemaItem.collection);
+    })
+  );
 
   // Create collection indexes if needed
   const results = [];
-  for (const schemaItem of schema) { // eslint-disable-line no-restricted-syntax
+  for (const schemaItem of schema) {
+    // eslint-disable-line no-restricted-syntax
     const schemaItemCollection = dbClient.db.collection(schemaItem.collection);
-    for (const index of schemaItem.indexes) { // eslint-disable-line no-restricted-syntax
+    for (const index of schemaItem.indexes) {
+      // eslint-disable-line no-restricted-syntax
       // eslint-disable-next-line no-await-in-loop
       const indexExists = await schemaItemCollection.indexExists(index.key);
       if (!indexExists) {
-        results.push(schemaItemCollection.createIndex({ [index.key]: 1 }, index.options));
+        results.push(
+          schemaItemCollection.createIndex({ [index.key]: 1 }, index.options)
+        );
       }
     }
   }
@@ -61,8 +65,4 @@ async function closeDB() {
   await clearDB();
 }
 
-module.exports = {
-  seedDatabase,
-  startDB,
-  closeDB,
-};
+export { seedDatabase, startDB, closeDB };

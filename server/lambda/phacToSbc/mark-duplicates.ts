@@ -1,4 +1,4 @@
-const dayjs = require('dayjs');
+import dayjs from 'dayjs';
 
 /**
  * Flatten nested collection
@@ -270,4 +270,4 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   return logs.join('\n');
 };
 
-module.exports = markDuplicates;
+export default markDuplicates;

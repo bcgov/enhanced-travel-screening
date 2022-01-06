@@ -1,12 +1,23 @@
-const { MongoClient } = require('mongodb');
-const fs = require('fs');
-const logger = require('../logger.js');
+import { MongoClient, MongoClientOptions } from 'mongodb';
+import fs from 'fs';
+import logger from '../logger';
 
 /**
  * This utility module provides helper methods to allow the application
  * to easily interact with a DocumentDB/MongoDB database
  */
 class DBClient {
+  public _connection: any;
+  public db: any;
+  public dbPassword: any;
+  public dbServer: any;
+  public dbPort: any;
+  public dbUser: any;
+  public dbName: any;
+  public dbTLSEnabled: any;
+  public useReplicaSet: any;
+  public dbTLSDisableCert: any;
+
   constructor() {
     /**
      * DB Connection
@@ -32,7 +43,7 @@ class DBClient {
    * @returns
    * @memberof DBClient
    */
-  static config() {
+  config() {
     return {
       dbServer: process.env.DB_SERVER || 'localhost',
       dbPort: process.env.DB_PORT || '27017',
@@ -49,7 +60,7 @@ class DBClient {
    * Console log current configuration but password
    */
   printConfig() {
-    const { dbPassword, ...config } = this.constructor.config();
+    const { dbPassword, ...config } = this.config();
     console.log(config); // eslint-disable-line no-console
   }
 
@@ -71,15 +82,16 @@ class DBClient {
       dbTLSEnabled,
       useReplicaSet,
       dbTLSDisableCert,
-    } = this.constructor.config();
+    } = this.config();
 
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-from-outside-a-vpc.html
 
-    const uri = process.env.USE_GHA_MONGO === 'true'
-      ? 'mongodb://localhost/test' : `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`;
+    const uri =
+      process.env.USE_GHA_MONGO === 'true'
+        ? 'mongodb://localhost/test'
+        : `mongodb://${dbUser}:${dbPassword}@${dbServer}:${dbPort}/${dbName}`;
 
-    /** @type {MongoClientOptions} */
-    const options = {
+    const options: MongoClientOptions = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     };
@@ -88,7 +100,13 @@ class DBClient {
       options.ssl = true;
       options.sslValidate = !dbTLSDisableCert;
       // Specify the Amazon DocumentDB cert
-      options.sslCA = dbTLSDisableCert ? undefined : [fs.readFileSync(`${__dirname}/certificates/rds-combined-ca-bundle.pem`)];
+      options.sslCA = dbTLSDisableCert
+        ? undefined
+        : [
+            fs.readFileSync(
+              `${__dirname}/certificates/rds-combined-ca-bundle.pem`
+            ),
+          ];
     }
 
     // Create a MongoDB client opening a connection to Amazon DocumentDB as a replica set,
@@ -115,16 +133,16 @@ class DBClient {
    * @param {*} database
    * @memberof DBClient
    */
-  useDB(database) {
+  useDB(database: any) {
     this.db = this._connection.db(database);
   }
 
   /**
-     * Disconnect from database
-     *
-     * @returns
-     * @memberof DB
-     */
+   * Disconnect from database
+   *
+   * @returns
+   * @memberof DB
+   */
   async disconnect() {
     if (!this._connection) return;
 
@@ -136,8 +154,4 @@ class DBClient {
   }
 }
 
-DBClient.instance = new DBClient();
-
-module.exports = {
-  dbClient: DBClient.instance,
-};
+export const dbClient = new DBClient();

@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:14-alpine
 
 # Static env vars
 ARG VERSION
@@ -13,7 +13,7 @@ WORKDIR /server
 
 COPY package*.json ./
 
-RUN npm set progress=false && npm ci --no-cache
+RUN npm set progress=false && npm install
 
 # Run dev server
 EXPOSE 80
