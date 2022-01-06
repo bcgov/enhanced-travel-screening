@@ -23,7 +23,7 @@ resource "aws_cloudfront_origin_access_identity" "app" {
 
 resource "aws_cloudfront_distribution" "app" {
   comment = local.app_name
-  aliases = var.target_env == "prod" ? ["travelscreening.gov.bc.ca"] : []
+  aliases = var.target_env == "prod" ? ["travelscreening.gov.bc.ca"] : ["${var.target_env}.ets.freshworks.club"]
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3_origin_id
@@ -56,11 +56,13 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
 
-  # Non prod has no dedicated url
+  # CNAME to this CF dist is created in freshworks.club hosted zone in fw AWS
   dynamic "viewer_certificate" {
     for_each = local.is_not_prod
     content {
-      cloudfront_default_certificate = true
+      acm_certificate_arn      = aws_acm_certificate.fw_ets[0].arn
+      ssl_support_method       = "sni-only"
+      minimum_protocol_version = "TLSv1.2_2019"
     }
   }
 
