@@ -104,7 +104,8 @@ build-lambdas:
 	@echo -e "\n\n\n============================="
 	@echo "Copy backend to temp folder to start build"
 	@echo "============================="
-	cp -r ./server ./terraform/build/server
+	npm run build --prefix server
+	cp -r ./server/build ./terraform/build/server
 
 	@echo -e "\n\n\n============================="
 	@echo "Optimize node modules size"
