@@ -38,7 +38,7 @@ const toCsvString = (data) =>
     stream.end();
   });
 
-const fromCsvString = (csv) =>
+const fromCsvString = (csv): Promise<any[]> =>
   new Promise((resolve, reject) => {
     const data = [];
     const stream = parse({ headers: true })

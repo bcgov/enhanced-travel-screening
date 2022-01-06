@@ -10,9 +10,12 @@
     "allowJs": true,
     "lib": ["esnext"],
     "baseUrl": ".",
+    "paths": {
+      "custom_modules/*": ["./lambda/layer/common/nodejs/custom_modules/*"],
+    },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "include": ["**/*.ts", "**/*.test.ts"]
 }

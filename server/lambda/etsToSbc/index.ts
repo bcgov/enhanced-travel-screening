@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/no-unresolved */
 import { sendEtsToSBC } from 'custom_modules/send-to-sbc';
 
 import postToSlack from 'custom_modules/post-to-slack';

@@ -7,7 +7,7 @@ import { dbClient, collections, TEST_DB } from '../db';
 import { startDB, closeDB } from './util/db';
 import { fromCsvString } from './util/csv';
 import markDuplicates from '../lambda/phacToSbc/mark-duplicates';
-import { sendPhacToSBC, sendEtsToSBC } from '../lambda/layer/common/nodejs/custom_modules/send-to-sbc';
+import { sendPhacToSBC, sendEtsToSBC } from 'custom_modules/send-to-sbc';
 
 const formatHeaders = (csvString) => {
   const rows = csvString.split(/\r?\n/g);
@@ -24,11 +24,13 @@ describe('Test phac-servicebc queries and endpoints', () => {
   let server;
 
   async function feedDbEtsForms() {
-    let etsDataString = readFileSync(join(__dirname, './fixtures/ets-data.csv')).toString();
+    let etsDataString = readFileSync(
+      join(__dirname, './fixtures/ets-data.csv')
+    ).toString();
     etsDataString = formatHeaders(etsDataString);
     const etsData = await fromCsvString(etsDataString);
     const currentIsoDate = new Date().toISOString();
-    const formattedEtsData = etsData.map((item, index) => ({
+    const formattedEtsData = etsData?.map((item, index) => ({
       id: item.confirmation_number,
       firstName: item.first_name,
       lastName: item.last_name,
@@ -92,12 +94,15 @@ describe('Test phac-servicebc queries and endpoints', () => {
     phacDataString = formatHeaders(phacDataString);
     const phacData = await fromCsvString(phacDataString);
 
-    const resLogin = await request.agent(app)
-      .post(loginEndpoint)
-      .send(user);
+    const resLogin = await request.agent(app).post(loginEndpoint).send(user);
 
-    return request.agent(app)
-      .set({ Accept: 'application/json', 'Content-type': 'application/json', Authorization: `Bearer ${resLogin.body.token}` })
+    return request
+      .agent(app)
+      .set({
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${resLogin.body.token}`,
+      })
       .post(phacEndpoint)
       .send(phacData);
   }
@@ -110,17 +115,23 @@ describe('Test phac-servicebc queries and endpoints', () => {
   it('Reject submission with invalid data of birth', async () => {
     const result = await sendPhacForms('./fixtures/phac-data-invalid-dob.csv');
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toEqual('Validation error(s): Date of birth is invalid');
+    expect(result.text).toEqual(
+      'Validation error(s): Date of birth is invalid'
+    );
   });
 
   it('Reject submission with invalid arrival date', async () => {
-    const result = await sendPhacForms('./fixtures/phac-data-invalid-arrival.csv');
+    const result = await sendPhacForms(
+      './fixtures/phac-data-invalid-arrival.csv'
+    );
     expect(result.statusCode).toEqual(400);
     expect(result.text).toEqual('Validation error(s): Arrival date is invalid');
   });
 
   it('Reject submission with invalid phone numbers', async () => {
-    const result = await sendPhacForms('./fixtures/phac-data-invalid-phone.csv');
+    const result = await sendPhacForms(
+      './fixtures/phac-data-invalid-phone.csv'
+    );
     expect(result.statusCode).toEqual(400);
     expect(result.text).toMatch(/phone number is invalid/);
   });
@@ -132,7 +143,9 @@ describe('Test phac-servicebc queries and endpoints', () => {
   });
 
   it('Reject submission with invalid end of isolation', async () => {
-    const result = await sendPhacForms('./fixtures/phac-data-invalid-end-of-isolation.csv');
+    const result = await sendPhacForms(
+      './fixtures/phac-data-invalid-end-of-isolation.csv'
+    );
     expect(result.statusCode).toEqual(400);
     expect(result.text).toMatch(/later than arrival date/);
   });
