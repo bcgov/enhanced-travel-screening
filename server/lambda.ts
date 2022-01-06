@@ -10,7 +10,7 @@ const wrappedApp = awsServerlessExpress.createServer(app);
 (async () => {
   try {
     const connection = await dbClient.connect();
-    logger.log('connection success', connection);
+    logger.info('connection success', connection);
   } catch (err) {
     logger.error('Database Connection Failed');
     logger.error(err);
