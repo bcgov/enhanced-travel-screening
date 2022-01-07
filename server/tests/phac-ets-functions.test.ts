@@ -36,7 +36,6 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const fixture = join(__dirname, './fixtures/phac-data-invalid.csv');
     const result = await sendPhacForms(fixture);
     expect(result.statusCode).toEqual(400);
-    console.log(result.text);
     expect(result.text).toMatch(/later than arrival date/);
     expect(result.text).toMatch(/phone number is invalid/);
     expect(result.text).toMatch(/Arrival date is invalid/);
