@@ -9,7 +9,7 @@
     "watch": "NODE_ENV=development nodemon src/main.ts",
     "start": "NODE_ENV=production npm run build && node dist/main.js",
     "build": "NODE_ENV=production npm run lint:fix && tsc --project tsconfig-build.json",
-    "test": "NODE_ENV=test jest --runInBand",
+    "test": "NODE_ENV=test jest --runInBand --coverage --reporters='default' --ci",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format:fix": "prettier --write ."
