@@ -2,15 +2,15 @@ import request from 'supertest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import MockDate from 'mockdate';
-import app from 'src/server';
-import { dbClient, collections, TEST_DB } from 'src/db';
+import app from '../src/server';
+import { dbClient, collections, TEST_DB } from '../src/db';
 import { startDB, closeDB } from './util/db';
 import { fromCsvString } from './util/csv';
-import markDuplicates from 'src/lambda/phacToSbc/mark-duplicates';
+import markDuplicates from '../src/lambda/phacToSbc/mark-duplicates';
 import {
   sendPhacToSBC,
   sendEtsToSBC,
-} from 'src/lambda/layer/common/nodejs/custom_modules/send-to-sbc';
+} from '../src/lambda/layer/common/nodejs/custom_modules/send-to-sbc';
 
 const formatHeaders = csvString => {
   const rows = csvString.split(/\r?\n/g);

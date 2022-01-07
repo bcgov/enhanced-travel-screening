@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
-import { dbClient, schema, collections, TEST_DB } from 'src/db';
-import { hashPassword } from 'src/auth';
+import { dbClient, schema, collections, TEST_DB } from '../../src/db';
+import { hashPassword } from '../../src/auth';
 
 async function seedDatabase() {
   // Create collections if needed

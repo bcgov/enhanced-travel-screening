@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from 'src/server';
+import app from '../src/server';
 import { startDB, closeDB } from './util/db';
 
 describe('Server V1 Form Endpoints', () => {
