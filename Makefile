@@ -108,6 +108,11 @@ build-lambdas:
 	npm install --production --prefix server/src/lambda/layer/common/nodejs
 	cp -r ./server/dist ./terraform/build/server
 	cp -r ./server/node_modules ./terraform/build/server/node_modules
+	ls -lah ./terraform/build/server
+	ls -lah ./terraform/build/server/lambda
+	ls -lah ./terraform/build/server/lambda/layer
+	ls -lah ./terraform/build/server/lambda/layer/common
+	ls -lah ./terraform/build/server/lambda/layer/common/nodejs
 	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
 	cp -r ./server/src/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
 	cp -r ./server/src/db/certificates ./terraform/build/server/db/certificates
