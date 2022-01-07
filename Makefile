@@ -111,6 +111,7 @@ build-lambdas:
 	cp -r ./server/node_modules ./terraform/build/server/node_modules
 	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
 	cp -r ./server/src/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
+	ls -lah ./server/src/db
 	cp -r ./server/src/db/certificates ./terraform/build/server/db/certificates
 	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
 
