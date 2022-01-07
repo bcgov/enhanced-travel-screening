@@ -34,3 +34,5 @@ ssh-keypair.pub
 
 *.zip
 server/dist
+
+server/coverage
