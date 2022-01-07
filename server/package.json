@@ -8,7 +8,7 @@
     "db:seed": "tsc src/db/scripts/seed.ts",
     "watch": "NODE_ENV=development nodemon src/main.ts",
     "start": "NODE_ENV=production npm run build && node dist/main.js",
-    "build": "NODE_ENV=production npm run lint:fix && npm run format:fix && tsc --project tsconfig.json",
+    "build": "NODE_ENV=production npm run lint:fix && npm run format:fix && tsc --project tsconfig-build.json",
     "test": "NODE_ENV=test jest --runInBand",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
