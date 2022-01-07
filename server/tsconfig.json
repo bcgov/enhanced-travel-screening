@@ -11,7 +11,7 @@
     "lib": ["esnext"],
     "baseUrl": ".",
     "paths": {
-      "custom_modules/*": ["./lambda/layer/common/nodejs/custom_modules/*"],
+      "custom_modules/*": ["src/lambda/layer/common/nodejs/custom_modules/*"]
     },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true

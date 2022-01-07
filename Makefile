@@ -104,14 +104,14 @@ build-lambdas:
 	@echo "============================="
 	npm run build --prefix server
 	rm -rf server/node_modules && npm install --production --prefix server
-	npm install --production --prefix server/lambda/layer/common/nodejs/custom_modules
-	npm install --production --prefix server/lambda/layer/common/nodejs
+	npm install --production --prefix server/src/lambda/layer/common/nodejs/custom_modules
+	npm install --production --prefix server/src/lambda/layer/common/nodejs
 	cp -r ./server/dist ./terraform/build/server
 	cp -r ./server/node_modules ./terraform/build/server/node_modules
-	cp -r ./server/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
-	cp -r ./server/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
-	cp -r ./server/db/certificates ./terraform/build/server/db/certificates
-	cp -r ./server/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
+	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
+	cp -r ./server/src/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
+	cp -r ./server/src/db/certificates ./terraform/build/server/db/certificates
+	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
 
 	@echo -e "\n\n\n============================="
 	@echo "Optimize node modules size"

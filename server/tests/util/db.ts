@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
-import { dbClient, schema, collections, TEST_DB } from '../../db';
-import { hashPassword } from '../../auth';
+import { dbClient, schema, collections, TEST_DB } from 'src/db';
+import { hashPassword } from 'src/auth';
 
 async function seedDatabase() {
   // Create collections if needed
   await Promise.all(
-    schema.map(async (schemaItem) => {
+    schema.map(async schemaItem => {
       await dbClient.db.createCollection(schemaItem.collection);
     })
   );
@@ -20,9 +20,7 @@ async function seedDatabase() {
       // eslint-disable-next-line no-await-in-loop
       const indexExists = await schemaItemCollection.indexExists(index.key);
       if (!indexExists) {
-        results.push(
-          schemaItemCollection.createIndex({ [index.key]: 1 }, index.options)
-        );
+        results.push(schemaItemCollection.createIndex({ [index.key]: 1 }, index.options));
       }
     }
   }
