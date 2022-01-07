@@ -5,7 +5,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "db:seed": "tsc src/db/scripts/seed.ts",
+    "db:seed": "ts-node src/db/scripts/seed.ts",
     "watch": "NODE_ENV=development nodemon src/main.ts",
     "start": "NODE_ENV=production npm run build && node dist/main.js",
     "build": "NODE_ENV=production npm run lint:fix && tsc --project tsconfig-build.json",

@@ -162,6 +162,11 @@ run-local-test:
 	@echo "Running test in server container"
 	@docker-compose -f docker-compose.dev.yml run --name ets-server-test --entrypoint "npm test" server
 
+run-db-seed:
+	@echo "Running db seed in server container"
+	@docker-compose -f docker-compose.dev.yml run --name ets-server-db-seed --entrypoint "npm run db:seed" server
+
+
 run-local-db:
 	@echo "Running local DB container"
 	@docker-compose -f docker-compose.dev.yml up mongodb
