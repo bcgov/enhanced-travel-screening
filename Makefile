@@ -103,6 +103,7 @@ build-lambdas:
 	@echo -e "\n\n\n============================="
 	@echo "Copy backend to temp folder to start build"
 	@echo "============================="
+	ls -lah ./server/src/db
 	npm run build --prefix server
 	rm -rf server/node_modules && npm install --production --prefix server
 	npm install --production --prefix server/src/lambda/layer/common/nodejs/custom_modules
