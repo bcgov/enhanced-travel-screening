@@ -246,6 +246,6 @@ const FormSchema = yup
       .test('is-true', 'Certify must be true', v => v === true),
   });
 
-const validate = async (schema, data) => schema.validate(data, { strict: true });
+const validate = async (schema, data) => schema.validate(data, { strict: true, abortEarly: false });
 
 export { DeterminationSchema, FormSchema, PhacSchema, validate };

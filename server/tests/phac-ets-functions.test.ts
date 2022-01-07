@@ -32,39 +32,16 @@ describe('Test phac-servicebc queries and endpoints', () => {
     expect(resPhacForms.statusCode).toEqual(200);
   });
 
-  it('Reject submission with invalid data of birth', async () => {
-    const fixture = join(__dirname, './fixtures/phac-data-invalid-dob.csv');
+  it('Validates submissions and returns all errors', async () => {
+    const fixture = join(__dirname, './fixtures/phac-data-invalid.csv');
     const result = await sendPhacForms(fixture);
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toEqual('Validation error(s): Date of birth is invalid');
-  });
-
-  it('Reject submission with invalid arrival date', async () => {
-    const fixture = join(__dirname, './fixtures/phac-data-invalid-arrival.csv');
-    const result = await sendPhacForms(fixture);
-    expect(result.statusCode).toEqual(400);
-    expect(result.text).toEqual('Validation error(s): Arrival date is invalid');
-  });
-
-  it('Reject submission with invalid phone numbers', async () => {
-    const fixture = join(__dirname, './fixtures/phac-data-invalid-phone.csv');
-    const result = await sendPhacForms(fixture);
-    expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/phone number is invalid/);
-  });
-
-  it('Reject submission with no phone numbers', async () => {
-    const fixture = join(__dirname, './fixtures/phac-data-no-phone.csv');
-    const result = await sendPhacForms(fixture);
-    expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/phone number is required/);
-  });
-
-  it('Reject submission with invalid end of isolation', async () => {
-    const fixture = join(__dirname, './fixtures/phac-data-invalid-end-of-isolation.csv');
-    const result = await sendPhacForms(fixture);
-    expect(result.statusCode).toEqual(400);
+    console.log(result.text);
     expect(result.text).toMatch(/later than arrival date/);
+    expect(result.text).toMatch(/phone number is invalid/);
+    expect(result.text).toMatch(/Arrival date is invalid/);
+    expect(result.text).toMatch(/Date of birth is invalid/);
+    expect(result.text).toMatch(/phone number is required/);
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {
