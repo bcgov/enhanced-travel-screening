@@ -5,13 +5,14 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "db:seed": "tsc db/scripts/seed.ts",
-    "watch": "NODE_ENV=development nodemon main.ts",
+    "db:seed": "ts-node src/db/scripts/seed.ts",
+    "watch": "NODE_ENV=development nodemon src/main.ts",
     "start": "NODE_ENV=production npm run build && node dist/main.js",
-    "build": "NODE_ENV=production tsc --project tsconfig.json",
-    "test": "NODE_ENV=test jest --runInBand",
+    "build": "NODE_ENV=production npm run lint:fix && tsc --project tsconfig-build.json",
+    "test": "NODE_ENV=test jest --runInBand --coverage --reporters='default' --ci",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint --fix .",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
     "aws-sdk": "2.1050.0",
@@ -20,6 +21,8 @@
     "body-parser": "1.19.0",
     "crypto": "1.0.1",
     "dayjs": "1.8.33",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-prettier": "4.0.0",
     "express": "4.17.1",
     "helmet": "4.1.0",
     "jsonwebtoken": "8.5.1",
@@ -75,6 +78,9 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.{js,ts}": [
+      "eslint --cache --fix .",
+      "prettier --write ."
+    ]
   }
 }

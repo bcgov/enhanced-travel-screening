@@ -7,7 +7,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: https://travelscreening.gov.bc.ca/api/v1
+  - url: https://travelscreening.gov.bc.ca/api/v1
 paths:
   /phac/submission:
     post:
@@ -130,12 +130,12 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT  
+      bearerFormat: JWT
   schemas:
     Determination:
       required:
-      - determination
-      - notes
+        - determination
+        - notes
       properties:
         determination:
           type: string
@@ -224,22 +224,22 @@ components:
                 type: boolean
     Form:
       required:
-      - ableToIsolate
-      - accomodations
-      - additionalTravellers
-      - address
-      - arrival
-      - certified
-      - city
-      - dob
-      - firstName
-      - includeAdditionalTravellers
-      - isolationPlan
-      - lastName
-      - province
-      - supplies
-      - telephone
-      - transportation
+        - ableToIsolate
+        - accomodations
+        - additionalTravellers
+        - address
+        - arrival
+        - certified
+        - city
+        - dob
+        - firstName
+        - includeAdditionalTravellers
+        - isolationPlan
+        - lastName
+        - province
+        - supplies
+        - telephone
+        - transportation
       type: object
       properties:
         firstName:
@@ -258,20 +258,20 @@ components:
         province:
           type: string
           enum:
-          - Alberta
-          - British Columbia
-          - Manitoba
-          - New Brunswick
-          - Newfoundland and Labrador
-          - Nova Scotia
-          - Ontario
-          - Prince Edward Island
-          - Québec
-          - Saskatchewan
-          - Nunavut
-          - Northwest Territories
-          - Yukon
-          - Other
+            - Alberta
+            - British Columbia
+            - Manitoba
+            - New Brunswick
+            - Newfoundland and Labrador
+            - Nova Scotia
+            - Ontario
+            - Prince Edward Island
+            - Québec
+            - Saskatchewan
+            - Nunavut
+            - Northwest Territories
+            - Yukon
+            - Other
         postalCode:
           type: string
         dob:
@@ -288,9 +288,9 @@ components:
           items:
             type: object
             required:
-            - dob
-            - firstName
-            - lastName
+              - dob
+              - firstName
+              - lastName
             properties:
               firstName:
                 type: string
@@ -303,9 +303,9 @@ components:
         arrival:
           type: object
           required:
-          - by
-          - date
-          - from
+            - by
+            - date
+            - from
           properties:
             date:
               type: string
@@ -324,9 +324,9 @@ components:
           description: Must be null if accomodations is false
           nullable: true
           required:
-          - address
-          - city
-          - type
+            - address
+            - city
+            - type
           properties:
             city:
               type: string
@@ -344,9 +344,9 @@ components:
           items:
             type: string
             enum:
-            - taxi
-            - personal
-            - public
+              - taxi
+              - personal
+              - public
         certified:
           type: boolean
     FormResponse:
@@ -369,19 +369,19 @@ components:
           type: string
     Phac:
       required:
-      - covid_id
+        - covid_id
       properties:
         covid_id:
           type: string
       additionalProperties:
         anyOf:
-        - type: string
-        - type: number
-        - type: integer
-        - type: boolean
-        - type: array
-          items: {}
-        - type: object
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - type: array
+            items: {}
+          - type: object
         nullable: false
     PhacResponse:
       type: object

@@ -26,7 +26,6 @@ terraform/build
 
 easy-rsa
 *.ovpn
-rds-combined-ca-bundle.pem
 dump/*
 vpn/gen/*
 

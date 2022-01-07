@@ -6,7 +6,7 @@
     "tsconfigRootDir": "."
   },
   "plugins": ["@typescript-eslint/eslint-plugin"],
-  "extends": ["plugin:@typescript-eslint/recommended"],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
   "root": true,
   "env": {
     "node": true,
@@ -19,7 +19,10 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "import/no-extraneous-dependencies": ["off", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}],
+    "import/no-extraneous-dependencies": [
+      "off",
+      { "devDependencies": false, "optionalDependencies": false, "peerDependencies": false }
+    ],
     "import/no-unresolved": "off",
     "no-underscore-dangle": ["error", { "allowAfterThis": true }]
   }

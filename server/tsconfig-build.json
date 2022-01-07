@@ -5,6 +5,8 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
+    "resolveJsonModule": false,
+    "rootDir": "src",
     "noEmit": false,
     "esModuleInterop": true,
     "allowJs": true,
@@ -17,5 +19,5 @@
     "experimentalDecorators": true
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["**/*.ts", "**/*.test.ts"]
+  "include": ["src/**/*.ts"]
 }

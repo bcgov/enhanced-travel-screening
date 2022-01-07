@@ -91,6 +91,7 @@ build-lambdas:
 	@echo "Cleaning up previous builds"
 	@echo "============================="
 	rm -rf ./terraform/build/server || true
+	rm -rf ./server/dist || true
 	mkdir -p ./terraform/build
 	
 	
@@ -102,16 +103,17 @@ build-lambdas:
 	@echo -e "\n\n\n============================="
 	@echo "Copy backend to temp folder to start build"
 	@echo "============================="
+
 	npm run build --prefix server
 	rm -rf server/node_modules && npm install --production --prefix server
-	npm install --production --prefix server/lambda/layer/common/nodejs/custom_modules
-	npm install --production --prefix server/lambda/layer/common/nodejs
+	npm install --production --prefix server/src/lambda/layer/common/nodejs/custom_modules
+	npm install --production --prefix server/src/lambda/layer/common/nodejs
 	cp -r ./server/dist ./terraform/build/server
 	cp -r ./server/node_modules ./terraform/build/server/node_modules
-	cp -r ./server/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
-	cp -r ./server/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
-	cp -r ./server/db/certificates ./terraform/build/server/db/certificates
-	cp -r ./server/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
+	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/node_modules ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/node_modules
+	cp -r ./server/src/lambda/layer/common/nodejs/node_modules ./terraform/build/server/lambda/layer/common/nodejs/node_modules
+	cp -r ./server/src/db/certificates ./terraform/build/server/db/certificates
+	cp -r ./server/src/lambda/layer/common/nodejs/custom_modules/certificates ./terraform/build/server/lambda/layer/common/nodejs/custom_modules/certificates
 
 	@echo -e "\n\n\n============================="
 	@echo "Optimize node modules size"
@@ -159,6 +161,11 @@ run-local:
 run-local-test:
 	@echo "Running test in server container"
 	@docker-compose -f docker-compose.dev.yml run --name ets-server-test --entrypoint "npm test" server
+
+run-db-seed:
+	@echo "Running db seed in server container"
+	@docker-compose -f docker-compose.dev.yml run --name ets-server-db-seed --entrypoint "npm run db:seed" server
+
 
 run-local-db:
 	@echo "Running local DB container"
