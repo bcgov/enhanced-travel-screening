@@ -61,8 +61,8 @@ async function startDB() {
 }
 
 async function closeDB() {
-  await dbClient.disconnect();
   await clearDB();
+  await dbClient.disconnect();
 }
 
 export { seedDatabase, startDB, closeDB };

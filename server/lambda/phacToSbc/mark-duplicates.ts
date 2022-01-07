@@ -128,6 +128,8 @@ const createEtsKeys = (ets) => {
 const markDuplicates = async (etsCollection, phacCollection) => {
   const logs = ['Loading collections from database'];
   const cutoffDate = dayjs().subtract(13, 'day').startOf('day').toDate();
+
+  // get the last two weeks' submissions
   const phac = await phacCollection.aggregate([
     { $addFields: { parsed_arrival_date: { $dateFromString: { dateString: '$arrival_date', timezone: '-0700' } } } },
     {
@@ -153,6 +155,7 @@ const markDuplicates = async (etsCollection, phacCollection) => {
   ]).toArray();
   logs.push(`Loaded ${phac.length} PHAC entries requiring processing`);
 
+  // get all ets entries
   const ets = await etsCollection.aggregate([
     {
       $addFields: {
