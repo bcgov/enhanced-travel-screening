@@ -5,7 +5,7 @@ resource "aws_cloudwatch_log_metric_filter" "phac_sbc_lambda_errors" {
   log_group_name = "/aws/lambda/ets-phac-sbc-${var.target_env}"
 
   metric_transformation {
-    name      = "lambda_unexpected_errors"
+    name      = "phac_sbc_lambda_unexpected_errors"
     namespace = "lambda_alarms"
     value     = "1"
   }
@@ -15,7 +15,7 @@ resource "aws_cloudwatch_metric_alarm" "phac_sbc_lambda_errors" {
   alarm_name          = "phac_sbc_lambda_errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "lambda_unexpected_errors"
+  metric_name         = "phac_sbc_lambda_unexpected_errors"
   namespace           = "lambda_alarms"
   period              = "30"
   threshold           = "1"
@@ -33,7 +33,7 @@ resource "aws_cloudwatch_log_metric_filter" "phac_sbc_error_levels" {
   log_group_name = "/aws/lambda/ets-phac-sbc-${var.target_env}"
 
   metric_transformation {
-    name      = "EventCount"
+    name      = "phac_sbc_error_log"
     namespace = "lambda_alarms"
     value     = "1"
   }
@@ -43,7 +43,7 @@ resource "aws_cloudwatch_metric_alarm" "phac_sbc_error_levels" {
   alarm_name          = "phac_sbc_error_levels"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "EventCount"
+  metric_name         = "phac_sbc_error_log"
   namespace           = "lambda_alarms"
   period              = "30"
   threshold           = "1"
