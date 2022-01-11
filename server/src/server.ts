@@ -84,11 +84,7 @@ app.post(
   passport.authenticate('jwt-phac', { session: false }),
   asyncMiddleware(async (req, res) => {
     await dbClient.connect();
-    try {
-      await validate(PhacSchema, req.body); // Validate submitted submissions against schema
-    } catch (e) {
-      return res.status(400).send({ errors: e.errors });
-    }
+    await validate(PhacSchema, req.body); // Validate submitted submissions against schema
     const phacCollection = dbClient.db.collection(collections.PHAC);
 
     const currentIsoDate = new Date().toISOString();

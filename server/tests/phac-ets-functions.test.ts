@@ -36,11 +36,15 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const fixture = join(__dirname, './fixtures/phac-data-invalid.csv');
     const result = await sendPhacForms(fixture);
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/later than arrival date/);
-    expect(result.text).toMatch(/phone number is invalid/);
-    expect(result.text).toMatch(/Arrival date is invalid/);
-    expect(result.text).toMatch(/Date of birth is invalid/);
-    expect(result.text).toMatch(/phone number is required/);
+    expect(result.text).toMatch(/covid_id is required/);
+    expect(result.text).toMatch(/arrival_date is invalid/);
+    expect(result.text).toMatch(/date_of_birth is invalid/);
+    expect(result.text).toMatch(/arrival_date should be later than date of birth/);
+    expect(result.text).toMatch(/end_of_isolation should be later than arrival date/);
+    expect(result.text).toMatch(/phone is required/);
+    expect(result.text).toMatch(/home_phone is invalid/);
+    expect(result.text).toMatch(/mobile_phone is invalid/);
+    expect(result.text).toMatch(/other_phone is invalid/);
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {

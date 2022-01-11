@@ -6,7 +6,9 @@ const errorHandler = (error, req, res, next) => {
   logger.error(error.message);
   switch (error.name) {
     case 'ValidationError':
-      res.status(400).send(`Validation error(s): ${error.errors}`);
+      const { errors } = error;
+      logger.error(errors);
+      res.status(400).send({ errors });
       break;
     default:
       res.status(500).send('An unexpected error was encountered');
