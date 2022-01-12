@@ -39,10 +39,7 @@ const PHONE_NUMBER_PATTERN =
   /^((\+?[1-9]{1,4}[ \\-]*)|(\([0-9]{2,3}\)[ .\\-]*)|([0-9]{2,4})[ .\\-]*)*?[0-9]{3,4}?[ .\\-]*[0-9]{3,4}?$/;
 const validatePhoneNumber = value => {
   if (!value) return true;
-  if (!PHONE_NUMBER_PATTERN.test(value)) {
-    return false;
-  }
-  return true;
+  return PHONE_NUMBER_PATTERN.test(value);
 };
 
 const DeterminationSchema = yup
@@ -122,7 +119,8 @@ const PhacSchema = yup
           then: yup.string().test('is-phone-number', (value, context) => {
             if (!value) {
               const { path, parent } = context;
-              const message = `${parent.covid_id}:${path} - at least one phone is required`;
+              const [index] = path.split('.'); // path format is like [0].field_name
+              const message = `${parent.covid_id}:${index}.At least one phone is required`;
               return new yup.ValidationError(message, value, path);
             }
             return prependErrorWithKey(value, context, validatePhoneNumber);
