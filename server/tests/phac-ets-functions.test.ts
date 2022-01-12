@@ -7,6 +7,7 @@ import { dbClient, collections, TEST_DB } from '../src/db';
 import { startDB, closeDB } from './util/db';
 import { sendPhacForms, feedDbEtsForms } from './util/feedDb';
 import markDuplicates from '../src/lambda/phacToSbc/mark-duplicates';
+import { PhacEntryError } from '../src/types';
 
 const failSbcSubmissionsCount = 3;
 
@@ -49,7 +50,7 @@ describe('Test phac-servicebc queries and endpoints', () => {
     ];
     const { errors } = result.body;
     messages.forEach(message => {
-      const found = errors.some(e => e.errors.includes(message));
+      const found = Object.values(errors).some((e: PhacEntryError) => e.errors.includes(message));
       expect(found).toBeTruthy();
     });
   });
