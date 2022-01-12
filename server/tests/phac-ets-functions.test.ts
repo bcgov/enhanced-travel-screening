@@ -46,12 +46,12 @@ describe('Test phac-servicebc queries and endpoints', () => {
       'home_phone is invalid',
       'mobile_phone is invalid',
       'other_phone is invalid',
-      'other_phone - at least one phone is required',
+      'At least one phone is required',
     ];
     const { errors } = result.body;
     messages.forEach(message => {
       const found = Object.values(errors).some((e: PhacEntryError) => e.errors.includes(message));
-      expect(found).toBeTruthy();
+      if (!found) fail(`error not found: ${message}`);
     });
   });
 
