@@ -1,22 +1,6 @@
 version: '3.7'
 
 services:
-  # client:
-  #   image: ${PROJECT_NAME}-client
-  #   container_name: ${PROJECT_NAME}-client
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - "4000:4000"
-  #   volumes:
-  #     - ./client:/client # Use client dir in host for hot reloading
-  #     - /client/node_modules # Use node_modules in container
-  #   depends_on:
-  #     - server
-  #   networks:
-  #     - ets-dev
-
   server:
     image: ${PROJECT_NAME}-server
     container_name: ${PROJECT_NAME}-server
