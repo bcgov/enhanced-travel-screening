@@ -15,7 +15,7 @@ resource "aws_route53_record" "www" {
   zone_id = aws_route53_zone.ets[0].zone_id
   name    = "travelscreening.gov.bc.ca"
   type    = "A"
-  ttl     = "300"
+
   alias {
     name                   = aws_cloudfront_distribution.app.domain_name
     zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
