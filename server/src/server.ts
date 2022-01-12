@@ -10,6 +10,7 @@ import { dbClient, collections } from './db';
 import { errorHandler, asyncMiddleware } from './error-handler';
 import logger from './logger';
 import { IUserRequest } from 'src/types';
+import { transformValidationErrors } from './utils/transform-validation-errors';
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -84,7 +85,14 @@ app.post(
   passport.authenticate('jwt-phac', { session: false }),
   asyncMiddleware(async (req, res) => {
     await dbClient.connect();
-    await validate(PhacSchema, req.body); // Validate submitted submissions against schema
+    try {
+      await validate(PhacSchema, req.body); // Validate submitted submissions against schema
+    } catch (e) {
+      if (e.errors) {
+        throw { ...e, errors: transformValidationErrors(e.errors) };
+      }
+      throw e;
+    }
     const phacCollection = dbClient.db.collection(collections.PHAC);
 
     const currentIsoDate = new Date().toISOString();

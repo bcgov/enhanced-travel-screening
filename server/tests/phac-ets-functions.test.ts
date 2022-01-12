@@ -36,15 +36,22 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const fixture = join(__dirname, './fixtures/phac-data-invalid.csv');
     const result = await sendPhacForms(fixture);
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.covid_id is required/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.arrival_date is invalid/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.date_of_birth is invalid/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.arrival_date should be later than date of birth/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.end_of_isolation should be later than arrival date/);
-    expect(result.text).toMatch(/.*:\s\[\d+\].*phone is required/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.home_phone is invalid/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.mobile_phone is invalid/);
-    expect(result.text).toMatch(/.*:\s\[\d+\]\.other_phone is invalid/);
+    const messages = [
+      'covid_id is required',
+      'arrival_date is invalid',
+      'date_of_birth is invalid',
+      'arrival_date should be later than date of birth',
+      'end_of_isolation should be later than arrival date',
+      'home_phone is invalid',
+      'mobile_phone is invalid',
+      'other_phone is invalid',
+      'other_phone - at least one phone is required',
+    ];
+    const { errors } = result.body;
+    messages.forEach(message => {
+      const found = errors.some(e => e.errors.includes(message));
+      expect(found).toBeTruthy();
+    });
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {

@@ -59,7 +59,7 @@ const DeterminationSchema = yup
 const checkRequired = <T>(value: T, context: TestContext): boolean => {
   const { path, parent } = context;
   if (value === null || value === undefined || (value as any) === '') {
-    const message = `${parent.covid_id}: ${path} is required`;
+    const message = `${parent.covid_id}:${path} is required`;
     throw new yup.ValidationError(message, value, path);
   }
   return true;
@@ -76,7 +76,7 @@ const prependErrorWithKey = <T>(
   }
   const { path, parent } = context;
   if (callback && !callback(value)) {
-    const message = `${parent.covid_id}: ${path} is invalid`;
+    const message = `${parent.covid_id}:${path} is invalid`;
     throw new yup.ValidationError(message, value, path);
   }
   return true;
@@ -97,7 +97,7 @@ const PhacSchema = yup
           prependErrorWithKey(value, context, validateDateString, true);
           const { path, parent } = context;
           if (Date.parse(value) < Date.parse(parent.date_of_birth)) {
-            const message = `${parent.covid_id}: ${path} should be later than date of birth`;
+            const message = `${parent.covid_id}:${path} should be later than date of birth`;
             return new yup.ValidationError(message, value, path);
           }
           return true;
@@ -106,7 +106,7 @@ const PhacSchema = yup
           const { path, parent } = context;
           prependErrorWithKey(value, context, validateDateString, true);
           if (Date.parse(value) < Date.parse(parent.arrival_date)) {
-            const message = `${parent.covid_id}: ${path} should be later than arrival date`;
+            const message = `${parent.covid_id}:${path} should be later than arrival date`;
             return new yup.ValidationError(message, value, path);
           }
           return true;
@@ -122,7 +122,7 @@ const PhacSchema = yup
           then: yup.string().test('is-phone-number', (value, context) => {
             if (!value) {
               const { path, parent } = context;
-              const message = `${parent.covid_id}: ${path} - At least one phone is required`;
+              const message = `${parent.covid_id}:${path} - at least one phone is required`;
               return new yup.ValidationError(message, value, path);
             }
             return prependErrorWithKey(value, context, validatePhoneNumber);

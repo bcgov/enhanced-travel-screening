@@ -5,3 +5,9 @@ export interface IUserRequest extends Request {
     token: string;
   };
 }
+
+export interface PhacEntryError {
+  id: string;
+  index: string;
+  errors: string[];
+}
