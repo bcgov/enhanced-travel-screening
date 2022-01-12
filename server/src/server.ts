@@ -10,6 +10,7 @@ import { dbClient, collections } from './db';
 import { errorHandler, asyncMiddleware } from './error-handler';
 import logger from './logger';
 import { IUserRequest } from 'src/types';
+import { transformValidationErrors } from './utils/transform-validation-errors';
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -87,7 +88,10 @@ app.post(
     try {
       await validate(PhacSchema, req.body); // Validate submitted submissions against schema
     } catch (e) {
-      return res.status(400).send({ errors: e.errors });
+      if (e.errors) {
+        throw { ...e, errors: transformValidationErrors(e.errors) };
+      }
+      throw e;
     }
     const phacCollection = dbClient.db.collection(collections.PHAC);
 

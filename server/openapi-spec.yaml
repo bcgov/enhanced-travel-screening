@@ -28,6 +28,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PhacResponse'
+        400:
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhacValidationError'
   /login:
     post:
       summary: Login using username and password, receive JWT
@@ -396,3 +402,19 @@ components:
           type: array
           items:
             type: string
+    PhacValidationError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              index:
+                type: string
+              errors:
+                type: array
+                items:
+                  type: string

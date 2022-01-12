@@ -1,7 +1,10 @@
 COVID ID,First Name,Last Name,Date of Birth,Type,Arrival Date,End of Isolation,Destination Type,Address 1,City,Postal Code,Home Phone,Mobile Phone,Other Phone,Email Address,Port of Entry,Land Port of Entry,Other Port of Entry,Occupancy status,Notes,Province / Territory
 CVR-0159076,Invalid,Arrival,2014-10-31,Asymptomatic,20200517,2020-05-31,,67 Warrior Point,New West Minster,O8M3J2,752 969 6466,(546) 8521240,,amatteuzzi7p@hostgator.com,Land border,Stewart,,,,British Columbia
-CVR-0159075,Invalid,Birthday,20160117,Asymptomatic,2020-05-17,2020-05-31,,98548 Magdeline Drive,Coquitlam,U1N8D4,198-385-9397,,,bsnaselgu@unicef.org,Land border,Douglas,,,,British Columbia
+CVR-0159091,Invalid,LateArrival,2020-10-10,Asymptomatic,2020-05-17,2020-05-31,,6 Veith Plaza,surrey,P6Y3H5,,,409 360 7607,dgreystoke6s@sciencedaily.com,Land border,Douglas,,,,British Columbia
+CVR-0159075,Invalid,Birthday,20160117,Asymptomatic,2020-05-17,2020-05-31,,98548 Magdeline Drive,Coquitlam,U1N8D4,198-385-a,222,333,bsnaselgu@unicef.org,Land border,Douglas,,,,British Columbia
 CVR-0159075,Invalid,Isolation,2016-01-17,Asymptomatic,2020-05-31,2020-05-30,,98548 Magdeline Drive,Coquitlam,U1N8D4,198-385-9397,+82-10-8888-9999,02.2222.2222,bsnaselgu@unicef.org,Land border,Douglas,,,,British Columbia
 CVR-0159077,Invalid,Phone,1999-09-29,Asymptomatic,2020-05-17,2020-05-31,,"0983, Melby Terrace",SURREY,R4P5F3,1111,,1E+21,wkestennh@un.org,Land border,Pacific Highway,,,,British Columbia
 CVR-0159077,No,Phone,1999-09-29,Asymptomatic,2020-05-17,2020-05-31,,"0983, Melby Terrace",SURREY,R4P5F3,,,,wkestennh@un.org,Land border,Pacific Highway,,,,British Columbia
+,Invalid,EmptyCovidId,2010-08-24,Asymptomatic,2020-05-17,2020-05-31,,071 Barby Lane,Courtenay,B6A4H6,864-877-5396,,,dvivashbe@phpbb.com,Land border,Douglas,,,,British Columbia
+
 

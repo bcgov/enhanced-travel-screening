@@ -7,6 +7,7 @@ import { dbClient, collections, TEST_DB } from '../src/db';
 import { startDB, closeDB } from './util/db';
 import { sendPhacForms, feedDbEtsForms } from './util/feedDb';
 import markDuplicates from '../src/lambda/phacToSbc/mark-duplicates';
+import { PhacEntryError } from '../src/types';
 
 const failSbcSubmissionsCount = 3;
 
@@ -36,11 +37,22 @@ describe('Test phac-servicebc queries and endpoints', () => {
     const fixture = join(__dirname, './fixtures/phac-data-invalid.csv');
     const result = await sendPhacForms(fixture);
     expect(result.statusCode).toEqual(400);
-    expect(result.text).toMatch(/later than arrival date/);
-    expect(result.text).toMatch(/phone number is invalid/);
-    expect(result.text).toMatch(/Arrival date is invalid/);
-    expect(result.text).toMatch(/Date of birth is invalid/);
-    expect(result.text).toMatch(/phone number is required/);
+    const messages = [
+      'covid_id is required',
+      'arrival_date is invalid',
+      'date_of_birth is invalid',
+      'arrival_date should be later than date of birth',
+      'end_of_isolation should be later than arrival date',
+      'home_phone is invalid',
+      'mobile_phone is invalid',
+      'other_phone is invalid',
+      'other_phone - at least one phone is required',
+    ];
+    const { errors } = result.body;
+    messages.forEach(message => {
+      const found = Object.values(errors).some((e: PhacEntryError) => e.errors.includes(message));
+      expect(found).toBeTruthy();
+    });
   });
 
   it('Test PHAC to ServiceBC function, match logs', async () => {

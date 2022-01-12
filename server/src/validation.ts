@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { TestContext } from 'yup';
 
 const provinces = [
   'Alberta',
@@ -55,6 +56,32 @@ const DeterminationSchema = yup
     notes: yup.string().required('Notes are required'),
   });
 
+const checkRequired = <T>(value: T, context: TestContext): boolean => {
+  const { path, parent } = context;
+  if (value === null || value === undefined || (value as any) === '') {
+    const message = `${parent.covid_id}:${path} is required`;
+    throw new yup.ValidationError(message, value, path);
+  }
+  return true;
+};
+
+const prependErrorWithKey = <T>(
+  value: T,
+  context: TestContext,
+  callback: null | ((value: T) => boolean),
+  required = false
+): boolean => {
+  if (required) {
+    checkRequired(value, context);
+  }
+  const { path, parent } = context;
+  if (callback && !callback(value)) {
+    const message = `${parent.covid_id}:${path} is invalid`;
+    throw new yup.ValidationError(message, value, path);
+  }
+  return true;
+};
+
 const PhacSchema = yup
   .array()
   .required('Submission must contain at least one item')
@@ -62,59 +89,49 @@ const PhacSchema = yup
     yup
       .object()
       .shape({
-        covid_id: yup
-          .string()
-          .typeError('covid_id must be a string')
-          .required('covid_id is required'),
-        date_of_birth: yup
-          .string()
-          .required('Date of birth is required')
-          .test('is-date', 'Date of birth is invalid', validatePastDateString),
-        arrival_date: yup
-          .string()
-          .required('Arrival date is required')
-          .test('is-date', 'Arrival date is invalid', (value, context) => {
-            if (!validateDateString(value)) return false;
-            const { path, parent, createError } = context;
-            if (Date.parse(value) < Date.parse(parent.date_of_birth)) {
-              const message = `Arrival date should be later than date of birth: ${value} > ${parent.date_of_birth}`;
-              return createError({ path, message });
-            }
-            return true;
-          }),
-        end_of_isolation: yup
-          .string()
-          .required('End of isolation is required')
-          .test('is-date', 'End of isolation is invalid', (value, context) => {
-            if (!validateDateString(value)) return false;
-            const { path, parent, createError } = context;
-            if (Date.parse(value) < Date.parse(parent.arrival_date)) {
-              const message = `End of isolation should be later than arrival date: ${value} < ${parent.arrival_date}`;
-              return createError({ path, message });
-            }
-            return true;
-          }),
-        home_phone: yup
-          .string()
-          .test('is-phone-number', 'Home phone number is invalid', validatePhoneNumber),
-        mobile_phone: yup
-          .string()
-          .test('is-phone-number', 'Mobile phone number is invalid', validatePhoneNumber),
+        covid_id: yup.string().test('required', checkRequired),
+        date_of_birth: yup.string().test('is-date', (value, context) => {
+          return prependErrorWithKey(value, context, validatePastDateString, true);
+        }),
+        arrival_date: yup.string().test('is-date', (value, context) => {
+          prependErrorWithKey(value, context, validateDateString, true);
+          const { path, parent } = context;
+          if (Date.parse(value) < Date.parse(parent.date_of_birth)) {
+            const message = `${parent.covid_id}:${path} should be later than date of birth`;
+            return new yup.ValidationError(message, value, path);
+          }
+          return true;
+        }),
+        end_of_isolation: yup.string().test('is-date', (value, context) => {
+          const { path, parent } = context;
+          prependErrorWithKey(value, context, validateDateString, true);
+          if (Date.parse(value) < Date.parse(parent.arrival_date)) {
+            const message = `${parent.covid_id}:${path} should be later than arrival date`;
+            return new yup.ValidationError(message, value, path);
+          }
+          return true;
+        }),
+        home_phone: yup.string().test('is-phone-number', (value, context) => {
+          return prependErrorWithKey(value, context, validatePhoneNumber);
+        }),
+        mobile_phone: yup.string().test('is-phone-number', (value, context) => {
+          return prependErrorWithKey(value, context, validatePhoneNumber);
+        }),
         other_phone: yup.string().when(['home_phone', 'mobile_phone'], {
           is: (homePhone, mobilePhone) => !homePhone && !mobilePhone,
-          then: yup.string().test('is-phone-number', 'Other phone is invalid', (value, context) => {
+          then: yup.string().test('is-phone-number', (value, context) => {
             if (!value) {
-              const { path, createError } = context;
-              const message = 'At least one phone number is required';
-              return createError({ path, message });
+              const { path, parent } = context;
+              const message = `${parent.covid_id}:${path} - at least one phone is required`;
+              return new yup.ValidationError(message, value, path);
             }
-            return validatePhoneNumber(value);
+            return prependErrorWithKey(value, context, validatePhoneNumber);
           }),
-          otherwise: yup
-            .string()
-            .test('is-phone-number', 'Other phone is invalid', validatePhoneNumber),
+          otherwise: yup.string().test('is-phone-number', (value, context) => {
+            return prependErrorWithKey(value, context, validatePhoneNumber);
+          }),
         }),
-        province_territory: yup.string().required(),
+        province_territory: yup.string().test('required', checkRequired),
       })
       .test(
         'no-empty-keys',
