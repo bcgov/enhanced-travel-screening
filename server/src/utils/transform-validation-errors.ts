@@ -1,7 +1,7 @@
 import { PhacEntryError } from '../types';
 
-export const transformValidationErrors = (errors: string[]): Record<string, PhacEntryError> => {
-  return errors.reduce((errors, yupError) => {
+export const transformValidationErrors = (errors: string[]): PhacEntryError[] => {
+  const results = errors.reduce((errors, yupError) => {
     const found = yupError.match(/^(?<id>.*):\[(?<index>\d+)\]\.(?<message>.*)$/);
     if (!found) return;
 
@@ -15,4 +15,5 @@ export const transformValidationErrors = (errors: string[]): Record<string, Phac
 
     return errors;
   }, {} as Record<string, PhacEntryError>);
+  return Object.values(results);
 };
