@@ -11,8 +11,8 @@ import { validate, FormSchema, DeterminationSchema, PhacSchema } from './validat
 import { dbClient, collections } from './db';
 import { errorHandler, asyncMiddleware } from './error-handler';
 import logger from './logger';
-import { IUserRequest, PhacEntry } from './types';
 import { transformValidationErrors } from './utils/transform-validation-errors';
+import { PhacEntry, UserRequest } from './types';
 
 const apiBaseUrl = '/api/v1';
 const app = express();
@@ -49,7 +49,7 @@ app.post(
   `${apiBaseUrl}/login`,
   passport.authenticate('login', { session: false }),
 
-  (req: IUserRequest, res: Response) => res.json({ token: req.user.token })
+  (req: UserRequest, res: Response) => res.json({ token: req.user.token })
 );
 
 /**

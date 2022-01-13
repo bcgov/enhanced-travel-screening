@@ -1,28 +1,4 @@
-import { Request } from 'express';
-
-export interface IUserRequest extends Request {
-  user: {
-    token: string;
-  };
-}
-
-export interface User {
-  username: string;
-  password: string;
-  salt: string;
-  type?: string;
-  token?: string;
-}
-
-export interface PhacEntryError {
-  id: string;
-  index: string;
-  errors: string[];
-}
-
-export interface Entry {
-  id: string;
-}
+import { Entry } from './Entry';
 
 export interface PhacEntry extends Entry {
   covid_id: string;

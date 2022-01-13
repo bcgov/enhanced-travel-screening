@@ -4,7 +4,7 @@ import { Collection } from 'mongodb';
 import { postServiceItem, PostToSbcResult } from './service-bc-api';
 import postToSlack from './post-to-slack';
 import logger from './logger';
-import { PhacEntry, Entry } from '../../../../../types';
+import { Entry, PhacEntry } from '../../../../../types';
 
 const getUnsuccessfulSbcTransactions = async <T>(collection: Collection<T>, arrivalKey: string) => {
   const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(3, 'day')].map(d =>
