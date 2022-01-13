@@ -5,6 +5,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { scryptSync } from 'crypto';
 import { dbClient, collections } from './db';
 import logger from './logger';
+import { User } from './types';
 
 const jwtSecret = process.env.JWT_SECRET || 'secret'; // FIXME: Obviously not secure
 const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously not secure
@@ -12,12 +13,12 @@ const passwordSalt = process.env.PASSWORD_SALT || 'salt'; // FIXME: Obviously no
 const USER_TYPE_PHAC = 'phac';
 
 // Hash and salt password (static + dynamic salt)
-const hashPassword = (password, salt) =>
+const hashPassword = (password: string, salt: string) =>
   scryptSync(password, `${passwordSalt}${salt}`, 64).toString('hex');
 
 // Create JWT for admin user or PDF generation
 // PDF JWTs should only have access to form with ID matchin sub property
-const generateJwt = (id, type) =>
+const generateJwt = (id: string, type: string) =>
   jwt.sign(
     {
       sub: id,
@@ -30,8 +31,8 @@ const generateJwt = (id, type) =>
 // Fetch user item from credentials table of DB
 // Returns user item (username and password)
 // Could be refactored into database.js
-const getUser = async username => {
-  const usersCollection = dbClient.db.collection(collections.USERS);
+const getUser = async (username: string) => {
+  const usersCollection = dbClient.db.collection<User>(collections.USERS);
   return usersCollection.findOne({ username: { $in: [username] } });
 };
 

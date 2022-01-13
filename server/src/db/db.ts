@@ -1,5 +1,5 @@
-import { MongoClient, MongoClientOptions } from 'mongodb';
 import fs from 'fs';
+import { Db, MongoClient, MongoClientOptions, ReadPreference } from 'mongodb';
 import logger from '../logger';
 
 /**
@@ -7,35 +7,8 @@ import logger from '../logger';
  * to easily interact with a DocumentDB/MongoDB database
  */
 class DBClient {
-  public _connection: any;
-  public db: any;
-  public dbPassword: any;
-  public dbServer: any;
-  public dbPort: any;
-  public dbUser: any;
-  public dbName: any;
-  public dbTLSEnabled: any;
-  public useReplicaSet: any;
-  public dbTLSDisableCert: any;
-
-  constructor() {
-    /**
-     * DB Connection
-     *
-     * @type {MongoClient|null}
-     * @memberof DB
-     */
-    this._connection = null;
-
-    /**
-     * Current Database
-     *
-     * @type {Db|null}
-     * @memberof DB
-     */
-    /** eslint-disable-next-line */
-    this.db = null;
-  }
+  private _connection: MongoClient;
+  public db: Db;
 
   /**
    * Return config variables
@@ -70,7 +43,7 @@ class DBClient {
    * @returns {Promise<void>}
    * @memberof DB
    */
-  async connect() {
+  async connect(): Promise<MongoClient> {
     if (this._connection) return this._connection;
 
     const {
@@ -109,7 +82,7 @@ class DBClient {
     // and specify the read preference as secondary preferred following AWS best practices
     // https://docs.aws.amazon.com/documentdb/latest/developerguide/connect-to-replica-set.html
     if (useReplicaSet) {
-      options.readPreference = 'secondaryPreferred';
+      options.readPreference = ReadPreference.SECONDARY_PREFERRED;
       options.replicaSet = 'rs0';
     }
 
@@ -129,7 +102,7 @@ class DBClient {
    * @param {*} database
    * @memberof DBClient
    */
-  useDB(database: any) {
+  useDB(database: string) {
     this.db = this._connection.db(database);
   }
 

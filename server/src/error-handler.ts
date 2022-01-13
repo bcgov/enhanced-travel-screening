@@ -1,7 +1,8 @@
 import logger from './logger';
+import { ErrorRequestHandler, RequestHandler } from 'express';
 
 // Middleware to log and sanitize errors
-const errorHandler = (error, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
   // eslint-disable-line no-unused-vars
   logger.error(error.message);
   switch (error.name) {
@@ -17,7 +18,9 @@ const errorHandler = (error, req, res, next) => {
 };
 
 // Wraps async request handlers to ensure next is called
-const asyncMiddleware = f => (req, res, next) =>
-  Promise.resolve(f(req, res, next)).catch(error => next(error));
+const asyncMiddleware =
+  f =>
+  (req, res, next): Promise<RequestHandler> =>
+    Promise.resolve(f(req, res, next)).catch(error => next(error));
 
 export { errorHandler, asyncMiddleware };

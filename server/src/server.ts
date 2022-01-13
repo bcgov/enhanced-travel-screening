@@ -1,6 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import bodyParser from 'body-parser';
 import { randomBytes } from 'crypto';
+import { Collection } from 'mongodb';
+
 import { passport } from './auth';
 import requireHttps from './require-https';
 import postToSlack from './lambda/layer/common/nodejs/custom_modules/post-to-slack';
@@ -9,7 +11,7 @@ import { validate, FormSchema, DeterminationSchema, PhacSchema } from './validat
 import { dbClient, collections } from './db';
 import { errorHandler, asyncMiddleware } from './error-handler';
 import logger from './logger';
-import { IUserRequest } from 'src/types';
+import { IUserRequest, PhacEntry } from './types';
 import { transformValidationErrors } from './utils/transform-validation-errors';
 
 const apiBaseUrl = '/api/v1';
@@ -18,8 +20,11 @@ const app = express();
 app.use(requireHttps);
 app.use(bodyParser.json({ limit: '10Mb' }));
 
-// Remove empty strings
-const scrubObject = obj => {
+/**
+ * Remove empty strings of form data
+ * @deprecated
+ */
+const scrubObject = (obj: Record<any, any>) => {
   const scrubbed = obj;
   Object.keys(scrubbed).forEach(key => {
     if (typeof scrubbed[key] === 'object' && scrubbed[key] !== null) {
@@ -31,7 +36,7 @@ const scrubObject = obj => {
   return scrubbed;
 };
 
-const generateUniqueHexId = async collection => {
+const generateUniqueHexId = async (collection: Collection): Promise<string> => {
   const randomHexId = randomBytes(4).toString('hex').toUpperCase();
   if ((await collection.countDocuments({ id: randomHexId }, { limit: 1 })) > 0) {
     return generateUniqueHexId(collection); // Ensure ID is unique
@@ -47,7 +52,10 @@ app.post(
   (req: IUserRequest, res: Response) => res.json({ token: req.user.token })
 );
 
-// Create new form, not secured
+/**
+ * Create new form, not secured
+ * @deprecated
+ */
 app.post(
   `${apiBaseUrl}/form`,
   asyncMiddleware(async (req, res) => {
@@ -93,7 +101,7 @@ app.post(
       }
       throw e;
     }
-    const phacCollection = dbClient.db.collection(collections.PHAC);
+    const phacCollection = dbClient.db.collection<PhacEntry>(collections.PHAC);
 
     const currentIsoDate = new Date().toISOString();
     const phacItems = await Promise.all(
@@ -143,7 +151,10 @@ app.post(
   })
 );
 
-// Edit existing form
+/**
+ * Edit existing form
+ * @deprecated
+ */
 app.patch(
   `${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
@@ -177,7 +188,10 @@ app.patch(
   })
 );
 
-// Get existing form by ID
+/**
+ * Get existing form by ID
+ * @deprecated
+ */
 app.get(
   `${apiBaseUrl}/form/:id`,
   passport.authenticate('jwt', { session: false }),
@@ -192,7 +206,10 @@ app.get(
   })
 );
 
-// get travellers by last name (partial match)
+/**
+ * get travellers by last name (partial match)
+ * @deprecated
+ */
 app.get(
   `${apiBaseUrl}/last-name/:lname`,
   passport.authenticate('jwt', { session: false }),

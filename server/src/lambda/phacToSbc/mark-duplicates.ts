@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { Collection } from 'mongodb';
+import { PhacEntry } from '../../types';
 
 /**
  * Flatten nested collection
@@ -146,7 +148,7 @@ const createEtsKeys = ets => {
  *
  * @param db
  */
-const markDuplicates = async (etsCollection, phacCollection) => {
+const markDuplicates = async (etsCollection: Collection, phacCollection: Collection<PhacEntry>) => {
   const logs = ['Loading collections from database'];
   const cutoffDate = dayjs().subtract(13, 'day').startOf('day').toDate();
   const phac = await phacCollection

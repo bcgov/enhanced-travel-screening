@@ -20,7 +20,7 @@ const auth = {
   client_secret: process.env.SBC_CLI_SECRET,
 };
 
-const getToken = async () => {
+const getToken = async (): Promise<string> => {
   if (appCache.get('ServiceBCToken') !== undefined) return appCache.get('ServiceBCToken');
 
   const { data } = await axios.post(tokenUrl, qs.stringify(auth), {
@@ -34,7 +34,14 @@ const getToken = async () => {
   return data.access_token;
 };
 
-const postServiceItem = async item => {
+export interface PostToSbcResult {
+  status: 'success' | 'fail';
+  errorDetails?: string;
+  serviceBCId?: string;
+  processedAt: string;
+}
+
+const postServiceItem = async (item): Promise<PostToSbcResult> => {
   const token = await getToken();
   const response = await axios.post(
     submitURL,
