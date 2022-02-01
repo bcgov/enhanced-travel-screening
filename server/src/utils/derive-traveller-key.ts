@@ -6,7 +6,7 @@ const cleanString = s =>
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\w]/gi, '');
 
-const deriveTravellerKey = item => {
+const deriveTravellerKey = (item: Record<string, any>): string => {
   const components = [
     item.firstName || item.first_name,
     item.lastName || item.last_name,

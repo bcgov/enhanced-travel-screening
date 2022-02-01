@@ -1,13 +1,16 @@
 import dayjs from 'dayjs';
 import asyncPool from 'tiny-async-pool';
-import { postServiceItem } from './service-bc-api';
+import { Collection } from 'mongodb';
+import { postServiceItem, PostToSbcResult } from './service-bc-api';
 import postToSlack from './post-to-slack';
 import logger from './logger';
+import { Entry, PhacEntry } from '../../../../../types';
 
-const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
+const getUnsuccessfulSbcTransactions = async <T>(collection: Collection<T>, arrivalKey: string) => {
   const dateRange = [dayjs().subtract(13, 'day'), dayjs().subtract(3, 'day')].map(d =>
     d.startOf('day').toDate()
   );
+
   const query = [
     {
       $addFields: {
@@ -62,8 +65,7 @@ const getUnsuccessfulSbcTransactions = async (collection, arrivalKey) => {
       },
     },
   ];
-  const items = await collection.aggregate(query).toArray();
-  return items;
+  return await collection.aggregate(query).toArray();
 };
 
 // Following NoSQL recommendation, in this case, we want to store
@@ -77,10 +79,10 @@ const updateSbcTransactions = async (collection, id, transaction) =>
     }
   );
 
-const postToSbcAndUpdateDb = async (collection, submission) => {
+const postToSbcAndUpdateDb = async <T extends Entry>(collection: Collection<T>, submission: T) => {
   logger.info('Post to SBC Starts');
   // TODO: transaction metrics on each call, time taken etc?
-  let transaction;
+  let transaction: PostToSbcResult;
   try {
     transaction = await postServiceItem(submission);
   } catch (e) {
@@ -99,14 +101,14 @@ const postToSbcAndUpdateDb = async (collection, submission) => {
   return { id: submission.id, status: transaction.status, transaction };
 };
 
-const cleanJoinArray = a =>
+const cleanJoinArray = (a: any[]): string =>
   a
     .filter(i => ['string', 'number'].includes(typeof i))
     .map(i => String(i).trim())
     .filter(i => i !== '')
     .join(', ');
 
-const phacToSbc = phacItem => {
+const phacToSbc = (phacItem: PhacEntry) => {
   const oldKeys = [
     'first_name',
     'last_name',
@@ -156,9 +158,15 @@ const phacToSbc = phacItem => {
   return sbcItem;
 };
 
-const makeTransactionIterator = collection => d => postToSbcAndUpdateDb(collection, d);
+const makeTransactionIterator =
+  <T extends Entry>(collection: Collection<T>) =>
+  (d: T) =>
+    postToSbcAndUpdateDb(collection, d);
 
-const executeTransactionPool = async (data, collection) => {
+const executeTransactionPool = async <T extends Entry>(
+  data,
+  collection: Collection<T>
+): Promise<string> => {
   const concurrency = 10; // How many requests running in parallel
   const iterator = makeTransactionIterator(collection);
   const results = await asyncPool(concurrency, data, iterator);
@@ -170,18 +178,20 @@ const executeTransactionPool = async (data, collection) => {
   return output.join('\n');
 };
 
-const sendEtsToSBC = async etsCollection => {
+const sendEtsToSBC = async (etsCollection: Collection) => {
   const data = await getUnsuccessfulSbcTransactions(etsCollection, '$arrival.date');
+
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     return `DB_WRITE_SERVICE_DISABLED is true. Skipping retry of ${data.length} unsuccessful transaction(s) to SBC.`;
   }
-  const result = await executeTransactionPool(data, etsCollection);
-  return result;
+  return await executeTransactionPool(data, etsCollection);
 };
 
-const sendPhacToSBC = async phacCollection => {
+const sendPhacToSBC = async (phacCollection: Collection<PhacEntry>) => {
   let data = await getUnsuccessfulSbcTransactions(phacCollection, '$arrival_date');
+
   logger.info(`sendPhacToSBC - getUnsuccessfulSbcTransactions - ${data.length}`);
+
   if (process.env.DB_WRITE_SERVICE_DISABLED === 'true') {
     const message = `DB_WRITE_SERVICE_DISABLED is true. Skipping the sending of ${data.length} PHAC transaction(s) to SBC.`;
     logger.warn(message);
@@ -190,9 +200,7 @@ const sendPhacToSBC = async phacCollection => {
   logger.info('Preparing transaction pool');
 
   data = data.map(phacToSbc);
-
-  const result = await executeTransactionPool(data, phacCollection);
-  return result;
+  return await executeTransactionPool(data, phacCollection);
 };
 
 export { sendPhacToSBC, sendEtsToSBC };

@@ -1,4 +1,6 @@
-const requireHttps = (req, res, next) => {
+import { RequestHandler } from 'express';
+
+const requireHttps: RequestHandler = (req, res, next) => {
   // The 'x-forwarded-proto' check
   if (
     !req.secure &&
