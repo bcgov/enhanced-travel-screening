@@ -62,7 +62,7 @@
     "jest": "26.4.0",
     "lint-staged": "10.2.11",
     "mockdate": "3.0.2",
-    "nodemon": "2.0.4",
+    "nodemon": "2.0.20",
     "prettier": "2.5.1",
     "supertest": "4.0.2",
     "tiny-async-pool": "1.1.0",
